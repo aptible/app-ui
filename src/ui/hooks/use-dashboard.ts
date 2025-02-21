@@ -1,4 +1,4 @@
-import type { Message, Resource } from "@app/aptible-ai";
+import type { Message, Plot, Resource } from "@app/aptible-ai";
 import { selectAptibleAiUrl } from "@app/config";
 import { useSelector } from "@app/react";
 import { selectAccessToken } from "@app/token";
@@ -10,6 +10,8 @@ type Dashboard = {
     [key: string]: Resource;
   };
   messages: Message[];
+  summary: string;
+  ranked_plots: Plot[];
 };
 
 type UseDashboardParams = {
@@ -107,6 +109,12 @@ const handleDashboardEvent = (
           },
         ],
       };
+    case "SummaryGenerated":
+      return {
+        ...dashboard,
+        summary: event.summary,
+        ranked_plots: event.plots,
+      };
     default:
       console.log(`Unhandled event type ${event?.type}`, event);
       return dashboard;
@@ -125,6 +133,8 @@ export const useDashboard = ({
   const [dashboard, setDashboard] = useState<Dashboard>({
     resources: {},
     messages: [],
+    summary: "",
+    ranked_plots: [],
   });
   const [hasShownCompletion, setHasShownCompletion] = useState(false);
 
@@ -139,6 +149,9 @@ export const useDashboard = ({
         symptom_description: symptomDescription,
         start_time: startTime,
         end_time: endTime,
+      },
+      heartbeat: {
+        timeout: 60000 * 30, // 30 minutes
       },
     },
     socketConnected,
