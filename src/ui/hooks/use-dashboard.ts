@@ -1,4 +1,4 @@
-import type { Message, Resource } from "@app/aptible-ai";
+import type { Message, Plot, Resource } from "@app/aptible-ai";
 import { selectAptibleAiUrl } from "@app/config";
 import { fetchDashboard, selectDashboardById } from "@app/deploy/dashboard";
 import { findLoaderComposite } from "@app/loaders";
@@ -12,6 +12,8 @@ type Dashboard = {
     [key: string]: Resource;
   };
   messages: Message[];
+  summary: string;
+  ranked_plots: Plot[];
 };
 
 type UseDashboardParams = {
@@ -106,6 +108,12 @@ const handleDashboardEvent = (
           },
         ],
       };
+    case "SummaryGenerated":
+      return {
+        ...dashboard,
+        summary: event.summary,
+        ranked_plots: event.plots,
+      };
     default:
       console.log(`Unhandled event type ${event?.type}`, event);
       return dashboard;
@@ -116,8 +124,34 @@ export const useDashboard = ({ id }: UseDashboardParams) => {
   const dashboard = useSelector((s) => selectDashboardById(s, { id }));
   const loaderDashboard = useQuery(fetchDashboard({ id }));
   const loader = findLoaderComposite([loaderDashboard]);
-  // load widgets
 
+
+  const [socketConnected, setSocketConnected] = useState(true);
+  const [dashboard, setDashboard] = useState<Dashboard>({
+    resources: {},
+    messages: [],
+    summary: "",
+    ranked_plots: [],
+  });
+
+  const { lastJsonMessage: event, readyState } = useWebSocket<
+    Record<string, any>
+  >(
+    `${aptibleAiUrl}/troubleshoot`,
+    {
+      queryParams: {
+        token: accessToken,
+        resource_id: appId,
+        symptom_description: symptomDescription,
+        start_time: startTime,
+        end_time: endTime,
+      },
+      heartbeat: {
+        timeout: 60000 * 30, // 30 minutes
+      },
+    },
+    socketConnected,
+  );
 
   // if no widgets, connect to socket, have socket code convert to widgets etc & save on new
 
