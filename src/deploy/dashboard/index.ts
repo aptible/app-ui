@@ -14,6 +14,7 @@ export interface DeployDashboardResponse {
   range_begin: string;
   range_end: string;
   observation_timestamp: string;
+  data: object;
   created_at: string;
   updated_at: string;
   _links: {
@@ -46,6 +47,7 @@ export const defaultDashboardResponse = (
     range_begin: "",
     range_end: "",
     observation_timestamp: "",
+    data: {},
     created_at: now,
     updated_at: now,
     _type: "dashboard",
@@ -70,6 +72,7 @@ export const deserializeDeployDashboard = (
     rangeBegin: response.range_begin,
     rangeEnd: response.range_end,
     observationTimestamp: response.observation_timestamp,
+    data: response.data,
     createdAt: response.created_at,
     updatedAt: response.updated_at,
   };
@@ -88,6 +91,7 @@ export const createDashboard = api.post<
     resource_id: resourceId,
     resource_type: resourceType,
     symptoms: symptoms,
+    observation_timestamp: rangeBegin,
     range_begin: rangeBegin,
     range_end: rangeEnd,
     organization_id: organizationId,
@@ -118,4 +122,4 @@ export const dashboardEntities = {
     deserialize: deserializeDeployDashboard,
     save: schema.dashboards.add,
   }),
-}; 
+};

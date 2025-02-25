@@ -730,4 +730,5 @@ export interface DeployDashboard extends Timestamps {
   rangeBegin: string;
   rangeEnd: string;
   observationTimestamp: string;
+  data: object;
 }

@@ -3,7 +3,7 @@ import { useState } from "react";
 import { useParams } from "react-router-dom";
 import { useDashboard } from "../hooks/use-dashboard";
 import { AppSidebarLayout } from "../layouts";
-import { Breadcrumbs, LoadingSpinner } from "../shared";
+import { Breadcrumbs } from "../shared";
 import { HoverContext } from "../shared/diagnostics/hover";
 import { DiagnosticsLineChart } from "../shared/diagnostics/line-chart";
 import { DiagnosticsMessages } from "../shared/diagnostics/messages";
@@ -11,7 +11,7 @@ import { DiagnosticsResource } from "../shared/diagnostics/resource";
 
 export const DiagnosticsDetailPage = () => {
   const { id = "" } = useParams();
-  const { dashboard, isLoading } = useDashboard({ id });
+  const { dashboard, dashboardContents, isDashboardLoading, socketReadyState } = useDashboard({ id });
   const [showAllMessages, setShowAllMessages] = useState(false);
   const [hoverTimestamp, setHoverTimestamp] = useState<string | null>(null);
 
@@ -31,29 +31,25 @@ export const DiagnosticsDetailPage = () => {
       />
 
       <div className="flex flex-col gap-4 p-4">
-        {isLoading ? (
-          <LoadingSpinner />
-        ) : (
-          <div>
-            <h1>{dashboard.name}</h1>
-          </div>
-        )}
+        <div>
+          <h1>{dashboard.name}</h1>
+        </div>
 
         <HoverContext.Provider
           value={{ timestamp: hoverTimestamp, setTimestamp: setHoverTimestamp }}
         >
           <DiagnosticsMessages
-            messages={dashboard.messages}
+            messages={dashboardContents.messages}
             showAllMessages={showAllMessages}
             setShowAllMessages={setShowAllMessages}
           />
 
-          {dashboard.summary && (
+          {dashboardContents.summary && (
             <>
               <h2 className="text-lg font-semibold">Summary</h2>
-              <div className="text-gray-500">{dashboard.summary}</div>
+              <div className="text-gray-500">{dashboardContents.summary}</div>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-2">
-                {Object.entries(dashboard.ranked_plots).map(
+                {Object.entries(dashboardContents.ranked_plots).map(
                   ([plotId, plot]) => (
                     <div
                       key={plotId}
@@ -100,14 +96,14 @@ export const DiagnosticsDetailPage = () => {
 
           <h2 className="text-lg font-semibold mb-2">Resources</h2>
           <div className="space-y-4">
-            {Object.entries(dashboard.resources).map(
+            {Object.entries(dashboardContents.resources).map(
               ([resourceId, resource]) => (
                 <DiagnosticsResource
                   key={resourceId}
                   resourceId={resourceId}
                   resource={resource}
-                  startTime={startTime}
-                  endTime={endTime}
+                  startTime={dashboard.rangeBegin}
+                  endTime={dashboard.rangeEnd}
                   synchronizedHoverContext={HoverContext}
                 />
               ),

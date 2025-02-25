@@ -56,3 +56,112 @@ export interface Annotation {
   y_min: number;
   y_max: number;
 }
+
+export interface DashboardContents {
+  resources: {
+    [key: string]: Resource;
+  };
+  messages: Message[];
+  summary: string;
+  ranked_plots: Plot[];
+};
+
+export const handleDashboardEvent = (
+  dashboard: DashboardContents,
+  event: Record<string, any>,
+): DashboardContents => {
+  switch (event?.type) {
+    case "ResourceDiscovered":
+      return {
+        ...dashboard,
+        resources: {
+          ...dashboard.resources,
+          [event.resource_id]: {
+            id: event.resource_id,
+            type: event.resource_type,
+            notes: event.notes,
+            plots: {},
+            operations: [],
+          },
+        },
+      };
+    case "ResourceMetricsRetrieved":
+      return {
+        ...dashboard,
+        resources: {
+          ...dashboard.resources,
+          [event.resource_id]: {
+            ...dashboard.resources[event.resource_id],
+            plots: {
+              ...dashboard.resources[event.resource_id].plots,
+              [event.plot.id]: {
+                id: event.plot.id,
+                title: event.plot.title,
+                description: event.plot.description,
+                interpretation: event.plot.interpretation,
+                analysis: event.plot.analysis,
+                unit: event.plot.unit,
+                series: event.plot.series,
+                annotations: event.plot.annotations,
+                x_axis_range: event.plot.x_axis_range,
+                y_axis_range: event.plot.y_axis_range,
+              },
+            },
+          },
+        },
+      };
+    case "PlotAnnotated":
+      return {
+        ...dashboard,
+        resources: {
+          ...dashboard.resources,
+          [event.resource_id]: {
+            ...dashboard.resources[event.resource_id],
+            plots: {
+              ...dashboard.resources[event.resource_id].plots,
+              [event.plot_id]: {
+                ...dashboard.resources[event.resource_id].plots[event.plot_id],
+                analysis: event.analysis,
+                annotations: event.annotations,
+              },
+            },
+          },
+        },
+      };
+    case "ResourceOperationsRetrieved":
+      return {
+        ...dashboard,
+        resources: {
+          ...dashboard.resources,
+          [event.resource_id]: {
+            ...dashboard.resources[event.resource_id],
+            operations: [
+              ...dashboard.resources[event.resource_id].operations,
+              ...event.operations,
+            ],
+          },
+        },
+      };
+    case "Message":
+      return {
+        ...dashboard,
+        messages: [
+          ...dashboard.messages,
+          {
+            id: event.id,
+            severity: event.severity,
+            message: event.message,
+          },
+        ],
+      };
+    case "SummaryGenerated":
+      return {
+        ...dashboard,
+        summary: event.summary,
+        ranked_plots: event.plots,
+      };
+    default:
+      console.log(`Unhandled event type ${event?.type}`, event);
+      return dashboard;
+  }
+};
