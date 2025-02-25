@@ -34,7 +34,7 @@ RUN env | grep VITE
 
 RUN yarn build
 
-FROM nginx:1.26.1 as nginx
+FROM nginx:1.27.4-alpine3.21-slim as nginx
 
 ENV BUILD=/app
 ENV PORT=80
