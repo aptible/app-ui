@@ -64,7 +64,7 @@ export interface DashboardContents {
   messages: Message[];
   summary: string;
   ranked_plots: Plot[];
-};
+}
 
 export const handleDashboardEvent = (
   dashboard: DashboardContents,

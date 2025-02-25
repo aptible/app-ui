@@ -7,6 +7,7 @@ import { certificateEntities } from "./certificate";
 import { appConfigEntities } from "./configuration";
 import { containerEntities } from "./container";
 import { costEntities } from "./cost";
+import { dashboardEntities } from "./dashboard";
 import { databaseEntities } from "./database";
 import { credEntities } from "./database-credential";
 import { databaseImageEntities } from "./database-images";
@@ -26,7 +27,6 @@ import { serviceSizingPolicyEntities } from "./service-sizing-policy";
 import { stackEntities } from "./stack";
 import { vpcPeerEntities } from "./vpc-peer";
 import { vpnTunnelEntities } from "./vpn-tunnel";
-import { dashboardEntities } from "./dashboard";
 
 export const entities = {
   ...appEntities,

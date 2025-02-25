@@ -11,7 +11,7 @@ import { DiagnosticsResource } from "../shared/diagnostics/resource";
 
 export const DiagnosticsDetailPage = () => {
   const { id = "" } = useParams();
-  const { dashboard, dashboardContents, isDashboardLoading, socketReadyState } = useDashboard({ id });
+  const { dashboard, dashboardContents } = useDashboard({ id });
   const [showAllMessages, setShowAllMessages] = useState(false);
   const [hoverTimestamp, setHoverTimestamp] = useState<string | null>(null);
 

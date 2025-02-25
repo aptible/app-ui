@@ -85,7 +85,15 @@ export const createDashboard = api.post<
   CreateDashboardProps,
   DeployDashboardResponse
 >("/dashboards", function* (ctx, next) {
-  const { name, resourceId, resourceType, organizationId, symptoms, rangeBegin, rangeEnd } = ctx.payload;
+  const {
+    name,
+    resourceId,
+    resourceType,
+    organizationId,
+    symptoms,
+    rangeBegin,
+    rangeEnd,
+  } = ctx.payload;
   const body = {
     name,
     resource_id: resourceId,

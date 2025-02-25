@@ -1,3 +1,5 @@
+import { fetchDashboards, selectDashboardsAsList } from "@app/deploy/dashboard";
+import { useQuery, useSelector } from "@app/react";
 import { diagnosticsCreateUrl, diagnosticsDetailUrl } from "@app/routes";
 import { Link } from "react-router-dom";
 import { AppSidebarLayout } from "../layouts";
@@ -19,8 +21,6 @@ import {
   Tr,
   tokens,
 } from "../shared";
-import { useQuery, useSelector } from "@app/react";
-import { fetchDashboards, selectDashboardsAsList } from "@app/deploy/dashboard";
 
 export const DiagnosticsPage = () => {
   useQuery(fetchDashboards());
@@ -75,7 +75,10 @@ export const DiagnosticsPage = () => {
             dashboards.map((dashboard) => (
               <Tr key={dashboard.id}>
                 <Td className="flex-1">
-                  <Link to={diagnosticsDetailUrl(dashboard.id)} className="flex">
+                  <Link
+                    to={diagnosticsDetailUrl(dashboard.id)}
+                    className="flex"
+                  >
                     <img
                       src="/resource-types/logo-diagnostics.png"
                       className="w-[32px] h-[32px] mr-2 align-middle"

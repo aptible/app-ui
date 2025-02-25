@@ -1,3 +1,11 @@
+import { createDashboard } from "@app/deploy/dashboard";
+import { selectOrganizationSelectedId } from "@app/organizations";
+import {
+  useDispatch,
+  useLoader,
+  useLoaderSuccess,
+  useSelector,
+} from "@app/react";
 import {
   diagnosticsCreateUrl,
   diagnosticsDetailUrl,
@@ -18,9 +26,6 @@ import {
   Tooltip,
 } from "../shared";
 import { AppSelect } from "../shared/select-apps";
-import { createDashboard } from "@app/deploy/dashboard";
-import { useDispatch, useLoader, useLoaderSuccess, useSelector } from "@app/react";
-import { selectOrganizationSelectedId } from "@app/organizations";
 import "react-datepicker/dist/react-datepicker.css";
 import { selectAppById } from "@app/deploy/app";
 import { useNavigate } from "react-router-dom";
@@ -113,8 +118,8 @@ export const DiagnosticsCreateForm = ({ appId }: { appId: string }) => {
     resourceType: "app",
     organizationId: orgId,
     symptoms,
-    rangeBegin: startDate.toISO() ?? '',
-    rangeEnd: endDate.toISO() ?? '',
+    rangeBegin: startDate.toISO() ?? "",
+    rangeEnd: endDate.toISO() ?? "",
   });
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
@@ -206,14 +211,14 @@ export const DiagnosticsCreateForm = ({ appId }: { appId: string }) => {
                   </Button>
                 </Tooltip>
               )) || (
-                  <Button
-                    type="submit"
-                    className="w-[200px] flex font-semibold"
-                    isLoading={isLoading}
-                  >
-                    Generate Diagnostics
-                  </Button>
-                )}
+                <Button
+                  type="submit"
+                  className="w-[200px] flex font-semibold"
+                  isLoading={isLoading}
+                >
+                  Generate Diagnostics
+                </Button>
+              )}
               <Button className="w-fit ml-2 flex font-semibold" variant="white">
                 Cancel
               </Button>

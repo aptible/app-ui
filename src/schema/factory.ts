@@ -975,6 +975,7 @@ export const defaultDeployDashboard = (
     rangeBegin: "",
     rangeEnd: "",
     observationTimestamp: "",
+    data: {},
     createdAt: now,
     updatedAt: now,
     ...s,
