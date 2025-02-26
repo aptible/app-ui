@@ -1,12 +1,15 @@
 import { type DashboardContents, handleDashboardEvent } from "@app/aptible-ai";
 import { selectAptibleAiUrl } from "@app/config";
+import { updateDashboard } from "@app/deploy/dashboard";
 import { fetchDashboard, selectDashboardById } from "@app/deploy/dashboard";
 import { findLoaderComposite } from "@app/loaders";
-import { useQuery, useSelector } from "@app/react";
+import { useDispatch, useQuery, useSelector } from "@app/react";
 import { selectAccessToken } from "@app/token";
 import type { DeployDashboard } from "@app/types/deploy";
 import { useEffect, useState } from "react";
 import useWebSocket, { ReadyState } from "react-use-websocket";
+
+const DASHBOARD_SAVE_DEBOUNCE_MS = 1000;
 
 type UseDashboardParams = {
   id: string;
@@ -27,6 +30,8 @@ export const useDashboard = ({ id }: UseDashboardParams) => {
       ranked_plots: [],
     },
   );
+  const [debouncedDashboardContents, setDebouncedDashboardContents] =
+    useState(dashboardContents);
 
   const { dashboard, isDashboardLoading } = useLoadedDashboard({ id });
   const { socketReadyState } = useHotshotDashboard({
@@ -34,6 +39,7 @@ export const useDashboard = ({ id }: UseDashboardParams) => {
     isDashboardLoading,
     setDashboardContents,
   });
+  const dispatch = useDispatch();
 
   useEffect(() => {
     // If we have saved content from the backend, use it
@@ -41,6 +47,30 @@ export const useDashboard = ({ id }: UseDashboardParams) => {
       setDashboardContents(dashboard.data as DashboardContents);
     }
   }, [dashboard]);
+
+  // Debounce to limit backend requests as Hotshot data comes in
+  useEffect(() => {
+    if (debouncedDashboardContents) {
+      dispatch(
+        updateDashboard({ id: dashboard.id, data: debouncedDashboardContents }),
+      );
+    }
+  }, [debouncedDashboardContents]);
+
+  useEffect(() => {
+    // TODO: add a check to make sure the dashboardContents are different from
+    // dashboard.data to avoid saving the data we just loaded from the backend
+    if (Object.entries(dashboardContents).length === 0) {
+      return;
+    }
+
+    const handler = setTimeout(() => {
+      setDebouncedDashboardContents(dashboardContents);
+    }, DASHBOARD_SAVE_DEBOUNCE_MS);
+
+    // Clear the timeout if dashboardContents changes before the debounce
+    return () => clearTimeout(handler);
+  }, [dashboardContents]);
 
   return {
     dashboard,
@@ -94,12 +124,9 @@ const useHotshotDashboard = ({
 
   useEffect(() => {
     if (event) {
-      setDashboardContents((prevDashboard) => {
-        const contents = handleDashboardEvent(prevDashboard, event);
-        // TODO: save contents to backend
-        console.log(contents);
-        return contents;
-      });
+      setDashboardContents((prevDashboard) =>
+        handleDashboardEvent(prevDashboard, event),
+      );
     }
   }, [JSON.stringify(event)]);
 

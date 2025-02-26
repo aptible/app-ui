@@ -124,6 +124,39 @@ export const fetchDashboard = api.get<{ id: string }, DeployDashboardResponse>(
   "/dashboards/:id",
 );
 
+interface UpdateDashboard {
+  id: string;
+  data?: object;
+  name?: string;
+}
+
+export const updateDashboard = api.put<UpdateDashboard>(
+  "/dashboards/:id",
+  function* (ctx, next) {
+    const { data, name } = ctx.payload;
+    const body: { data?: object; name?: string } = {};
+
+    if (data) {
+      body.data = data;
+    }
+
+    if (name) {
+      body.name = name;
+    }
+    ctx.request = ctx.req({ body: JSON.stringify(body) });
+
+    yield* next();
+
+    if (!ctx.json.ok) {
+      return;
+    }
+
+    ctx.loader = {
+      message: "Saved changes successfully!",
+    };
+  },
+);
+
 export const dashboardEntities = {
   dashboard: defaultEntity({
     id: "dashboard",
