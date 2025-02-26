@@ -1,11 +1,18 @@
-import { updateDashboard } from "@app/deploy/dashboard";
-import { diagnosticsCreateUrl } from "@app/routes";
-import { useDispatch } from "node_modules/starfx/esm/deps";
+import { deleteDashboard, updateDashboard } from "@app/deploy/dashboard";
+import { useDispatch } from "@app/react";
+import { diagnosticsUrl } from "@app/routes";
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { useDashboard } from "../hooks/use-dashboard";
 import { AppSidebarLayout } from "../layouts";
-import { Breadcrumbs, type Crumb, IconEdit } from "../shared";
+import {
+  Breadcrumbs,
+  Button,
+  type Crumb,
+  IconEdit,
+  IconTrash,
+} from "../shared";
 import { HoverContext } from "../shared/diagnostics/hover";
 import { DiagnosticsLineChart } from "../shared/diagnostics/line-chart";
 import { DiagnosticsMessages } from "../shared/diagnostics/messages";
@@ -17,14 +24,17 @@ export const DiagnosticsDetailPage = () => {
   const [dashboardName, setDashboardName] = useState(dashboard.name);
   const [showAllMessages, setShowAllMessages] = useState(false);
   const [hoverTimestamp, setHoverTimestamp] = useState<string | null>(null);
-  const [isEditingName, setIsEditingName] = useState(false);
+  const [isEditing, setIsEditing] = useState(false);
   const dispatch = useDispatch();
+  const navigate = useNavigate();
 
   const diagnosticsCrumb: Crumb = {
     name: "Diagnostics",
-    to: diagnosticsCreateUrl(),
+    to: diagnosticsUrl(),
   };
   const [crumbs, setCrumbs] = useState<Crumb[]>([diagnosticsCrumb]);
+
+  const deleteAction = deleteDashboard({ id: dashboard.id });
 
   // When dashboard loads, set name and add breadcrumb
   useEffect(() => {
@@ -41,7 +51,7 @@ export const DiagnosticsDetailPage = () => {
 
   const handleEditNameClick = () => {
     setCrumbs([diagnosticsCrumb]);
-    setIsEditingName(true);
+    setIsEditing(true);
   };
 
   const handleSaveNameClick = () => {
@@ -55,7 +65,7 @@ export const DiagnosticsDetailPage = () => {
 
     dispatch(updateDashboard({ id: dashboard.id, name: dashboardName }));
 
-    setIsEditingName(false);
+    setIsEditing(false);
   };
 
   const handleNameKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
@@ -68,12 +78,17 @@ export const DiagnosticsDetailPage = () => {
     setDashboardName(e.target.value);
   };
 
+  const handleDeleteClick = async () => {
+    await dispatch(deleteAction);
+    navigate(diagnosticsUrl());
+  };
+
   return (
     <AppSidebarLayout>
       <div className="flex flex-row p-4">
         <Breadcrumbs crumbs={crumbs} />
         <div className="flex flex-row gap-2">
-          {isEditingName ? (
+          {isEditing ? (
             <div className="flex flex-row gap-2 ml-2">
               <input
                 type="text"
@@ -96,7 +111,19 @@ export const DiagnosticsDetailPage = () => {
             </button>
           )}
         </div>
-        <div className="flex flex-col gap-4 ml-auto">Delete</div>
+        {isEditing ? (
+          <div className="flex flex-col gap-4 ml-auto">
+            <Button
+              type="submit"
+              variant="delete"
+              className="w-70 flex"
+              onClick={handleDeleteClick}
+            >
+              <IconTrash color="#FFF" className="mr-2" />
+              Delete Diagnostic
+            </Button>
+          </div>
+        ) : null}
       </div>
 
       <div className="flex flex-col gap-4 p-4">

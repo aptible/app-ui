@@ -157,6 +157,18 @@ export const updateDashboard = api.put<UpdateDashboard>(
   },
 );
 
+export const deleteDashboard = api.delete<{
+  id: string;
+}>("/dashboards/:id", function* (ctx, next) {
+  yield* next();
+
+  if (!ctx.json.ok) {
+    return;
+  }
+
+  yield* schema.update(schema.dashboards.remove([ctx.payload.id]));
+});
+
 export const dashboardEntities = {
   dashboard: defaultEntity({
     id: "dashboard",
