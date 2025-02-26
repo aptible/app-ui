@@ -58,9 +58,12 @@ export const useDashboard = ({ id }: UseDashboardParams) => {
   }, [debouncedDashboardContents]);
 
   useEffect(() => {
-    // TODO: add a check to make sure the dashboardContents are different from
-    // dashboard.data to avoid saving the data we just loaded from the backend
-    if (Object.entries(dashboardContents).length === 0) {
+    // Make sure dashboardContents is different from dashboard.data to avoid
+    // saving the data we just loaded from the backend
+    if (
+      Object.entries(dashboardContents).length === 0 ||
+      JSON.stringify(dashboardContents) === JSON.stringify(dashboard.data)
+    ) {
       return;
     }
 
