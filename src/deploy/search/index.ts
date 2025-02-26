@@ -10,6 +10,7 @@ import {
   selectAppsByOrgAsList,
 } from "../app";
 import { computeCostId } from "../cost";
+import { selectDashboardsAsList } from "../dashboard";
 import {
   type DeployDatabaseRow,
   selectDatabasesByOrgAsList,
@@ -674,5 +675,15 @@ export const selectDatabasesForTableSearchByEnvironmentId = createSelector(
 
       return searchMatch;
     });
+  },
+);
+
+export const selectDashboardsForTableSearch = createSelector(
+  selectDashboardsAsList,
+  (_: WebState, props: { search: string }) => props.search,
+  (dashboards, search) => {
+    return dashboards.filter((dashboard) =>
+      dashboard.name.toLowerCase().includes(search.toLowerCase()),
+    );
   },
 );

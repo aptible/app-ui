@@ -1,17 +1,21 @@
-import { fetchDashboards, selectDashboardsAsList } from "@app/deploy/dashboard";
+import { fetchDashboards } from "@app/deploy/dashboard";
+import { selectDashboardsForTableSearch } from "@app/deploy/search";
 import { useQuery, useSelector } from "@app/react";
 import { diagnosticsCreateUrl, diagnosticsDetailUrl } from "@app/routes";
-import { Link } from "react-router-dom";
+import { Link, useSearchParams } from "react-router-dom";
+import { usePaginate } from "../hooks/use-paginate";
 import { AppSidebarLayout } from "../layouts";
 import {
   ActionBar,
   Banner,
   ButtonLink,
   DescBar,
+  EmptyTr,
   FilterBar,
   Group,
   IconPlusCircle,
   InputSearch,
+  PaginateBar,
   TBody,
   THead,
   Table,
@@ -21,10 +25,17 @@ import {
   Tr,
   tokens,
 } from "../shared";
-
 export const DiagnosticsPage = () => {
   useQuery(fetchDashboards());
-  const dashboards = useSelector(selectDashboardsAsList);
+  const [params, setParams] = useSearchParams();
+  const search = params.get("search") || "";
+  const onChange = (ev: React.ChangeEvent<HTMLInputElement>) => {
+    setParams({ search: ev.currentTarget.value }, { replace: true });
+  };
+  const dashboards = useSelector((s) =>
+    selectDashboardsForTableSearch(s, { search }),
+  );
+  const paginated = usePaginate(dashboards);
 
   return (
     <AppSidebarLayout>
@@ -41,8 +52,8 @@ export const DiagnosticsPage = () => {
           <Group variant="horizontal" size="sm" className="items-center">
             <InputSearch
               placeholder="Search..."
-              search={""}
-              onChange={console.log}
+              search={search}
+              onChange={onChange}
             />
           </Group>
 
@@ -54,7 +65,8 @@ export const DiagnosticsPage = () => {
         </div>
 
         <Group variant="horizontal" size="lg" className="items-center mt-1">
-          <DescBar>{dashboards.length} Diagnostics</DescBar>
+          <DescBar>{paginated.totalItems} Diagnostics</DescBar>
+          <PaginateBar {...paginated} />
         </Group>
       </FilterBar>
 
@@ -65,36 +77,26 @@ export const DiagnosticsPage = () => {
         </THead>
 
         <TBody>
-          {dashboards.length === 0 ? (
-            <tr>
-              <td colSpan={4} className="text-center py-4">
-                No diagnostics found
-              </td>
-            </tr>
-          ) : (
-            dashboards.map((dashboard) => (
-              <Tr key={dashboard.id}>
-                <Td className="flex-1">
-                  <Link
-                    to={diagnosticsDetailUrl(dashboard.id)}
-                    className="flex"
-                  >
-                    <img
-                      src="/resource-types/logo-diagnostics.png"
-                      className="w-[32px] h-[32px] mr-2 align-middle"
-                      aria-label="App"
-                    />
-                    <p className={`${tokens.type["table link"]} leading-8`}>
-                      {dashboard.name}
-                    </p>
-                  </Link>
-                </Td>
-                <Td className="flex-1">
-                  <p>{new Date(dashboard.createdAt).toLocaleString()} UTC</p>
-                </Td>
-              </Tr>
-            ))
-          )}
+          {paginated.data.length === 0 ? <EmptyTr colSpan={5} /> : null}
+          {paginated.data.map((dashboard) => (
+            <Tr key={dashboard.id}>
+              <Td className="flex-1">
+                <Link to={diagnosticsDetailUrl(dashboard.id)} className="flex">
+                  <img
+                    src="/resource-types/logo-diagnostics.png"
+                    className="w-[32px] h-[32px] mr-2 align-middle"
+                    aria-label="App"
+                  />
+                  <p className={`${tokens.type["table link"]} leading-8`}>
+                    {dashboard.name}
+                  </p>
+                </Link>
+              </Td>
+              <Td className="flex-1">
+                <p>{new Date(dashboard.createdAt).toLocaleString()} UTC</p>
+              </Td>
+            </Tr>
+          ))}
         </TBody>
       </Table>
     </AppSidebarLayout>
