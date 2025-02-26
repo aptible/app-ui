@@ -76,12 +76,12 @@ export const ApplicationSidebar = () => {
     { name: "Activity", to: activityUrl(), icon: <IconHeart /> },
     ...(hasBetaFeatures
       ? [
-        {
-          name: "Diagnostics",
-          to: diagnosticsUrl(),
-          icon: <IconDiagnostics />,
-        },
-      ]
+          {
+            name: "Diagnostics",
+            to: diagnosticsUrl(),
+            icon: <IconDiagnostics />,
+          },
+        ]
       : []),
     {
       name: "Security & Compliance",
@@ -108,8 +108,9 @@ export const ApplicationSidebar = () => {
         <button
           aria-label={`${collapsed ? "Expand" : "Collapse"} Menu`}
           type="button"
-          className={`${collapsed ? "mt-0 ml-4 my-4" : "absolute top-4 right-4"
-            } hover:cursor-pointer`}
+          className={`${
+            collapsed ? "mt-0 ml-4 my-4" : "absolute top-4 right-4"
+          } hover:cursor-pointer`}
           onClick={() => dispatch(setCollapsed({ collapsed: !collapsed }))}
         >
           <IconHamburger color="#888C90" />
@@ -186,12 +187,12 @@ export const ApplicationSidebar = () => {
                 style={
                   collapsed
                     ? {
-                      width: 12,
-                      height: 12,
-                      marginRight: -3,
-                      marginLeft: -2,
-                      transform: "scale(1.8, 1.8)",
-                    }
+                        width: 12,
+                        height: 12,
+                        marginRight: -3,
+                        marginLeft: -2,
+                        transform: "scale(1.8, 1.8)",
+                      }
                     : {}
                 }
               />

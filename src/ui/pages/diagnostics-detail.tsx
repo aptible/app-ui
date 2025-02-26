@@ -1,9 +1,11 @@
+import { updateDashboard } from "@app/deploy/dashboard";
 import { diagnosticsCreateUrl } from "@app/routes";
-import { useState } from "react";
+import { useDispatch } from "node_modules/starfx/esm/deps";
+import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { useDashboard } from "../hooks/use-dashboard";
 import { AppSidebarLayout } from "../layouts";
-import { Breadcrumbs } from "../shared";
+import { Breadcrumbs, type Crumb, IconEdit } from "../shared";
 import { HoverContext } from "../shared/diagnostics/hover";
 import { DiagnosticsLineChart } from "../shared/diagnostics/line-chart";
 import { DiagnosticsMessages } from "../shared/diagnostics/messages";
@@ -12,29 +14,92 @@ import { DiagnosticsResource } from "../shared/diagnostics/resource";
 export const DiagnosticsDetailPage = () => {
   const { id = "" } = useParams();
   const { dashboard, dashboardContents } = useDashboard({ id });
+  const [dashboardName, setDashboardName] = useState(dashboard.name);
   const [showAllMessages, setShowAllMessages] = useState(false);
   const [hoverTimestamp, setHoverTimestamp] = useState<string | null>(null);
+  const [isEditingName, setIsEditingName] = useState(false);
+  const dispatch = useDispatch();
+
+  const diagnosticsCrumb: Crumb = {
+    name: "Diagnostics",
+    to: diagnosticsCreateUrl(),
+  };
+  const [crumbs, setCrumbs] = useState<Crumb[]>([diagnosticsCrumb]);
+
+  // When dashboard loads, set name and add breadcrumb
+  useEffect(() => {
+    setDashboardName(dashboard.name);
+
+    setCrumbs([
+      diagnosticsCrumb,
+      {
+        name: dashboard.name,
+        to: window.location.href,
+      },
+    ]);
+  }, [dashboard]);
+
+  const handleEditNameClick = () => {
+    setCrumbs([diagnosticsCrumb]);
+    setIsEditingName(true);
+  };
+
+  const handleSaveNameClick = () => {
+    setCrumbs([
+      diagnosticsCrumb,
+      {
+        name: dashboardName,
+        to: window.location.href,
+      },
+    ]);
+
+    dispatch(updateDashboard({ id: dashboard.id, name: dashboardName }));
+
+    setIsEditingName(false);
+  };
+
+  const handleNameKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === "Enter") {
+      handleSaveNameClick();
+    }
+  };
+
+  const handleNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setDashboardName(e.target.value);
+  };
 
   return (
     <AppSidebarLayout>
-      <Breadcrumbs
-        crumbs={[
-          {
-            name: "Diagnostics",
-            to: diagnosticsCreateUrl(),
-          },
-          {
-            name: dashboard.name,
-            to: window.location.href,
-          },
-        ]}
-      />
+      <div className="flex flex-row p-4">
+        <Breadcrumbs crumbs={crumbs} />
+        <div className="flex flex-row gap-2">
+          {isEditingName ? (
+            <div className="flex flex-row gap-2 ml-2">
+              <input
+                type="text"
+                value={dashboardName}
+                onChange={handleNameChange}
+                onKeyDown={handleNameKeyDown}
+                className="border border-gray-300 rounded-md p-2"
+              />
+              <button
+                type="button"
+                className="inline-block px-4 py-2 bg-blue-500 text-white rounded-md"
+                onClick={handleSaveNameClick}
+              >
+                Save
+              </button>
+            </div>
+          ) : (
+            <button type="button" onClick={handleEditNameClick}>
+              <IconEdit color="#aaa" className="w-3 h-3 ml-2" />
+            </button>
+          )}
+        </div>
+        <div className="flex flex-col gap-4 ml-auto">Delete</div>
+      </div>
 
       <div className="flex flex-col gap-4 p-4">
-        <div>
-          <h1>{dashboard.name}</h1>
-        </div>
-
         <HoverContext.Provider
           value={{ timestamp: hoverTimestamp, setTimestamp: setHoverTimestamp }}
         >
