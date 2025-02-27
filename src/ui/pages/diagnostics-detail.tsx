@@ -20,7 +20,9 @@ import { DiagnosticsResource } from "../shared/diagnostics/resource";
 
 export const DiagnosticsDetailPage = () => {
   const { id = "" } = useParams();
-  const { dashboard, dashboardContents } = useDashboard({ id });
+  const { dashboard, dashboardContents, loadingComplete } = useDashboard({
+    id,
+  });
   const [dashboardName, setDashboardName] = useState(dashboard.name);
   const [showAllMessages, setShowAllMessages] = useState(false);
   const [hoverTimestamp, setHoverTimestamp] = useState<string | null>(null);
@@ -134,6 +136,7 @@ export const DiagnosticsDetailPage = () => {
             messages={dashboardContents.messages}
             showAllMessages={showAllMessages}
             setShowAllMessages={setShowAllMessages}
+            loadingComplete={loadingComplete}
           />
 
           {dashboardContents.summary && (

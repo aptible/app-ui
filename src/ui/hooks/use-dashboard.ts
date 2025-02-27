@@ -2,7 +2,6 @@ import { type DashboardContents, handleDashboardEvent } from "@app/aptible-ai";
 import { selectAptibleAiUrl } from "@app/config";
 import { updateDashboard } from "@app/deploy/dashboard";
 import { fetchDashboard, selectDashboardById } from "@app/deploy/dashboard";
-import { findLoaderComposite } from "@app/loaders";
 import { useDispatch, useQuery, useSelector } from "@app/react";
 import { selectAccessToken } from "@app/token";
 import type { DeployDashboard } from "@app/types/deploy";
@@ -17,11 +16,19 @@ type UseDashboardParams = {
 
 type UseHotshotDashboardParams = {
   dashboard: DeployDashboard;
-  isDashboardLoading: boolean;
+  useHotshot: boolean;
   setDashboardContents: React.Dispatch<React.SetStateAction<DashboardContents>>;
+  setLoadingComplete: React.Dispatch<React.SetStateAction<boolean>>;
 };
 
 export const useDashboard = ({ id }: UseDashboardParams) => {
+  const { isSuccess: isDashboardLoaded } = useQuery(fetchDashboard({ id }));
+  const dashboard = useSelector((s) => selectDashboardById(s, { id }));
+  const dispatch = useDispatch();
+  const [useHotshot, setUseHotshot] = useState(false);
+  const [loadingComplete, setLoadingComplete] = useState(false);
+  const [debouncedDashboardContents, setDebouncedDashboardContents] =
+    useState<DashboardContents>();
   const [dashboardContents, setDashboardContents] = useState<DashboardContents>(
     {
       resources: {},
@@ -30,23 +37,25 @@ export const useDashboard = ({ id }: UseDashboardParams) => {
       ranked_plots: [],
     },
   );
-  const [debouncedDashboardContents, setDebouncedDashboardContents] =
-    useState(dashboardContents);
-
-  const { dashboard, isDashboardLoading } = useLoadedDashboard({ id });
-  const { socketReadyState } = useHotshotDashboard({
+  useHotshotDashboard({
     dashboard,
-    isDashboardLoading,
+    useHotshot,
     setDashboardContents,
+    setLoadingComplete,
   });
-  const dispatch = useDispatch();
 
   useEffect(() => {
-    // If we have saved content from the backend, use it
-    if (Object.entries(dashboard.data).length > 0) {
-      setDashboardContents(dashboard.data as DashboardContents);
+    if (isDashboardLoaded) {
+      if (Object.entries(dashboard.data).length > 0) {
+        // If we have saved content from the backend, use it
+        setDashboardContents(dashboard.data as DashboardContents);
+        setLoadingComplete(true);
+      } else {
+        // Otherwise, get data from Hotshot
+        setUseHotshot(true);
+      }
     }
-  }, [dashboard]);
+  }, [isDashboardLoaded]);
 
   // Debounce to limit backend requests as Hotshot data comes in
   useEffect(() => {
@@ -58,12 +67,13 @@ export const useDashboard = ({ id }: UseDashboardParams) => {
   }, [debouncedDashboardContents]);
 
   useEffect(() => {
-    // Make sure dashboardContents is different from dashboard.data to avoid
-    // saving the data we just loaded from the backend
-    if (
-      Object.entries(dashboardContents).length === 0 ||
-      JSON.stringify(dashboardContents) === JSON.stringify(dashboard.data)
-    ) {
+    if (!isDashboardLoaded) {
+      return;
+    }
+
+    // If the dashboardContents is the same as what we have saved on the
+    // backend, don't save it again
+    if (JSON.stringify(dashboardContents) === JSON.stringify(dashboard.data)) {
       return;
     }
 
@@ -73,41 +83,23 @@ export const useDashboard = ({ id }: UseDashboardParams) => {
 
     // Clear the timeout if dashboardContents changes before the debounce
     return () => clearTimeout(handler);
-  }, [dashboardContents]);
+  }, [dashboardContents, isDashboardLoaded]);
 
   return {
     dashboard,
     dashboardContents,
-    isDashboardLoading,
-    socketReadyState,
-  };
-};
-
-const useLoadedDashboard = ({ id }: UseDashboardParams) => {
-  const dashboard = useSelector((s) => selectDashboardById(s, { id }));
-  const loaderDashboard = useQuery(fetchDashboard({ id }));
-  const loader = findLoaderComposite([loaderDashboard]);
-
-  return {
-    dashboard,
-    isDashboardLoading: loader.isLoading,
+    loadingComplete,
   };
 };
 
 const useHotshotDashboard = ({
   dashboard,
-  isDashboardLoading,
+  useHotshot,
   setDashboardContents,
+  setLoadingComplete,
 }: UseHotshotDashboardParams) => {
   const aptibleAiUrl = useSelector(selectAptibleAiUrl);
   const accessToken = useSelector(selectAccessToken);
-  const [socketReadyState, setSocketReadyState] = useState<ReadyState>(
-    ReadyState.UNINSTANTIATED,
-  );
-
-  // Only enable socket if the dashboard has loaded and there is no saved data
-  const shouldEnableSocket =
-    !isDashboardLoading && Object.entries(dashboard.data).length === 0;
 
   const { lastJsonMessage: event, readyState: wsReadyState } = useWebSocket<
     Record<string, any>
@@ -121,8 +113,11 @@ const useHotshotDashboard = ({
         start_time: dashboard.rangeBegin,
         end_time: dashboard.rangeEnd,
       },
+      heartbeat: {
+        timeout: 60000 * 30, // 30 minutes
+      },
     },
-    shouldEnableSocket,
+    useHotshot,
   );
 
   useEffect(() => {
@@ -134,14 +129,8 @@ const useHotshotDashboard = ({
   }, [JSON.stringify(event)]);
 
   useEffect(() => {
-    if (wsReadyState === ReadyState.OPEN) {
-      setSocketReadyState(ReadyState.OPEN);
-    } else if (wsReadyState === ReadyState.CLOSED) {
-      setSocketReadyState(ReadyState.CLOSED);
+    if (wsReadyState === ReadyState.CLOSED) {
+      setLoadingComplete(true);
     }
   }, [wsReadyState]);
-
-  return {
-    socketReadyState,
-  };
 };
