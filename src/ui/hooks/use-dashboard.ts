@@ -1,197 +1,136 @@
-import type { Message, Plot, Resource } from "@app/aptible-ai";
+import { type DashboardContents, handleDashboardEvent } from "@app/aptible-ai";
 import { selectAptibleAiUrl } from "@app/config";
-import { useSelector } from "@app/react";
+import { updateDashboard } from "@app/deploy/dashboard";
+import { fetchDashboard, selectDashboardById } from "@app/deploy/dashboard";
+import { useDispatch, useQuery, useSelector } from "@app/react";
 import { selectAccessToken } from "@app/token";
+import type { DeployDashboard } from "@app/types/deploy";
 import { useEffect, useState } from "react";
 import useWebSocket, { ReadyState } from "react-use-websocket";
 
-type Dashboard = {
-  resources: {
-    [key: string]: Resource;
-  };
-  messages: Message[];
-  summary: string;
-  ranked_plots: Plot[];
-};
+const DASHBOARD_SAVE_DEBOUNCE_MS = 1000;
 
 type UseDashboardParams = {
-  appId: string;
-  symptomDescription: string;
-  startTime: string;
-  endTime: string;
+  id: string;
 };
 
-const handleDashboardEvent = (
-  dashboard: Dashboard,
-  event: Record<string, any>,
-): Dashboard => {
-  switch (event?.type) {
-    case "ResourceDiscovered":
-      return {
-        ...dashboard,
-        resources: {
-          ...dashboard.resources,
-          [event.resource_id]: {
-            id: event.resource_id,
-            type: event.resource_type,
-            notes: event.notes,
-            plots: {},
-            operations: [],
-          },
-        },
-      };
-    case "ResourceMetricsRetrieved":
-      return {
-        ...dashboard,
-        resources: {
-          ...dashboard.resources,
-          [event.resource_id]: {
-            ...dashboard.resources[event.resource_id],
-            plots: {
-              ...dashboard.resources[event.resource_id].plots,
-              [event.plot.id]: {
-                id: event.plot.id,
-                title: event.plot.title,
-                description: event.plot.description,
-                interpretation: event.plot.interpretation,
-                analysis: event.plot.analysis,
-                unit: event.plot.unit,
-                series: event.plot.series,
-                annotations: event.plot.annotations,
-                x_axis_range: event.plot.x_axis_range,
-                y_axis_range: event.plot.y_axis_range,
-              },
-            },
-          },
-        },
-      };
-    case "PlotAnnotated":
-      return {
-        ...dashboard,
-        resources: {
-          ...dashboard.resources,
-          [event.resource_id]: {
-            ...dashboard.resources[event.resource_id],
-            plots: {
-              ...dashboard.resources[event.resource_id].plots,
-              [event.plot_id]: {
-                ...dashboard.resources[event.resource_id].plots[event.plot_id],
-                analysis: event.analysis,
-                annotations: event.annotations,
-              },
-            },
-          },
-        },
-      };
-    case "ResourceOperationsRetrieved":
-      return {
-        ...dashboard,
-        resources: {
-          ...dashboard.resources,
-          [event.resource_id]: {
-            ...dashboard.resources[event.resource_id],
-            operations: [
-              ...dashboard.resources[event.resource_id].operations,
-              ...event.operations,
-            ],
-          },
-        },
-      };
-    case "Message":
-      return {
-        ...dashboard,
-        messages: [
-          ...dashboard.messages,
-          {
-            id: event.id,
-            severity: event.severity,
-            message: event.message,
-          },
-        ],
-      };
-    case "SummaryGenerated":
-      return {
-        ...dashboard,
-        summary: event.summary,
-        ranked_plots: event.plots,
-      };
-    default:
-      console.log(`Unhandled event type ${event?.type}`, event);
-      return dashboard;
-  }
+type UseHotshotDashboardParams = {
+  dashboard: DeployDashboard;
+  useHotshot: boolean;
+  setDashboardContents: React.Dispatch<React.SetStateAction<DashboardContents>>;
+  setLoadingComplete: React.Dispatch<React.SetStateAction<boolean>>;
 };
 
-export const useDashboard = ({
-  appId,
-  symptomDescription,
-  startTime,
-  endTime,
-}: UseDashboardParams) => {
+export const useDashboard = ({ id }: UseDashboardParams) => {
+  const { isSuccess: isDashboardLoaded } = useQuery(fetchDashboard({ id }));
+  const dashboard = useSelector((s) => selectDashboardById(s, { id }));
+  const dispatch = useDispatch();
+  const [useHotshot, setUseHotshot] = useState(false);
+  const [loadingComplete, setLoadingComplete] = useState(false);
+  const [debouncedDashboardContents, setDebouncedDashboardContents] =
+    useState<DashboardContents>();
+  const [dashboardContents, setDashboardContents] = useState<DashboardContents>(
+    {
+      resources: {},
+      messages: [],
+      summary: "",
+      ranked_plots: [],
+    },
+  );
+  useHotshotDashboard({
+    dashboard,
+    useHotshot,
+    setDashboardContents,
+    setLoadingComplete,
+  });
+
+  useEffect(() => {
+    if (isDashboardLoaded) {
+      if (Object.entries(dashboard.data).length > 0) {
+        // If we have saved content from the backend, use it
+        setDashboardContents(dashboard.data as DashboardContents);
+        setLoadingComplete(true);
+      } else {
+        // Otherwise, get data from Hotshot
+        setUseHotshot(true);
+      }
+    }
+  }, [isDashboardLoaded]);
+
+  // Debounce to limit backend requests as Hotshot data comes in
+  useEffect(() => {
+    if (debouncedDashboardContents) {
+      dispatch(
+        updateDashboard({ id: dashboard.id, data: debouncedDashboardContents }),
+      );
+    }
+  }, [debouncedDashboardContents]);
+
+  useEffect(() => {
+    if (!isDashboardLoaded) {
+      return;
+    }
+
+    // If the dashboardContents is the same as what we have saved on the
+    // backend, don't save it again
+    if (JSON.stringify(dashboardContents) === JSON.stringify(dashboard.data)) {
+      return;
+    }
+
+    const handler = setTimeout(() => {
+      setDebouncedDashboardContents(dashboardContents);
+    }, DASHBOARD_SAVE_DEBOUNCE_MS);
+
+    // Clear the timeout if dashboardContents changes before the debounce
+    return () => clearTimeout(handler);
+  }, [dashboardContents, isDashboardLoaded]);
+
+  return {
+    dashboard,
+    dashboardContents,
+    loadingComplete,
+  };
+};
+
+const useHotshotDashboard = ({
+  dashboard,
+  useHotshot,
+  setDashboardContents,
+  setLoadingComplete,
+}: UseHotshotDashboardParams) => {
   const aptibleAiUrl = useSelector(selectAptibleAiUrl);
   const accessToken = useSelector(selectAccessToken);
-  const [socketConnected, setSocketConnected] = useState(true);
-  const [dashboard, setDashboard] = useState<Dashboard>({
-    resources: {},
-    messages: [],
-    summary: "",
-    ranked_plots: [],
-  });
-  const [hasShownCompletion, setHasShownCompletion] = useState(false);
 
-  const { lastJsonMessage: event, readyState } = useWebSocket<
+  const { lastJsonMessage: event, readyState: wsReadyState } = useWebSocket<
     Record<string, any>
   >(
     `${aptibleAiUrl}/troubleshoot`,
     {
       queryParams: {
         token: accessToken,
-        resource_id: appId,
-        symptom_description: symptomDescription,
-        start_time: startTime,
-        end_time: endTime,
+        resource_id: dashboard.resourceId,
+        symptom_description: dashboard.symptoms,
+        start_time: dashboard.rangeBegin,
+        end_time: dashboard.rangeEnd,
       },
       heartbeat: {
         timeout: 60000 * 30, // 30 minutes
       },
     },
-    socketConnected,
+    useHotshot,
   );
 
   useEffect(() => {
-    if (readyState === ReadyState.CLOSED) {
-      setSocketConnected(false);
-    }
-  }, [readyState]);
-
-  useEffect(() => {
     if (event) {
-      setDashboard((prevDashboard) =>
+      setDashboardContents((prevDashboard) =>
         handleDashboardEvent(prevDashboard, event),
       );
     }
   }, [JSON.stringify(event)]);
 
-  // Show a message when the socket closes and the analysis is complete.
   useEffect(() => {
-    if (readyState === ReadyState.CLOSED && !hasShownCompletion) {
-      setHasShownCompletion(true);
-      setDashboard((prev) => ({
-        ...prev,
-        messages: [
-          ...prev.messages,
-          {
-            id: "completion-message",
-            severity: "info",
-            message: "Analysis complete.",
-          },
-        ],
-      }));
+    if (wsReadyState === ReadyState.CLOSED) {
+      setLoadingComplete(true);
     }
-  }, [readyState, hasShownCompletion]);
-
-  return {
-    dashboard,
-    isConnected: readyState === ReadyState.OPEN,
-    isClosed: readyState === ReadyState.CLOSED,
-  };
+  }, [wsReadyState]);
 };

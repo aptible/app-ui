@@ -1,3 +1,11 @@
+import { createDashboard } from "@app/deploy/dashboard";
+import { selectOrganizationSelectedId } from "@app/organizations";
+import {
+  useDispatch,
+  useLoader,
+  useLoaderSuccess,
+  useSelector,
+} from "@app/react";
 import {
   diagnosticsCreateUrl,
   diagnosticsDetailUrl,
@@ -18,11 +26,14 @@ import {
   Tooltip,
 } from "../shared";
 import { AppSelect } from "../shared/select-apps";
-
 import "react-datepicker/dist/react-datepicker.css";
+import { selectAppById } from "@app/deploy/app";
+import { selectTokenHasWriteAccess } from "@app/token";
 import { useNavigate } from "react-router-dom";
 
 export const DiagnosticsCreateForm = ({ appId }: { appId: string }) => {
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
   const symptomOptions = [
     { label: "App is slow", value: "App is slow" },
     { label: "App is unavailable", value: "App is unavailable" },
@@ -32,6 +43,8 @@ export const DiagnosticsCreateForm = ({ appId }: { appId: string }) => {
     },
   ];
   const [symptoms, setSymptom] = useState(symptomOptions[0].value);
+  const app = useSelector((s) => selectAppById(s, { id: appId }));
+  const canCreateDiagnostics = useSelector(selectTokenHasWriteAccess);
 
   // We need to memoize the now date because the date picker will re-render the
   // component when the date changes, making the timestamps in the options
@@ -100,20 +113,41 @@ export const DiagnosticsCreateForm = ({ appId }: { appId: string }) => {
 
   // Submit the form.
   const [isLoading, setIsLoading] = useState(false);
-  const navigate = useNavigate();
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+  const orgId = useSelector(selectOrganizationSelectedId);
+  const action = createDashboard({
+    name: `${app.handle}: ${symptoms}`,
+    resourceId: appId,
+    resourceType: "app",
+    organizationId: orgId,
+    symptoms,
+    rangeBegin: startDate.toUTC(0, { keepLocalTime: true }).toISO() ?? "",
+    rangeEnd: endDate.toUTC(0, { keepLocalTime: true }).toISO() ?? "",
+  });
+
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    if (!canCreateDiagnostics) {
+      return;
+    }
     setIsLoading(true);
-    navigate(
-      diagnosticsDetailUrl(
-        appId,
-        symptoms,
-        startDate.toUTC(0, { keepLocalTime: true }).toJSDate(),
-        endDate.toUTC(0, { keepLocalTime: true }).toJSDate(),
-      ),
-    );
-    setIsLoading(false);
+
+    try {
+      dispatch(action);
+    } catch (error) {
+      console.error("Failed to create dashboard:", error);
+    } finally {
+      setIsLoading(false);
+    }
   };
+
+  const loader = useLoader(action);
+  useLoaderSuccess(loader, () => {
+    navigate(diagnosticsDetailUrl(loader.meta.dashboardId));
+  });
+
+  const canSubmit = useMemo(() => {
+    return canCreateDiagnostics && isValid;
+  }, [canCreateDiagnostics, isValid]);
 
   return (
     <>
@@ -175,7 +209,7 @@ export const DiagnosticsCreateForm = ({ appId }: { appId: string }) => {
           <hr />
           <div className="flex justify-between items-end gap-2">
             <div className="flex items-center gap-2 mt-4">
-              {(!isValid && (
+              {(!canSubmit && (
                 <Tooltip text="Please fill out all fields and ensure the start date is before the end date.">
                   <Button
                     type="submit"
@@ -200,6 +234,14 @@ export const DiagnosticsCreateForm = ({ appId }: { appId: string }) => {
             </div>
           </div>
         </div>
+        {!canCreateDiagnostics && (
+          <div className="mt-4">
+            <Banner variant="warning">
+              You do not have write access to create diagnostics. Please contact
+              support if you need to create diagnostics.
+            </Banner>
+          </div>
+        )}
       </form>
     </>
   );

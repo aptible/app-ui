@@ -1,15 +1,21 @@
-import { diagnosticsCreateUrl } from "@app/routes";
-import { Link } from "react-router-dom";
+import { fetchDashboards } from "@app/deploy/dashboard";
+import { selectDashboardsForTableSearch } from "@app/deploy/search";
+import { useQuery, useSelector } from "@app/react";
+import { diagnosticsCreateUrl, diagnosticsDetailUrl } from "@app/routes";
+import { Link, useSearchParams } from "react-router-dom";
+import { usePaginate } from "../hooks/use-paginate";
 import { AppSidebarLayout } from "../layouts";
 import {
   ActionBar,
   Banner,
   ButtonLink,
   DescBar,
+  EmptyTr,
   FilterBar,
   Group,
   IconPlusCircle,
   InputSearch,
+  PaginateBar,
   TBody,
   THead,
   Table,
@@ -19,8 +25,18 @@ import {
   Tr,
   tokens,
 } from "../shared";
-
 export const DiagnosticsPage = () => {
+  useQuery(fetchDashboards());
+  const [params, setParams] = useSearchParams();
+  const search = params.get("search") || "";
+  const onChange = (ev: React.ChangeEvent<HTMLInputElement>) => {
+    setParams({ search: ev.currentTarget.value }, { replace: true });
+  };
+  const dashboards = useSelector((s) =>
+    selectDashboardsForTableSearch(s, { search }),
+  );
+  const paginated = usePaginate(dashboards);
+
   return (
     <AppSidebarLayout>
       <Banner className="mt-2">
@@ -36,8 +52,8 @@ export const DiagnosticsPage = () => {
           <Group variant="horizontal" size="sm" className="items-center">
             <InputSearch
               placeholder="Search..."
-              search={""}
-              onChange={console.log}
+              search={search}
+              onChange={onChange}
             />
           </Group>
 
@@ -49,55 +65,38 @@ export const DiagnosticsPage = () => {
         </div>
 
         <Group variant="horizontal" size="lg" className="items-center mt-1">
-          <DescBar>1 Diagnostics</DescBar>
+          <DescBar>{paginated.totalItems} Diagnostics</DescBar>
+          <PaginateBar {...paginated} />
         </Group>
       </FilterBar>
 
       <Table>
         <THead>
-          <Th>Issues</Th>
-          <Th>App</Th>
-          <Th>Environment</Th>
+          <Th>Dashboard</Th>
           <Th>Time Range</Th>
         </THead>
 
         <TBody>
-          <Tr>
-            <Td className="flex-1">
-              <Link to="#" className="flex">
-                <img
-                  src="/resource-types/logo-diagnostics.png"
-                  className="w-[32px] h-[32px] mr-2 align-middle"
-                  aria-label="App"
-                />
-                <p className={`${tokens.type["table link"]} leading-8`}>
-                  Why is the app API error rate over 50%
-                </p>
-              </Link>
-            </Td>
-            <Td className="flex-1">
-              <Link to="/apps/85039/services" className="flex">
-                <p className="flex flex-col">
-                  <span className={tokens.type["table link"]}>app-ui</span>
-                </p>
-              </Link>
-            </Td>
-            <Td className="flex-1">
-              <div className="flex">
-                <Link to="/environments/10673/apps" className="flex">
-                  <p className="flex flex-col">
-                    <span className={tokens.type["table link"]}>dashboard</span>
-                    <span className={tokens.type["normal lighter"]}>
-                      Shared Stack (us-east-1)
-                    </span>
+          {paginated.data.length === 0 ? <EmptyTr colSpan={5} /> : null}
+          {paginated.data.map((dashboard) => (
+            <Tr key={dashboard.id}>
+              <Td className="flex-1">
+                <Link to={diagnosticsDetailUrl(dashboard.id)} className="flex">
+                  <img
+                    src="/resource-types/logo-diagnostics.png"
+                    className="w-[32px] h-[32px] mr-2 align-middle"
+                    aria-label="App"
+                  />
+                  <p className={`${tokens.type["table link"]} leading-8`}>
+                    {dashboard.name}
                   </p>
                 </Link>
-              </div>
-            </Td>
-            <Td className="flex-1">
-              <p>2024-12-01 10:11:00 - 10:21:00 UTC</p>
-            </Td>
-          </Tr>
+              </Td>
+              <Td className="flex-1">
+                <p>{new Date(dashboard.createdAt).toLocaleString()} UTC</p>
+              </Td>
+            </Tr>
+          ))}
         </TBody>
       </Table>
     </AppSidebarLayout>
