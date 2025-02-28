@@ -118,8 +118,8 @@ export const DiagnosticsCreateForm = ({ appId }: { appId: string }) => {
     resourceType: "app",
     organizationId: orgId,
     symptoms,
-    rangeBegin: startDate.toISO() ?? "",
-    rangeEnd: endDate.toISO() ?? "",
+    rangeBegin: startDate.toUTC(0, { keepLocalTime: true }).toISO() ?? "",
+    rangeEnd: endDate.toUTC(0, { keepLocalTime: true }).toISO() ?? "",
   });
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
