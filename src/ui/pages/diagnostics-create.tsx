@@ -28,6 +28,7 @@ import {
 import { AppSelect } from "../shared/select-apps";
 import "react-datepicker/dist/react-datepicker.css";
 import { selectAppById } from "@app/deploy/app";
+import { selectTokenHasWriteAccess } from "@app/token";
 import { useNavigate } from "react-router-dom";
 
 export const DiagnosticsCreateForm = ({ appId }: { appId: string }) => {
@@ -43,6 +44,7 @@ export const DiagnosticsCreateForm = ({ appId }: { appId: string }) => {
   ];
   const [symptoms, setSymptom] = useState(symptomOptions[0].value);
   const app = useSelector((s) => selectAppById(s, { id: appId }));
+  const canCreateDiagnostics = useSelector(selectTokenHasWriteAccess);
 
   // We need to memoize the now date because the date picker will re-render the
   // component when the date changes, making the timestamps in the options
@@ -124,6 +126,9 @@ export const DiagnosticsCreateForm = ({ appId }: { appId: string }) => {
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    if (!canCreateDiagnostics) {
+      return;
+    }
     setIsLoading(true);
 
     try {
@@ -139,6 +144,10 @@ export const DiagnosticsCreateForm = ({ appId }: { appId: string }) => {
   useLoaderSuccess(loader, () => {
     navigate(diagnosticsDetailUrl(loader.meta.dashboardId));
   });
+
+  const canSubmit = useMemo(() => {
+    return canCreateDiagnostics && isValid;
+  }, [canCreateDiagnostics, isValid]);
 
   return (
     <>
@@ -200,7 +209,7 @@ export const DiagnosticsCreateForm = ({ appId }: { appId: string }) => {
           <hr />
           <div className="flex justify-between items-end gap-2">
             <div className="flex items-center gap-2 mt-4">
-              {(!isValid && (
+              {(!canSubmit && (
                 <Tooltip text="Please fill out all fields and ensure the start date is before the end date.">
                   <Button
                     type="submit"
@@ -225,6 +234,14 @@ export const DiagnosticsCreateForm = ({ appId }: { appId: string }) => {
             </div>
           </div>
         </div>
+        {!canCreateDiagnostics && (
+          <div className="mt-4">
+            <Banner variant="warning">
+              You do not have write access to create diagnostics. Please contact
+              support if you need to create diagnostics.
+            </Banner>
+          </div>
+        )}
       </form>
     </>
   );
