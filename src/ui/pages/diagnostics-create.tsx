@@ -117,7 +117,7 @@ export const DiagnosticsCreateForm = ({ appId }: { appId: string }) => {
   const action = createDashboard({
     name: `${app.handle}: ${symptoms}`,
     resourceId: appId,
-    resourceType: "app",
+    resourceType: "App",
     organizationId: orgId,
     symptoms,
     rangeBegin: startDate.toUTC(0, { keepLocalTime: true }).toISO() ?? "",
