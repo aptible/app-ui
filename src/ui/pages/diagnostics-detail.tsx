@@ -1,6 +1,7 @@
 import { deleteDashboard, updateDashboard } from "@app/deploy/dashboard";
-import { useDispatch } from "@app/react";
+import { useDispatch, useSelector } from "@app/react";
 import { diagnosticsUrl } from "@app/routes";
+import { selectTokenHasWriteAccess } from "@app/token";
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
@@ -12,6 +13,7 @@ import {
   type Crumb,
   IconEdit,
   IconTrash,
+  Tooltip,
 } from "../shared";
 import { HoverContext } from "../shared/diagnostics/hover";
 import { DiagnosticsLineChart } from "../shared/diagnostics/line-chart";
@@ -29,6 +31,7 @@ export const DiagnosticsDetailPage = () => {
   const [isEditing, setIsEditing] = useState(false);
   const dispatch = useDispatch();
   const navigate = useNavigate();
+  const canEditDiagnostics = useSelector(selectTokenHasWriteAccess);
 
   const diagnosticsCrumb: Crumb = {
     name: "Diagnostics",
@@ -108,9 +111,19 @@ export const DiagnosticsDetailPage = () => {
               </button>
             </div>
           ) : (
-            <button type="button" onClick={handleEditNameClick}>
-              <IconEdit color="#aaa" className="w-3 h-3 ml-2" />
-            </button>
+            <>
+              {canEditDiagnostics ? (
+                <button type="button" onClick={handleEditNameClick}>
+                  <IconEdit color="#aaa" className="w-3 h-3 ml-2" />
+                </button>
+              ) : (
+                <Tooltip text="You do not have write access to edit diagnostics. Please contact support if you need to edit diagnostics.">
+                  <button type="button" disabled>
+                    <IconEdit color="#aaa" className="w-3 h-3 ml-2 mt-3" />
+                  </button>
+                </Tooltip>
+              )}
+            </>
           )}
         </div>
         {isEditing ? (
