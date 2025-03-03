@@ -104,8 +104,7 @@ const validators = {
   },
   // insightops
   loggingToken: (p: CreateLogDrainProps) => {
-    if (!(p.drainType === "insightops"))
-      return;
+    if (!(p.drainType === "insightops")) return;
     if (p.loggingToken === "") return "Must provide a token for log drain.";
   },
 };
