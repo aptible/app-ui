@@ -1,4 +1,4 @@
-import type { Resource } from "@app/aptible-ai";
+import type { Plot, Resource } from "@app/aptible-ai";
 import type React from "react";
 import { useState } from "react";
 import {
@@ -81,7 +81,19 @@ export const DiagnosticsResource = ({
   endTime: string;
   synchronizedHoverContext: React.Context<HoverState>;
 }) => {
-  const [isCollapsed, setIsCollapsed] = useState(false);
+  const [isCollapsed, setIsCollapsed] = useState(true);
+  let plots: Plot[] = [];
+
+  // Only show plots that have data
+  if (resource.plots) {
+    plots = Object.values(resource.plots).filter((plot) =>
+      plot.series && Array.isArray(plot.series)
+        ? plot.series.some(
+            (series) => series.points && series.points.length > 0,
+          )
+        : false,
+    );
+  }
 
   return (
     <div className="border rounded-lg p-4">
@@ -127,53 +139,46 @@ export const DiagnosticsResource = ({
           {resource.plots && Object.entries(resource.plots).length > 0 && (
             <div className="mt-2">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
-                {Object.entries(resource.plots)
-                  .filter(([_, plot]) =>
-                    // Only show plots that have data
-                    plot.series.some(
-                      (series) => series.points && series.points.length > 0,
-                    ),
-                  )
-                  .map(([plotId, plot]) => (
-                    <div
-                      key={plotId}
-                      className="border rounded-lg bg-white shadow-sm animate-fade-in"
-                    >
-                      <h4 className="font-medium text-gray-900 p-3 rounded-t-lg border-b">
-                        {plot.title}
-                      </h4>
-                      <div className="pb-6 px-6">
-                        <div className="mt-2 min-h-[200px]">
-                          <DiagnosticsLineChart
-                            showLegend={true}
-                            keyId={plot.id}
-                            chart={{
-                              title: " ",
-                              labels:
-                                plot.series[0]?.points.map(
-                                  (point) => point.timestamp,
-                                ) || [],
-                              datasets: plot.series.map((series) => ({
-                                label: series.label,
-                                data: series.points.map((point) => ({
-                                  x: point.timestamp,
-                                  y: point.value,
-                                })),
+                {plots.map((plot) => (
+                  <div
+                    key={plot.id}
+                    className="border rounded-lg bg-white shadow-sm animate-fade-in"
+                  >
+                    <h4 className="font-medium text-gray-900 p-3 rounded-t-lg border-b">
+                      {plot.title}
+                    </h4>
+                    <div className="pb-6 px-6">
+                      <div className="mt-2 min-h-[200px]">
+                        <DiagnosticsLineChart
+                          showLegend={true}
+                          keyId={plot.id}
+                          chart={{
+                            title: " ",
+                            labels:
+                              plot.series[0]?.points.map(
+                                (point) => point.timestamp,
+                              ) || [],
+                            datasets: plot.series.map((series) => ({
+                              label: series.label,
+                              data: series.points.map((point) => ({
+                                x: point.timestamp,
+                                y: point.value,
                               })),
-                            }}
-                            xAxisMin={plot.x_axis_range[0]}
-                            xAxisMax={plot.x_axis_range[1]}
-                            xAxisUnit="minute"
-                            yAxisLabel={undefined}
-                            yAxisUnit={plot.unit}
-                            annotations={plot.annotations}
-                            synchronizedHoverContext={synchronizedHoverContext}
-                          />
-                        </div>
-                        <AnalysisSection analysis={plot.analysis} />
+                            })),
+                          }}
+                          xAxisMin={plot.x_axis_range[0]}
+                          xAxisMax={plot.x_axis_range[1]}
+                          xAxisUnit="minute"
+                          yAxisLabel={undefined}
+                          yAxisUnit={plot.unit}
+                          annotations={plot.annotations}
+                          synchronizedHoverContext={synchronizedHoverContext}
+                        />
                       </div>
+                      <AnalysisSection analysis={plot.analysis} />
                     </div>
-                  ))}
+                  </div>
+                ))}
               </div>
             </div>
           )}

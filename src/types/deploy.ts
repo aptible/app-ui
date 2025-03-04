@@ -719,3 +719,16 @@ export interface DeployCostRates {
   c_class_gb_per_hour: number;
   r_class_gb_per_hour: number;
 }
+
+export interface DeployDashboard extends Timestamps {
+  id: string;
+  name: string;
+  organizationId: string;
+  resourceId: string;
+  resourceType: string;
+  symptoms: string;
+  rangeBegin: string;
+  rangeEnd: string;
+  observationTimestamp: string;
+  data: object;
+}

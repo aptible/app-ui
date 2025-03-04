@@ -78,6 +78,10 @@ export const selectIsTokenValid = createSelector(
   selectJwtToken,
   (jwtToken) => jwtToken.scope !== "" && !hasExpired(jwtToken),
 );
+export const selectTokenHasWriteAccess = createSelector(
+  selectJwtToken,
+  (jwtToken) => ["manage", "elevated", "privileged"].includes(jwtToken.scope),
+);
 export const selectIsAuthWithSso = createSelector(selectJwtToken, (jwt) => {
   return jwt._type === "org";
 });

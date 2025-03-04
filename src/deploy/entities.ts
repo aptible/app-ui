@@ -7,6 +7,7 @@ import { certificateEntities } from "./certificate";
 import { appConfigEntities } from "./configuration";
 import { containerEntities } from "./container";
 import { costEntities } from "./cost";
+import { dashboardEntities } from "./dashboard";
 import { databaseEntities } from "./database";
 import { credEntities } from "./database-credential";
 import { databaseImageEntities } from "./database-images";
@@ -57,4 +58,5 @@ export const entities = {
   ...serviceSizingPolicyEntities,
   ...manualScaleRecommendationEntities,
   ...costEntities,
+  ...dashboardEntities,
 };

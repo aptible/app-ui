@@ -9,7 +9,7 @@ import {
   databaseUrl,
   deployUrl,
   deploymentsUrl,
-  diagnosticsCreateUrl,
+  diagnosticsUrl,
   endpointsUrl,
   environmentsUrl,
   searchUrl,
@@ -78,7 +78,7 @@ export const ApplicationSidebar = () => {
       ? [
           {
             name: "Diagnostics",
-            to: diagnosticsCreateUrl(),
+            to: diagnosticsUrl(),
             icon: <IconDiagnostics />,
           },
         ]
