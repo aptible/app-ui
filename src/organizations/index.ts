@@ -140,6 +140,21 @@ export const selectHasTokenHeaderFeature = createSelector(
     return tokenHeaderFeatureOrgIds.includes(orgId);
   },
 );
+
+export const selectHasDiagnosticsPocFeature = createSelector(
+  selectOrganizationSelectedId,
+  selectEnv,
+  (orgId, config) => {
+    // Array of organization IDs that are Diagnostics POCs
+    const diagnosticsPocOrgIds = config.diagnosticsPocOrgIds
+      .split(",")
+      .map((id) => id.trim())
+      .filter(Boolean);
+
+    return diagnosticsPocOrgIds.includes(orgId);
+  },
+);
+
 function deserializeOrganization(o: OrganizationResponse): Organization {
   return {
     id: o.id,

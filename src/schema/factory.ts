@@ -70,6 +70,7 @@ export const defaultConfig = (e: Partial<Config> = {}): Config => {
     tokenHeaderOrgIds:
       import.meta.env.VITE_TOKEN_HEADER_ORG_IDS ||
       "df0ee681-9e02-4c28-8916-3b215d539b08",
+    diagnosticsPocOrgIds: import.meta.env.VITE_DIAGNOSTICS_POC_ORG_IDS || "",
     legacyDashboardUrl:
       import.meta.env.VITE_LEGACY_DASHBOARD_URL ||
       "https://dashboard.aptible.com",
