@@ -18,6 +18,7 @@ export interface Config {
   origin: "app";
   betaFeatureOrgIds: string;
   tokenHeaderOrgIds: string;
+  diagnosticsPocOrgIds: string;
 }
 
 export interface Feedback {
