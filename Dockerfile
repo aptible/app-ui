@@ -39,10 +39,19 @@ FROM nginx:1.26.1 as nginx
 
 ENV BUILD=/app
 ENV PORT=80
+ARG CSP_PUBLISHABLE_LINK_KEY
+ENV CSP_PUBLISHABLE_LINK_KEY=${CSP_PUBLISHABLE_LINK_KEY}
 
 COPY --from=builder /app/dist "$BUILD"
 
 RUN apt-get update && apt-get install -y curl
 WORKDIR /app
-ADD ./nginx.conf /etc/nginx/nginx.conf
+# Copy Nginx configuration as a temporary file first
+COPY ./nginx.conf /etc/nginx/nginx.conf.temp
+
+# Substitute environment variables in nginx.conf
+RUN envsubst '$CSP_PUBLISHABLE_LINK_KEY' < /etc/nginx/nginx.conf.temp > /etc/nginx/nginx.conf && rm /etc/nginx/nginx.conf.temp
+
 EXPOSE $PORT
+
+CMD ["nginx", "-g", "daemon off;"]

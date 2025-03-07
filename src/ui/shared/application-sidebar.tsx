@@ -1,9 +1,6 @@
 import { selectEnv } from "@app/config";
 import { selectNav, setCollapsed } from "@app/nav";
-import {
-  selectHasBetaFeatures,
-  selectHasDiagnosticsPocFeature,
-} from "@app/organizations";
+import { selectHasBetaFeatures } from "@app/organizations";
 import { useDispatch, useSelector } from "@app/react";
 import {
   activityUrl,
@@ -67,22 +64,17 @@ export const ApplicationSidebar = () => {
   const navigate = useNavigate();
   const isImpersonated = useSelector(selectIsImpersonated);
   const hasBetaFeatures = useSelector(selectHasBetaFeatures) || isImpersonated;
-  const hasDiagnosticsPoc = useSelector(selectHasDiagnosticsPocFeature);
   const navigation = [
-    ...(!hasDiagnosticsPoc
-      ? [
-          { name: "Stacks", to: stacksUrl(), icon: <IconLayers /> },
-          { name: "Environments", to: environmentsUrl(), icon: <IconGlobe /> },
-          { name: "Apps", to: appsUrl(), icon: <IconBox /> },
-          { name: "Databases", to: databaseUrl(), icon: <IconCylinder /> },
-          { name: "Endpoints", to: endpointsUrl(), icon: <IconEndpoint /> },
-          { name: "Services", to: servicesUrl(), icon: <IconService /> },
-          { name: "Sources", to: sourcesUrl(), icon: <IconSource /> },
-          { name: "Deployments", to: deploymentsUrl(), icon: <IconCloud /> },
-          { name: "Activity", to: activityUrl(), icon: <IconHeart /> },
-        ]
-      : []),
-    ...(hasBetaFeatures || hasDiagnosticsPoc
+    { name: "Stacks", to: stacksUrl(), icon: <IconLayers /> },
+    { name: "Environments", to: environmentsUrl(), icon: <IconGlobe /> },
+    { name: "Apps", to: appsUrl(), icon: <IconBox /> },
+    { name: "Databases", to: databaseUrl(), icon: <IconCylinder /> },
+    { name: "Endpoints", to: endpointsUrl(), icon: <IconEndpoint /> },
+    { name: "Services", to: servicesUrl(), icon: <IconService /> },
+    { name: "Sources", to: sourcesUrl(), icon: <IconSource /> },
+    { name: "Deployments", to: deploymentsUrl(), icon: <IconCloud /> },
+    { name: "Activity", to: activityUrl(), icon: <IconHeart /> },
+    ...(hasBetaFeatures
       ? [
           {
             name: "Diagnostics",
@@ -91,15 +83,11 @@ export const ApplicationSidebar = () => {
           },
         ]
       : []),
-    ...(!hasDiagnosticsPoc
-      ? [
-          {
-            name: "Security & Compliance",
-            to: securityDashboardUrl(env.legacyDashboardUrl),
-            icon: <IconShield />,
-          },
-        ]
-      : []),
+    {
+      name: "Security & Compliance",
+      to: securityDashboardUrl(env.legacyDashboardUrl),
+      icon: <IconShield />,
+    },
   ];
 
   useLayoutEffect(() => {
@@ -129,7 +117,7 @@ export const ApplicationSidebar = () => {
         </button>
 
         <div className="flex items-center flex-shrink-0 pl-4">
-          <Link to={hasDiagnosticsPoc ? diagnosticsUrl() : environmentsUrl()}>
+          <Link to={environmentsUrl()}>
             {collapsed ? <AptibleLogoOnly /> : <AptibleLogo />}
           </Link>
         </div>
@@ -140,7 +128,7 @@ export const ApplicationSidebar = () => {
           </div>
         )}
 
-        {collapsed || hasDiagnosticsPoc ? null : (
+        {collapsed ? null : (
           <div className="mt-2 px-3">
             <div
               className="border border-gray-200 bg-white rounded-lg px-2 py-1 flex items-center justify-between h-[36px] cursor-pointer hover:bg-black-50"
@@ -165,7 +153,7 @@ export const ApplicationSidebar = () => {
 
           {!collapsed ? <OrgRequirements /> : null}
 
-          {hasTrialNoPayment && !collapsed && !hasDiagnosticsPoc ? (
+          {hasTrialNoPayment && !collapsed ? (
             <Banner variant="error" className="mt-2">
               <div>Trial expires {expiresIn}.</div>
               <div>
@@ -190,31 +178,29 @@ export const ApplicationSidebar = () => {
       </div>
 
       <div className="px-2 w-full">
-        {hasDiagnosticsPoc ? null : (
-          <div className="ml-0">
-            <ButtonIcon
-              className="w-full mb-4"
-              onClick={() => navigate(deployUrl())}
-              icon={
-                <IconPlusCircle
-                  style={
-                    collapsed
-                      ? {
-                          width: 12,
-                          height: 12,
-                          marginRight: -3,
-                          marginLeft: -2,
-                          transform: "scale(1.8, 1.8)",
-                        }
-                      : {}
-                  }
-                />
-              }
-            >
-              {collapsed ? "" : "Deploy"}
-            </ButtonIcon>
-          </div>
-        )}
+        <div className="ml-0">
+          <ButtonIcon
+            className="w-full mb-4"
+            onClick={() => navigate(deployUrl())}
+            icon={
+              <IconPlusCircle
+                style={
+                  collapsed
+                    ? {
+                        width: 12,
+                        height: 12,
+                        marginRight: -3,
+                        marginLeft: -2,
+                        transform: "scale(1.8, 1.8)",
+                      }
+                    : {}
+                }
+              />
+            }
+          >
+            {collapsed ? "" : "Deploy"}
+          </ButtonIcon>
+        </div>
 
         <UserMenu hideName={collapsed} />
 
