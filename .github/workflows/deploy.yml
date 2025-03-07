@@ -42,6 +42,7 @@ jobs:
             VITE_STRIPE_PUBLISHABLE_KEY=${{ secrets.STRIPE_PUBLISHABLE_KEY }}
             VITE_FEATURE_BETA_ORG_IDS=${{ vars.FEATURE_BETA_ORG_IDS }}
             VITE_TOKEN_HEADER_ORG_IDS=${{ vars.TOKEN_HEADER_ORG_IDS }}
+            VITE_DIAGNOSTICS_POC_ORG_IDS=${{ vars.DIAGNOSTICS_POC_ORG_IDS }}
             CSP_PUBLISHABLE_LINK_KEY=${{ secrets.CSP_PUBLISHABLE_LINK_KEY }}
   deploy:
     runs-on: ubuntu-latest
