@@ -19,6 +19,7 @@ ARG VITE_MINTLIFY_CHAT_KEY
 ARG VITE_STRIPE_PUBLISHABLE_KEY
 ARG VITE_FEATURE_BETA_ORG_IDS=df0ee681-9e02-4c28-8916-3b215d539b08
 ARG VITE_TOKEN_HEADER_ORG_IDS=df0ee681-9e02-4c28-8916-3b215d539b08
+ARG CSP_PUBLISHABLE_LINK_KEY
 
 RUN corepack enable
 RUN corepack prepare yarn@stable --activate
@@ -38,10 +39,18 @@ FROM nginx:1.26.1 as nginx
 
 ENV BUILD=/app
 ENV PORT=80
+ENV CSP_PUBLISHABLE_LINK_KEY=${CSP_PUBLISHABLE_LINK_KEY}
 
 COPY --from=builder /app/dist "$BUILD"
 
 RUN apt-get update && apt-get install -y curl
 WORKDIR /app
-ADD ./nginx.conf /etc/nginx/nginx.conf
+# Copy Nginx configuration as a temporary file first
+COPY ./nginx.conf /etc/nginx/nginx.conf.temp
+
+# Substitute environment variables in nginx.conf
+RUN envsubst '$CSP_PUBLISHABLE_LINK_KEY' < /etc/nginx/nginx.conf.temp > /etc/nginx/nginx.conf && rm /etc/nginx/nginx.conf.temp
+
 EXPOSE $PORT
+
+CMD ["nginx", "-g", "daemon off;"]
