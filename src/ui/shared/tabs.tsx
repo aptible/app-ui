@@ -28,7 +28,7 @@ const navLink = ({ isActive }: { isActive: boolean }) =>
     "hover:no-underline",
   );
 
-export const Tab = ({ label, to }: TabViewProps) => (
+export const Tab = ({ label, to, isActive }: TabViewProps) => (
   <NavLink key={label} to={to} className={navLink}>
     {label}
   </NavLink>

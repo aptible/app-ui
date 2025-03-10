@@ -17,6 +17,7 @@ import {
   environmentsUrl,
   searchUrl,
   securityDashboardUrl,
+  serviceCatalogUrl,
   servicesUrl,
   sourcesUrl,
   stacksUrl,
@@ -54,6 +55,30 @@ import { OrgPicker } from "./org-picker";
 import { OrgRequirements } from "./org-requirements";
 import { UserMenu } from "./user-menu";
 
+// Custom icon for Service Catalog
+const IconCatalog = (props: any) => {
+  return (
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      viewBox="0 0 24 24"
+      width={24}
+      height={24}
+      stroke={props.color || "#111920"}
+      fill="none"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      {...props}
+    >
+      <title>Service Catalog</title>
+      <rect x="3" y="3" width="7" height="7" />
+      <rect x="14" y="3" width="7" height="7" />
+      <rect x="3" y="14" width="7" height="7" />
+      <rect x="14" y="14" width="7" height="7" />
+    </svg>
+  );
+};
+
 export const ApplicationSidebar = () => {
   const env = useSelector(selectEnv);
   const dispatch = useDispatch();
@@ -82,6 +107,8 @@ export const ApplicationSidebar = () => {
           { name: "Activity", to: activityUrl(), icon: <IconHeart /> },
         ]
       : []),
+    // Service Catalog is shown to all users
+    { name: "Service Catalog", to: serviceCatalogUrl(), icon: <IconCatalog /> },
     ...(hasBetaFeatures || hasDiagnosticsPoc
       ? [
           {

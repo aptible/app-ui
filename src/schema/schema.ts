@@ -45,6 +45,7 @@ export const [schema, initialState] = createSchema({
   apps: slice.table({ empty: factory.defaultDeployApp() }),
   appConfigs: slice.table({ empty: factory.defaultDeployAppConfig() }),
   certificates: slice.table({ empty: factory.defaultDeployCertificate() }),
+  customResources: slice.table({ empty: factory.defaultDeployCustomResource() }),
   endpoints: slice.table({ empty: factory.defaultDeployEndpoint() }),
   environments: slice.table({ empty: factory.defaultDeployEnvironment() }),
   environmentStats: slice.table({

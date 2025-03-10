@@ -112,6 +112,7 @@ import {
   SSHSettingsPage,
   SearchPage,
   SecuritySettingsPage,
+  ServiceCatalogPage,
   ServiceDetailLayout,
   ServicesPage,
   SettingsLayout,
@@ -607,6 +608,11 @@ export const appRoutes: RouteObject[] = [
             element: <DiagnosticsDetailPage />,
           },
         ],
+      },
+
+      {
+        path: routes.SERVICE_CATALOG_PATH,
+        element: <ServiceCatalogPage />,
       },
 
       {

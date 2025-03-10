@@ -178,6 +178,7 @@ export type OperationStatus =
 export type ResourceType =
   | "app"
   | "certificate"
+  | "custom_resource"
   | "service"
   | "database"
   | "database_credential"
@@ -699,6 +700,16 @@ export interface DeployDiskResponse {
     database: LinkResponse;
     account: LinkResponse;
   };
+}
+
+export interface DeployCustomResource extends Timestamps {
+  id: string;
+  name: string;
+  description: string;
+  status: string;
+  resourceType: string;
+  metadata: Record<string, any>;
+  organizationId: string;
 }
 
 export interface DeployCost {

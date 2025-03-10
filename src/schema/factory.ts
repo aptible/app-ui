@@ -11,6 +11,7 @@ import {
   type DeployContainer,
   type DeployCost,
   type DeployCostRates,
+  type DeployCustomResource,
   type DeployDashboard,
   type DeployDatabase,
   type DeployDatabaseCredential,
@@ -977,6 +978,24 @@ export const defaultDeployDashboard = (
     rangeEnd: "",
     observationTimestamp: "",
     data: {},
+    createdAt: now,
+    updatedAt: now,
+    ...s,
+  };
+};
+
+export const defaultDeployCustomResource = (
+  s: Partial<DeployCustomResource> = {},
+): DeployCustomResource => {
+  const now = new Date().toISOString();
+  return {
+    id: "",
+    name: "",
+    description: "",
+    status: "active",
+    resourceType: "",
+    metadata: {},
+    organizationId: "",
     createdAt: now,
     updatedAt: now,
     ...s,

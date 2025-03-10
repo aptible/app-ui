@@ -141,6 +141,9 @@ export const prettyResourceType = (rType: ResourceType): string => {
   if (rType === "vhost") {
     return "Endpoint";
   }
+  if (rType === "custom_resource") {
+    return "Custom Resource";
+  }
   return capitalize(rType.replace("_", " "));
 };
 
