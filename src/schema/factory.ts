@@ -20,6 +20,7 @@ import {
   type DeployEnvironment,
   type DeployEnvironmentStats,
   type DeployImage,
+  type DeployIntegration,
   type DeployLogDrain,
   type DeployMetricDrain,
   type DeployOperation,
@@ -980,5 +981,26 @@ export const defaultDeployDashboard = (
     createdAt: now,
     updatedAt: now,
     ...s,
+  };
+};
+
+export const defaultDeployIntegration = (
+  i: Partial<DeployIntegration> = {},
+): DeployIntegration => {
+  const now = new Date().toISOString();
+  return {
+    id: "",
+    type: "ElasticsearchIntegration",
+    organizationId: "",
+    awsRoleArn: "",
+    apiKey: "",
+    appKey: "",
+    host: "",
+    port: "",
+    username: "",
+    database: "",
+    createdAt: now,
+    updatedAt: now,
+    ...i,
   };
 };

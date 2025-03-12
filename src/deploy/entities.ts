@@ -15,6 +15,7 @@ import { diskEntities } from "./disk";
 import { endpointEntities } from "./endpoint";
 import { environmentEntities } from "./environment";
 import { imageEntities } from "./image";
+import { integrationEntities } from "./integration";
 import { logDrainEntities } from "./log-drain";
 import { manualScaleRecommendationEntities } from "./manual_scale_recommendation";
 import { metricDrainEntities } from "./metric-drain";
@@ -59,4 +60,5 @@ export const entities = {
   ...manualScaleRecommendationEntities,
   ...costEntities,
   ...dashboardEntities,
+  ...integrationEntities,
 };
