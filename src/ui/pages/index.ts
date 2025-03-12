@@ -124,3 +124,4 @@ export * from "./settings-team-roles-create";
 export * from "./settings-team-scim";
 export * from "./settings-team-diagnostics-integrations";
 export * from "./settings-team-diagnostics-integrations-add";
+export * from "./settings-team-diagnostics-integrations-edit";

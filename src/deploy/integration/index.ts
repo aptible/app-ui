@@ -56,6 +56,10 @@ export const selectIntegrationsAsList = schema.integrations.selectTableAsList;
 export const selectIntegrationById = schema.integrations.selectById;
 
 export const fetchIntegrations = api.get("/integrations");
+export const fetchIntegration = api.get<
+  { id: string },
+  DeployIntegrationResponse
+>("/integrations/:id");
 
 export interface CreateIntegrationParams {
   type: string;
@@ -115,17 +119,96 @@ export const createIntegration = api.post<
 // Update an existing integration
 export interface UpdateIntegrationParams {
   id: string;
-  name?: string;
+  aws_role_arn?: string;
+  api_key?: string;
+  app_key?: string;
+  host?: string;
+  port?: string;
+  username?: string;
+  password?: string;
+  database?: string;
 }
 
-export const updateIntegration = api.put<
-  UpdateIntegrationParams,
-  DeployIntegrationResponse
->("/integrations/:id");
+export const updateIntegration = api.put<UpdateIntegrationParams>(
+  "/integrations/:id",
+  function* (ctx, next) {
+    const {
+      aws_role_arn,
+      api_key,
+      app_key,
+      host,
+      port,
+      username,
+      password,
+      database,
+    } = ctx.payload;
+    const body: {
+      aws_role_arn?: string;
+      api_key?: string;
+      app_key?: string;
+      host?: string;
+      port?: string;
+      username?: string;
+      password?: string;
+      database?: string;
+    } = {};
+    if (aws_role_arn) {
+      body.aws_role_arn = aws_role_arn;
+    }
+
+    if (api_key) {
+      body.api_key = api_key;
+    }
+
+    if (app_key) {
+      body.app_key = app_key;
+    }
+
+    if (host) {
+      body.host = host;
+    }
+
+    if (port) {
+      body.port = port;
+    }
+
+    if (username) {
+      body.username = username;
+    }
+
+    if (password && password !== "") {
+      body.password = password;
+    }
+
+    if (database) {
+      body.database = database;
+    }
+    ctx.request = ctx.req({ body: JSON.stringify(body) });
+
+    yield* next();
+
+    if (!ctx.json.ok) {
+      return;
+    }
+
+    ctx.loader = {
+      message: "Saved changes successfully!",
+    };
+  },
+);
 
 // Delete an integration
 export const deleteIntegration = api.delete<{ id: string }>(
   "/integrations/:id",
+  function* (ctx, next) {
+    yield* next();
+
+    if (!ctx.json.ok) {
+      return;
+    }
+
+    yield* schema.update(schema.integrations.remove([ctx.payload.id]));
+  },
 );
 
 export const integrationEntities = {

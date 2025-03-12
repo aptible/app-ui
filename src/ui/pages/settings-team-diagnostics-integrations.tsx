@@ -3,11 +3,13 @@ import {
   selectIntegrationsAsList,
 } from "@app/deploy/integration";
 import { useQuery, useSelector } from "@app/react";
-import { teamDiagnosticsIntegrationsAddUrl } from "@app/routes";
+import {
+  teamDiagnosticsIntegrationsAddUrl,
+  teamDiagnosticsIntegrationsEditUrl,
+} from "@app/routes";
 import type { DeployIntegration } from "@app/types";
 import {
   ActionBar,
-  Button,
   ButtonLink,
   EmptyTr,
   Group,
@@ -40,9 +42,13 @@ function IntegrationRow({ integration }: { integration: DeployIntegration }) {
         )}
       </Td>
       <Td variant="right">
-        <Button size="sm" className="w-fit justify-self-end inline-flex">
+        <ButtonLink
+          to={teamDiagnosticsIntegrationsEditUrl(integration.id)}
+          size="sm"
+          className="w-fit justify-self-end inline-flex"
+        >
           Edit
-        </Button>
+        </ButtonLink>
       </Td>
     </Tr>
   );
