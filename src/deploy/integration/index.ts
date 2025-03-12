@@ -1,8 +1,6 @@
-import { api, cacheMinTimer } from "@app/api";
-import { createSelector } from "@app/fx";
-import { defaultEntity, extractIdFromLink } from "@app/hal";
-import type { WebState } from "@app/schema";
-import { defaultDeployIntegration } from "@app/schema/factory";
+import { api } from "@app/api";
+import { defaultEntity } from "@app/hal";
+import { schema } from "@app/schema";
 import type {
   DeployIntegration,
   DeployIntegrationResponse,
@@ -54,41 +52,11 @@ export const defaultIntegrationResponse = (): DeployIntegrationResponse => {
 };
 
 // Basic selectors
-export const selectIntegrationsTable = (state: WebState) => state.integrations;
-export const selectIntegrations = (state: WebState) =>
-  Object.values(state.integrations);
+export const selectIntegrationsAsList = schema.integrations.selectTableAsList;
+export const selectIntegrationById = schema.integrations.selectById;
 
-export const selectIntegrationById = (state: WebState, id: string) =>
-  state.integrations[id] || defaultDeployIntegration({ id });
+export const fetchIntegrations = api.get("/integrations");
 
-// Selector to get integrations for a specific organization
-export const selectOrganizationIntegrations = createSelector(
-  [selectIntegrations, (_: WebState, organizationId: string) => organizationId],
-  (integrations, organizationId) =>
-    integrations.filter(
-      (integration) => integration.organizationId === organizationId,
-    ),
-);
-
-// API Functions
-
-// Get all integrations
-export const getIntegrations = api.get<
-  never,
-  {
-    _embedded: { integrations: DeployIntegrationResponse[] };
-    current_page: number;
-    total_count: number;
-  }
->("/integrations", { supervisor: cacheMinTimer() });
-
-// Get a single integration by ID
-export const getIntegration = api.get<
-  { id: string },
-  DeployIntegrationResponse
->("/integrations/:id", { supervisor: cacheMinTimer() });
-
-// Create a new integration
 export interface CreateIntegrationParams {
   type: string;
   organization_id: string;
@@ -105,7 +73,44 @@ export interface CreateIntegrationParams {
 export const createIntegration = api.post<
   CreateIntegrationParams,
   DeployIntegrationResponse
->("/integrations");
+>("/integrations", function* (ctx, next) {
+  const {
+    type,
+    organization_id,
+    aws_role_arn,
+    api_key,
+    app_key,
+    host,
+    port,
+    username,
+    password,
+    database,
+  } = ctx.payload;
+  const body = {
+    type,
+    organization_id,
+    aws_role_arn,
+    api_key,
+    app_key,
+    host,
+    port,
+    username,
+    password,
+    database,
+  };
+  ctx.request = ctx.req({ body: JSON.stringify(body) });
+  yield* next();
+
+  if (!ctx.json.ok) {
+    return;
+  }
+
+  const integrationId = ctx.json.value.id;
+  ctx.loader = {
+    message: `Integration created (integration ID: ${integrationId})`,
+    meta: { integrationId: integrationId },
+  };
+});
 
 // Update an existing integration
 export interface UpdateIntegrationParams {
@@ -123,21 +128,10 @@ export const deleteIntegration = api.delete<{ id: string }>(
   "/integrations/:id",
 );
 
-// Entity registration
-export const entity = {
-  name: "integration",
-  url: "/integrations",
-  urlId: extractIdFromLink,
-  apiFunc: getIntegration,
-  defaultEntity: defaultEntity({
+export const integrationEntities = {
+  integration: defaultEntity({
     id: "integration",
     deserialize: deserializeIntegration,
-    save: () => () => {},
+    save: schema.integrations.add,
   }),
-  deserialize: deserializeIntegration,
-};
-
-// Exporting integrations entities for easy import elsewhere
-export const integrationEntities = {
-  integration: entity,
 };

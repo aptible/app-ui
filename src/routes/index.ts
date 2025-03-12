@@ -414,6 +414,10 @@ export const TEAM_DIAGNOSTICS_INTEGRATIONS_PATH =
   "/settings/team/diagnostics-integrations";
 export const teamDiagnosticsIntegrationsUrl = () =>
   TEAM_DIAGNOSTICS_INTEGRATIONS_PATH;
+export const TEAM_DIAGNOSTICS_INTEGRATIONS_ADD_PATH =
+  "/settings/team/diagnostics-integrations/add";
+export const teamDiagnosticsIntegrationsAddUrl = () =>
+  TEAM_DIAGNOSTICS_INTEGRATIONS_ADD_PATH;
 
 export const SOURCES_PATH = "/sources";
 export const sourcesUrl = () => SOURCES_PATH;

@@ -31,10 +31,12 @@ Always use absolute imports from src (e.g., `import Button from 'ui/shared/butto
 ## Code Change Workflow
 After making any code changes, always follow this sequence:
 
-1. Run `make fmt` to automatically fix formatting issues
-2. Run `make lint` to check for any remaining linting errors or circular dependencies
-3. Address any issues that `make lint` found
+1. Run `yarn fmt` to automatically fix formatting issues
+2. Run `yarn lint` to check for any remaining linting errors or circular dependencies
+3. Address any issues that `yarn lint` found
 4. Only when both checks pass, consider the changes complete
+
+IMPORTANT: Always run the formatter (`yarn fmt`) FIRST, and THEN run the linter (`yarn lint`). This is because the linter will check for formatting issues that the formatter would have fixed automatically.
 
 This ensures all code changes adhere to the project's standards before being committed.
 
