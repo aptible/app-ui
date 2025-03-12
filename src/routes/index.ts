@@ -410,6 +410,10 @@ export const DIAGNOSTICS_CREATE_URL = "/diagnostics/create";
 export const diagnosticsCreateUrl = () => DIAGNOSTICS_CREATE_URL;
 export const DIAGNOSTICS_DETAIL_URL = "/diagnostics/:id";
 export const diagnosticsDetailUrl = (id: string) => `/diagnostics/${id}`;
+export const TEAM_DIAGNOSTICS_INTEGRATIONS_PATH =
+  "/settings/team/diagnostics-integrations";
+export const teamDiagnosticsIntegrationsUrl = () =>
+  TEAM_DIAGNOSTICS_INTEGRATIONS_PATH;
 
 export const SOURCES_PATH = "/sources";
 export const sourcesUrl = () => SOURCES_PATH;
