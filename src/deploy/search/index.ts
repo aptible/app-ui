@@ -687,3 +687,20 @@ export const selectDashboardsForTableSearch = createSelector(
     );
   },
 );
+
+export const selectCustomResourcesForTableSearch = createSelector(
+  schema.customResources.selectTableAsList,
+  (_: WebState, props: { search: string }) => props.search,
+  (customResources, search) => {
+    if (search === "") {
+      return customResources;
+    }
+
+    const searchLower = search.toLowerCase();
+    return customResources.filter(
+      (resource) =>
+        resource.handle.toLowerCase().includes(searchLower) ||
+        resource.resourceType.toLowerCase().includes(searchLower),
+    );
+  },
+);
