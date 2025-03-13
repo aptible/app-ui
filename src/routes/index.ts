@@ -413,6 +413,9 @@ export const diagnosticsDetailUrl = (id: string) => `/diagnostics/${id}`;
 
 export const CUSTOM_RESOURCES_URL = "/custom_resources";
 export const customResourcesUrl = () => CUSTOM_RESOURCES_URL;
+export const CUSTOM_RESOURCE_DETAIL_URL = "/custom_resources/:id";
+export const customResourceDetailUrl = (id: string) =>
+  `/custom_resources/${id}`;
 
 export const SOURCES_PATH = "/sources";
 export const sourcesUrl = () => SOURCES_PATH;

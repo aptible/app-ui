@@ -1,17 +1,16 @@
 import { fetchCustomResources } from "@app/deploy/custom-resource";
 import { selectCustomResourcesForTableSearch } from "@app/deploy/search";
 import { useQuery, useSelector } from "@app/react";
+import { customResourceDetailUrl } from "@app/routes";
 import { useSearchParams } from "react-router-dom";
 import { usePaginate } from "../hooks/use-paginate";
 import { AppSidebarLayout } from "../layouts";
 import {
-  ActionBar,
   ButtonLink,
   DescBar,
   EmptyTr,
   FilterBar,
   Group,
-  IconPlusCircle,
   InputSearch,
   PaginateBar,
   TBody,
@@ -53,12 +52,6 @@ export const CustomResourcesPage = () => {
               onChange={onChange}
             />
           </Group>
-
-          <ActionBar>
-            <ButtonLink to="#">
-              <IconPlusCircle variant="sm" className="mr-2" /> Add Resource
-            </ButtonLink>
-          </ActionBar>
         </div>
 
         <Group variant="horizontal" size="lg" className="items-center mt-1">
@@ -85,8 +78,12 @@ export const CustomResourcesPage = () => {
                 <p className="leading-8">{resource.resourceType}</p>
               </Td>
               <Td className="flex-1">
-                <ButtonLink to="#" variant="secondary" size="sm">
-                  Edit
+                <ButtonLink
+                  to={customResourceDetailUrl(resource.id)}
+                  size="sm"
+                  className="w-fit justify-self-end inline-flex"
+                >
+                  View
                 </ButtonLink>
               </Td>
             </Tr>

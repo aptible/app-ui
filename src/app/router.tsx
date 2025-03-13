@@ -45,6 +45,8 @@ import {
   CreateMetricDrainPage,
   CreateOrgPage,
   CreateStackPage,
+  CustomResourceDetailPage,
+  CustomResourcesPage,
   DatabaseActivityPage,
   DatabaseBackupsPage,
   DatabaseClusterPage,
@@ -152,7 +154,6 @@ import {
 } from "@app/ui";
 import { DeploymentDetailLayout } from "@app/ui/layouts/deployment-detail-layout";
 import { AppDetailDiagnosticsPage } from "@app/ui/pages/app-detail-diagnostics";
-import { CustomResourcesPage } from "@app/ui/pages/custom-resources";
 import { EnvironmentEndpointsPage } from "@app/ui/pages/environment-detail-endpoints";
 import { GithubIntegrationPage } from "@app/ui/pages/github-integration";
 import { SettingsProfilePage } from "@app/ui/pages/settings-profile";
@@ -613,6 +614,10 @@ export const appRoutes: RouteObject[] = [
       {
         path: routes.CUSTOM_RESOURCES_URL,
         element: <CustomResourcesPage />,
+      },
+      {
+        path: routes.CUSTOM_RESOURCE_DETAIL_URL,
+        element: <CustomResourceDetailPage />,
       },
 
       {

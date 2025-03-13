@@ -80,13 +80,15 @@ export const fetchCustomResource = api.get<{ id: string }>(
   "/custom_resources/:id",
 );
 
+export interface CreateCustomResourceProps {
+  handle: string;
+  organizationId: string;
+  resourceType: string;
+  data: Record<string, any>;
+}
+
 export const createCustomResource = api.post<
-  {
-    handle: string;
-    organizationId: string;
-    resourceType: string;
-    data: Record<string, any>;
-  },
+  CreateCustomResourceProps,
   DeployCustomResourceResponse
 >("/custom_resources", function* (ctx, next) {
   const { handle, organizationId, resourceType, data } = ctx.payload;
