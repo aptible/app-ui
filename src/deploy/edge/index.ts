@@ -2,15 +2,15 @@ import { api, cacheMinTimer } from "@app/api";
 import { createSelector } from "@app/fx";
 import { defaultEntity } from "@app/hal";
 import { type WebState, schema } from "@app/schema";
-import type { ResourceType } from "@app/types";
+import type { CustomResourceType } from "@app/types";
 
 export interface DeployEdge {
   id: string;
   relationshipType: string;
   sourceResourceId: string;
-  sourceResourceType: ResourceType;
+  sourceResourceType: CustomResourceType;
   destinationResourceId: string;
-  destinationResourceType: ResourceType;
+  destinationResourceType: CustomResourceType;
   createdAt: string;
   updatedAt: string;
 }
@@ -28,11 +28,11 @@ export interface DeployEdgeResponse {
   _embedded: {
     source_resource: {
       id: number;
-      _type: ResourceType;
+      _type: CustomResourceType;
     };
     destination_resource: {
       id: number;
-      _type: ResourceType;
+      _type: CustomResourceType;
     };
   };
   _type: "edge";
@@ -45,59 +45,24 @@ export const deserializeDeployEdge = (
     id: `${payload.id}`,
     relationshipType: payload.relationship_type,
     sourceResourceId: `${payload._embedded.source_resource.id}`,
-    sourceResourceType: payload._embedded.source_resource._type as ResourceType,
+    sourceResourceType: payload._embedded.source_resource
+      ._type as CustomResourceType,
     destinationResourceId: `${payload._embedded.destination_resource.id}`,
     destinationResourceType: payload._embedded.destination_resource
-      ._type as ResourceType,
+      ._type as CustomResourceType,
     createdAt: payload.created_at,
     updatedAt: payload.updated_at,
   };
 };
 
-// Basic selectors
 export const selectEdges = schema.edges.selectTableAsList;
-
-// Custom selectors
-export const selectEdgesBySourceResourceId = createSelector(
-  selectEdges,
-  (_: WebState, props: { sourceResourceId: string }) => props.sourceResourceId,
-  (edges, sourceResourceId) => {
-    if (sourceResourceId === "") {
-      return edges;
-    }
-    return edges.filter((edge) => edge.sourceResourceId === sourceResourceId);
-  },
-);
-
-export const selectEdgesByDestinationResourceId = createSelector(
-  selectEdges,
-  (_: WebState, props: { destinationResourceId: string }) =>
-    props.destinationResourceId,
-  (edges, destinationResourceId) => {
-    if (destinationResourceId === "") {
-      return edges;
-    }
-    return edges.filter(
-      (edge) => edge.destinationResourceId === destinationResourceId,
-    );
-  },
-);
-
-export const selectEdgesByRelationshipType = createSelector(
-  selectEdges,
-  (_: WebState, props: { relationshipType: string }) => props.relationshipType,
-  (edges, relationshipType) => {
-    if (relationshipType === "") {
-      return edges;
-    }
-    return edges.filter((edge) => edge.relationshipType === relationshipType);
-  },
-);
 
 export const selectEdgesForResource = createSelector(
   selectEdges,
-  (_: WebState, props: { resourceId: string; resourceType: ResourceType }) =>
-    props,
+  (
+    _: WebState,
+    props: { resourceId: string; resourceType: CustomResourceType },
+  ) => props,
   (edges, { resourceId, resourceType }) => {
     if (resourceId === "" || resourceType === "unknown") {
       return edges;
@@ -130,15 +95,15 @@ export const fetchEdges = api.get(
 
 export const fetchEdgesByResource = api.get<{
   resourceId: string;
-  resourceType: ResourceType;
-}>("/edges?resource_id=:resourceId&resource_type=:resourceType&per_page=5000");
+  resourceType: CustomResourceType;
+}>("/edges?resource_id=:resourceId&resource_type=:resourceType");
 
 export const createEdge = api.post<
   {
     sourceResourceId: string;
-    sourceResourceType: ResourceType;
+    sourceResourceType: CustomResourceType;
     destinationResourceId: string;
-    destinationResourceType: ResourceType;
+    destinationResourceType: CustomResourceType;
     relationshipType: string;
   },
   DeployEdgeResponse

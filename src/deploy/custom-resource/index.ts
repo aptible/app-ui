@@ -74,6 +74,22 @@ export const selectCustomResourcesByResourceType = createSelector(
   },
 );
 
+export const selectCustomResourcesByIds = createSelector(
+  selectCustomResourcesAsList,
+  (_: WebState, props: { ids: string[] }) => props.ids,
+  (resources, ids) => {
+    const all = resources.filter((resource) => ids.includes(resource.id));
+    const byId = all.reduce(
+      (acc: Record<string, DeployCustomResource>, resource) => {
+        acc[resource.id] = resource;
+        return acc;
+      },
+      {},
+    );
+    return byId;
+  },
+);
+
 export const fetchCustomResources = api.get("/custom_resources");
 
 export const fetchCustomResource = api.get<{ id: string }>(

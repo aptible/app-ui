@@ -743,11 +743,13 @@ export interface DeployCustomResource extends Timestamps {
   data: Record<string, any>;
 }
 
+export type CustomResourceType = "unknown" | "custom_resource";
+
 export interface DeployEdge extends Timestamps {
   id: string;
   relationshipType: string;
   sourceResourceId: string;
-  sourceResourceType: ResourceType;
+  sourceResourceType: CustomResourceType;
   destinationResourceId: string;
-  destinationResourceType: ResourceType;
+  destinationResourceType: CustomResourceType;
 }
