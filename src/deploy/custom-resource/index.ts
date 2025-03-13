@@ -1,6 +1,7 @@
 import { api } from "@app/api";
 import { createSelector } from "@app/fx";
 import { defaultEntity, extractIdFromLink } from "@app/hal";
+import { selectOrganizationSelectedId } from "@app/organizations";
 import { type WebState, schema } from "@app/schema";
 import type { DeployCustomResource, LinkResponse } from "@app/types";
 
@@ -87,6 +88,16 @@ export const selectCustomResourcesByIds = createSelector(
       {},
     );
     return byId;
+  },
+);
+
+export const selectCustomResourcesByOrgAsList = createSelector(
+  selectCustomResourcesAsList,
+  selectOrganizationSelectedId,
+  (crs, orgId) => {
+    return crs.filter((cr) => {
+      return cr.organizationId === orgId;
+    });
   },
 );
 

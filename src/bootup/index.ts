@@ -14,6 +14,7 @@ import {
   fetchCostsByEnvironments,
   fetchCostsByServices,
   fetchCostsByStacks,
+  fetchCustomResources,
   fetchDatabaseImages,
   fetchDatabases,
   fetchEndpoints,
@@ -107,6 +108,7 @@ function* onFetchResourceData() {
     fetchMembershipsByOrgId.run({ orgId: org.id }),
     fetchServiceSizingPolicies.run(),
     fetchManualScaleRecommendations.run(),
+    fetchCustomResources.run(),
   ]);
   yield* onFetchCostData(org.id);
   yield* group;

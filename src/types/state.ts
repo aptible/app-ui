@@ -34,7 +34,13 @@ export interface Nav {
 
 export interface AbstractResourceItem {
   id: string;
-  type: "stack" | "environment" | "app" | "database" | "endpoint";
+  type:
+    | "stack"
+    | "environment"
+    | "app"
+    | "database"
+    | "endpoint"
+    | "custom_resource";
 }
 
 export interface ResourceStats extends AbstractResourceItem {
