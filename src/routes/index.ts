@@ -411,6 +411,9 @@ export const diagnosticsCreateUrl = () => DIAGNOSTICS_CREATE_URL;
 export const DIAGNOSTICS_DETAIL_URL = "/diagnostics/:id";
 export const diagnosticsDetailUrl = (id: string) => `/diagnostics/${id}`;
 
+export const CUSTOM_RESOURCES_URL = "/custom_resources";
+export const customResourcesUrl = () => CUSTOM_RESOURCES_URL;
+
 export const SOURCES_PATH = "/sources";
 export const sourcesUrl = () => SOURCES_PATH;
 export const SOURCES_SETUP_PATH = "/sources/setup";

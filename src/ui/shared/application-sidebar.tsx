@@ -9,6 +9,7 @@ import {
   activityUrl,
   appsUrl,
   billingMethodUrl,
+  customResourcesUrl,
   databaseUrl,
   deployUrl,
   deploymentsUrl,
@@ -88,6 +89,11 @@ export const ApplicationSidebar = () => {
             name: "Diagnostics",
             to: diagnosticsUrl(),
             icon: <IconDiagnostics />,
+          },
+          {
+            name: "Custom Resources",
+            to: customResourcesUrl(),
+            icon: <IconCloud />,
           },
         ]
       : []),
