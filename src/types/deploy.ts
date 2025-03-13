@@ -178,6 +178,7 @@ export type OperationStatus =
 export type ResourceType =
   | "app"
   | "certificate"
+  | "custom_resource"
   | "service"
   | "database"
   | "database_credential"
@@ -193,6 +194,7 @@ export type ResourceType =
   | "container"
   | "vpc_peer"
   | "vpn_tunnel"
+  | "edge"
   | "unknown";
 
 // https://github.com/aptible/deploy-api/blob/3b197beaa5bcbbed991c1eac73d5c99a4fdf8f95/app/models/operation.rb#L54
@@ -731,4 +733,21 @@ export interface DeployDashboard extends Timestamps {
   rangeEnd: string;
   observationTimestamp: string;
   data: object;
+}
+
+export interface DeployCustomResource extends Timestamps {
+  id: string;
+  handle: string;
+  resourceType: string;
+  organizationId: string;
+  data: Record<string, any>;
+}
+
+export interface DeployEdge extends Timestamps {
+  id: string;
+  relationshipType: string;
+  sourceResourceId: string;
+  sourceResourceType: ResourceType;
+  destinationResourceId: string;
+  destinationResourceType: ResourceType;
 }

@@ -7,11 +7,13 @@ import { certificateEntities } from "./certificate";
 import { appConfigEntities } from "./configuration";
 import { containerEntities } from "./container";
 import { costEntities } from "./cost";
+import { customResourceEntities } from "./custom-resource";
 import { dashboardEntities } from "./dashboard";
 import { databaseEntities } from "./database";
 import { credEntities } from "./database-credential";
 import { databaseImageEntities } from "./database-images";
 import { diskEntities } from "./disk";
+import { edgeEntities } from "./edge";
 import { endpointEntities } from "./endpoint";
 import { environmentEntities } from "./environment";
 import { imageEntities } from "./image";
@@ -59,4 +61,6 @@ export const entities = {
   ...manualScaleRecommendationEntities,
   ...costEntities,
   ...dashboardEntities,
+  ...customResourceEntities,
+  ...edgeEntities,
 };

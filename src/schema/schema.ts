@@ -98,5 +98,9 @@ export const [schema, initialState] = createSchema({
   }),
   costRates: slice.obj(factory.defaultCostRates()),
   dashboards: slice.table({ empty: factory.defaultDeployDashboard() }),
+  customResources: slice.table({
+    empty: factory.defaultDeployCustomResource(),
+  }),
+  edges: slice.table({ empty: factory.defaultDeployEdge() }),
 });
 export type WebState = typeof initialState;
