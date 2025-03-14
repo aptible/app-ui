@@ -2,15 +2,15 @@ import { api, cacheMinTimer } from "@app/api";
 import { createSelector } from "@app/fx";
 import { defaultEntity } from "@app/hal";
 import { type WebState, schema } from "@app/schema";
-import type { CustomResourceType } from "@app/types";
+import type { DeployEdgeType } from "@app/types";
 
 export interface DeployEdge {
   id: string;
   relationshipType: string;
   sourceResourceId: string;
-  sourceResourceType: CustomResourceType;
+  sourceResourceType: DeployEdgeType;
   destinationResourceId: string;
-  destinationResourceType: CustomResourceType;
+  destinationResourceType: DeployEdgeType;
   createdAt: string;
   updatedAt: string;
 }
@@ -28,11 +28,11 @@ export interface DeployEdgeResponse {
   _embedded: {
     source_resource: {
       id: number;
-      _type: CustomResourceType;
+      _type: DeployEdgeType;
     };
     destination_resource: {
       id: number;
-      _type: CustomResourceType;
+      _type: DeployEdgeType;
     };
   };
   _type: "edge";
@@ -45,11 +45,9 @@ export const deserializeDeployEdge = (
     id: `${payload.id}`,
     relationshipType: payload.relationship_type,
     sourceResourceId: `${payload._embedded.source_resource.id}`,
-    sourceResourceType: payload._embedded.source_resource
-      ._type as CustomResourceType,
+    sourceResourceType: payload._embedded.source_resource._type,
     destinationResourceId: `${payload._embedded.destination_resource.id}`,
-    destinationResourceType: payload._embedded.destination_resource
-      ._type as CustomResourceType,
+    destinationResourceType: payload._embedded.destination_resource._type,
     createdAt: payload.created_at,
     updatedAt: payload.updated_at,
   };
@@ -59,12 +57,10 @@ export const selectEdges = schema.edges.selectTableAsList;
 
 export const selectEdgesForResource = createSelector(
   selectEdges,
-  (
-    _: WebState,
-    props: { resourceId: string; resourceType: CustomResourceType },
-  ) => props,
+  (_: WebState, props: { resourceId: string; resourceType: DeployEdgeType }) =>
+    props,
   (edges, { resourceId, resourceType }) => {
-    if (resourceId === "" || resourceType === "unknown") {
+    if (resourceId === "") {
       return edges;
     }
 
@@ -95,15 +91,15 @@ export const fetchEdges = api.get(
 
 export const fetchEdgesByResource = api.get<{
   resourceId: string;
-  resourceType: CustomResourceType;
+  resourceType: DeployEdgeType;
 }>("/edges?resource_id=:resourceId&resource_type=:resourceType");
 
 export const createEdge = api.post<
   {
     sourceResourceId: string;
-    sourceResourceType: CustomResourceType;
+    sourceResourceType: DeployEdgeType;
     destinationResourceId: string;
-    destinationResourceType: CustomResourceType;
+    destinationResourceType: DeployEdgeType;
     relationshipType: string;
   },
   DeployEdgeResponse

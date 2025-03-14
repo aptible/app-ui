@@ -7,6 +7,7 @@ import {
   selectStackById,
 } from "@app/deploy";
 import { useSelector } from "@app/react";
+import { customResourceDetailUrl } from "@app/routes";
 import {
   type AppItem,
   type CustomResourceItem,
@@ -33,7 +34,6 @@ import {
   StackItemView,
   tokens,
 } from "../shared";
-import { customResourceDetailUrl } from "@app/routes";
 
 const ResourceView = ({ children }: { children: React.ReactNode }) => {
   const className = cn(
