@@ -1,5 +1,8 @@
 import { createDashboard } from "@app/deploy/dashboard";
-import { selectOrganizationSelectedId } from "@app/organizations";
+import {
+  selectHasDiagnosticsPocFeature,
+  selectOrganizationSelectedId,
+} from "@app/organizations";
 import {
   useDispatch,
   useLoader,
@@ -28,22 +31,44 @@ import {
 import { AppSelect } from "../shared/select-apps";
 import "react-datepicker/dist/react-datepicker.css";
 import { selectAppById } from "@app/deploy/app";
+import {
+  selectCustomResourceById,
+  selectCustomResourcesAsList,
+} from "@app/deploy/custom-resource";
 import { selectTokenHasWriteAccess } from "@app/token";
 import { useNavigate } from "react-router-dom";
 
-export const DiagnosticsCreateForm = ({ appId }: { appId: string }) => {
+export interface DiagnosticsCreateFormProps {
+  resourceId: string;
+  resourceType: string;
+  resourceName: string;
+}
+
+export const DiagnosticsCreateForm = ({
+  resourceId,
+  resourceType,
+  resourceName,
+}: DiagnosticsCreateFormProps) => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
+
+  const resourceTypeLabel = resourceType === "App" ? "App" : "Resource";
+
   const symptomOptions = [
-    { label: "App is slow", value: "App is slow" },
-    { label: "App is unavailable", value: "App is unavailable" },
     {
-      label: "App is experiencing high error rate",
-      value: "App is experiencing high error rate",
+      label: `${resourceTypeLabel} is slow`,
+      value: `${resourceTypeLabel} is slow`,
+    },
+    {
+      label: `${resourceTypeLabel} is unavailable`,
+      value: `${resourceTypeLabel} is unavailable`,
+    },
+    {
+      label: `${resourceTypeLabel} is experiencing high error rate`,
+      value: `${resourceTypeLabel} is experiencing high error rate`,
     },
   ];
   const [symptoms, setSymptom] = useState(symptomOptions[0].value);
-  const app = useSelector((s) => selectAppById(s, { id: appId }));
   const canCreateDiagnostics = useSelector(selectTokenHasWriteAccess);
 
   // We need to memoize the now date because the date picker will re-render the
@@ -104,20 +129,20 @@ export const DiagnosticsCreateForm = ({ appId }: { appId: string }) => {
   const isValid = useMemo(
     () =>
       symptoms !== "" &&
-      appId !== "" &&
+      resourceId !== "" &&
       startDate !== null &&
       endDate !== null &&
       startDate < endDate,
-    [symptoms, appId, startDate, endDate],
+    [symptoms, resourceId, startDate, endDate],
   );
 
   // Submit the form.
   const [isLoading, setIsLoading] = useState(false);
   const orgId = useSelector(selectOrganizationSelectedId);
   const action = createDashboard({
-    name: `${app.handle}: ${symptoms}`,
-    resourceId: appId,
-    resourceType: "App",
+    name: `${resourceName}: ${symptoms}`,
+    resourceId: resourceId,
+    resourceType: resourceType,
     organizationId: orgId,
     symptoms,
     rangeBegin: startDate.toUTC(0, { keepLocalTime: true }).toISO() ?? "",
@@ -248,13 +273,10 @@ export const DiagnosticsCreateForm = ({ appId }: { appId: string }) => {
 };
 
 export const DiagnosticsCreatePage = () => {
-  const [envId, setEnvId] = useState("");
-  const [appId, setAppId] = useState("");
-
-  // If the envId changes, the appId should be reset to an empty string
-  useEffect(() => {
-    setAppId("");
-  }, [envId]);
+  const hasDiagnosticsPoc = useSelector(selectHasDiagnosticsPocFeature);
+  const DiagnosticsCreateForm = hasDiagnosticsPoc
+    ? CustomResourceDiagnosticsCreateForm
+    : AppDiagnosticsCreateForm;
 
   return (
     <AppSidebarLayout>
@@ -276,33 +298,92 @@ export const DiagnosticsCreatePage = () => {
           <strong>New Feature:</strong> Use Aptible AI to diagnose production
           issues related to increased errors, latency or availability.
         </Banner>
-        <h1 className="text-lg text-gray-500 mb-4">Choose App to Diagnose</h1>
-        <FormGroup
-          label="Environment"
-          htmlFor="Environment"
-          feedbackVariant="info"
-          className="mb-4"
-        >
-          <EnvironmentSelect
-            onSelect={(o) => setEnvId(o.value)}
-            value={envId}
-          />
-        </FormGroup>
-        <FormGroup
-          label="App"
-          htmlFor="App"
-          feedbackVariant="info"
-          className="mb-4"
-        >
-          <AppSelect
-            envId={envId}
-            onSelect={(o) => setAppId(o.value)}
-            value={appId}
-            disabled={!envId}
-          />
-        </FormGroup>
-        <DiagnosticsCreateForm appId={appId} />
+
+        <DiagnosticsCreateForm />
       </Box>
     </AppSidebarLayout>
+  );
+};
+
+export const AppDiagnosticsCreateForm = () => {
+  const [envId, setEnvId] = useState("");
+  const [appId, setAppId] = useState("");
+
+  const app = useSelector((s) => selectAppById(s, { id: appId }));
+
+  // If the envId changes, the appId should be reset to an empty string
+  useEffect(() => {
+    setAppId("");
+  }, [envId]);
+
+  return (
+    <>
+      <h1 className="text-lg text-gray-500 mb-4">Choose App to Diagnose</h1>
+      <FormGroup
+        label="Environment"
+        htmlFor="Environment"
+        feedbackVariant="info"
+        className="mb-4"
+      >
+        <EnvironmentSelect onSelect={(o) => setEnvId(o.value)} value={envId} />
+      </FormGroup>
+      <FormGroup
+        label="App"
+        htmlFor="App"
+        feedbackVariant="info"
+        className="mb-4"
+      >
+        <AppSelect
+          envId={envId}
+          onSelect={(o) => setAppId(o.value)}
+          value={appId}
+          disabled={!envId}
+        />
+      </FormGroup>
+      <DiagnosticsCreateForm
+        resourceId={appId}
+        resourceType="App"
+        resourceName={app.handle}
+      />
+    </>
+  );
+};
+
+export const CustomResourceDiagnosticsCreateForm = () => {
+  const [resourceId, setResourceId] = useState("");
+  const resources = useSelector((s) => selectCustomResourcesAsList(s));
+  const resource = useSelector((s) =>
+    selectCustomResourceById(s, { id: resourceId }),
+  );
+
+  useEffect(() => {
+    if (resources.length > 0) {
+      setResourceId(resources[0].id);
+    }
+  }, [resources]);
+
+  return (
+    <>
+      <h1 className="text-lg text-gray-500 mb-4">
+        Choose Resource to Diagnose
+      </h1>
+      <FormGroup
+        label="Resource"
+        htmlFor="Resource"
+        feedbackVariant="info"
+        className="mb-4"
+      >
+        <Select
+          options={resources.map((r) => ({ label: r.handle, value: r.id }))}
+          onSelect={(o) => setResourceId(o.value)}
+          value={resourceId}
+        />
+      </FormGroup>
+      <DiagnosticsCreateForm
+        resourceId={resourceId}
+        resourceType="CustomResource"
+        resourceName={resource.handle}
+      />
+    </>
   );
 };
