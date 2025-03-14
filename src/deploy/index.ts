@@ -33,3 +33,4 @@ export * from "./entities";
 export * from "./search";
 export * from "./manual_scale_recommendation";
 export * from "./cost";
+export * from "./integration";

@@ -193,6 +193,7 @@ export type ResourceType =
   | "container"
   | "vpc_peer"
   | "vpn_tunnel"
+  | "integration"
   | "unknown";
 
 // https://github.com/aptible/deploy-api/blob/3b197beaa5bcbbed991c1eac73d5c99a4fdf8f95/app/models/operation.rb#L54
@@ -731,4 +732,38 @@ export interface DeployDashboard extends Timestamps {
   rangeEnd: string;
   observationTimestamp: string;
   data: object;
+}
+
+export type IntegrationType = "ElasticsearchIntegration" | "unknown";
+
+export interface DeployIntegration extends Timestamps {
+  id: string;
+  type: IntegrationType;
+  organizationId: string;
+  awsRoleArn?: string;
+  apiKey?: string;
+  appKey?: string;
+  host?: string;
+  port?: string;
+  username?: string;
+  database?: string;
+}
+
+export interface DeployIntegrationResponse {
+  id: string;
+  type: string;
+  organization_id: string;
+  aws_role_arn?: string;
+  api_key?: string;
+  app_key?: string;
+  host?: string;
+  port?: string;
+  username?: string;
+  database?: string;
+  created_at: string;
+  updated_at: string;
+  _links: {
+    self: LinkResponse;
+  };
+  _type: "integration";
 }
