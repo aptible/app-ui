@@ -10,10 +10,10 @@ import { AppSidebarLayout } from "../layouts";
 import {
   Box,
   ButtonLink,
+  Code,
   FormGroup,
   Group,
   Input,
-  KeyValueGroup,
   TitleBar,
 } from "../shared";
 import { DependencyGraph } from "../shared/dependency-graph";
@@ -41,12 +41,6 @@ export const CustomResourceDetailPage = () => {
     data: resource,
   };
 
-  // Convert data object to array of { key, value } objects
-  const dataEntries = Object.entries(resource.data).map(([key, value]) => ({
-    key,
-    value: typeof value === "string" ? value : JSON.stringify(value),
-  }));
-
   return (
     <AppSidebarLayout>
       <TitleBar description="View custom resource details">
@@ -73,7 +67,9 @@ export const CustomResourceDetailPage = () => {
       <Box>
         <h2 className="text-lg font-medium mb-4">Resource Data</h2>
         <div className="font-mono flex w-fit">
-          <KeyValueGroup data={dataEntries} />
+          <Code className="bg-gray-50">
+            <pre className="p-2">{JSON.stringify(resource.data, null, 2)}</pre>
+          </Code>
         </div>
       </Box>
 
