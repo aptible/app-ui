@@ -2,6 +2,7 @@ import { selectEnv } from "@app/config";
 import { selectIsAccountOwner } from "@app/deploy";
 import {
   selectHasBetaFeatures,
+  selectHasDiagnosticsPocFeature,
   selectHasManyOrgs,
   selectOrganizationSelectedId,
 } from "@app/organizations";
@@ -12,6 +13,7 @@ import {
   settingsProfileUrl,
   sshSettingsUrl,
   teamContactsUrl,
+  teamDiagnosticsIntegrationsUrl,
   teamGithubIntegrationUrl,
   teamMembersUrl,
   teamPendingInvitesUrl,
@@ -38,6 +40,7 @@ export function SettingsSidebar() {
   const hasManyOrgs = useSelector(selectHasManyOrgs);
   const isAccountOwner = useSelector((s) => selectIsAccountOwner(s, { orgId }));
   const hasBetaFeatures = useSelector(selectHasBetaFeatures);
+  const hasDiagnosticsPoc = useSelector(selectHasDiagnosticsPocFeature);
   const { hasTrialNoPayment } = useTrialNotice();
 
   const navLink = ({ isActive }: { isActive: boolean }) =>
@@ -155,6 +158,12 @@ export function SettingsSidebar() {
               <IconLock variant="sm" className="ml-1 opacity-60" />
             </Tooltip>
           </span>
+        )}
+
+        {(hasBetaFeatures || hasDiagnosticsPoc) && (
+          <NavLink className={navLink} to={teamDiagnosticsIntegrationsUrl()}>
+            Diagnostics Integrations
+          </NavLink>
         )}
 
         <hr className="mt-3 mx-2" />

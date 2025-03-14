@@ -157,6 +157,9 @@ import { AppDetailDiagnosticsPage } from "@app/ui/pages/app-detail-diagnostics";
 import { EnvironmentEndpointsPage } from "@app/ui/pages/environment-detail-endpoints";
 import { GithubIntegrationPage } from "@app/ui/pages/github-integration";
 import { SettingsProfilePage } from "@app/ui/pages/settings-profile";
+import { SettingsTeamDiagnosticsIntegrationsPage } from "@app/ui/pages/settings-team-diagnostics-integrations";
+import { SettingsTeamDiagnosticsIntegrationsAddPage } from "@app/ui/pages/settings-team-diagnostics-integrations-add";
+import { SettingsTeamDiagnosticsIntegrationsEditPage } from "@app/ui/pages/settings-team-diagnostics-integrations-edit";
 import { SourcesSetupPage } from "@app/ui/pages/sources-setup";
 import { type RouteObject, createBrowserRouter } from "react-router-dom";
 import { Tuna } from "./tuna";
@@ -941,6 +944,21 @@ export const appRoutes: RouteObject[] = [
             <TeamContactsPage />
           </AccountOwnerRequired>
         ),
+      },
+
+      {
+        path: routes.TEAM_DIAGNOSTICS_INTEGRATIONS_PATH,
+        element: <SettingsTeamDiagnosticsIntegrationsPage />,
+      },
+
+      {
+        path: routes.TEAM_DIAGNOSTICS_INTEGRATIONS_ADD_PATH,
+        element: <SettingsTeamDiagnosticsIntegrationsAddPage />,
+      },
+
+      {
+        path: routes.TEAM_DIAGNOSTICS_INTEGRATIONS_EDIT_PATH,
+        element: <SettingsTeamDiagnosticsIntegrationsEditPage />,
       },
 
       {

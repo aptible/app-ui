@@ -102,5 +102,6 @@ export const [schema, initialState] = createSchema({
     empty: factory.defaultDeployCustomResource(),
   }),
   edges: slice.table({ empty: factory.defaultDeployEdge() }),
+  integrations: slice.table({ empty: factory.defaultDeployIntegration() }),
 });
 export type WebState = typeof initialState;
