@@ -146,7 +146,7 @@ export const ApplicationSidebar = () => {
           </div>
         )}
 
-        {collapsed || hasDiagnosticsPoc ? null : (
+        {collapsed ? null : (
           <div className="mt-2 px-3">
             <div
               className="border border-gray-200 bg-white rounded-lg px-2 py-1 flex items-center justify-between h-[36px] cursor-pointer hover:bg-black-50"
