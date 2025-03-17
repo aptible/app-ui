@@ -1,5 +1,5 @@
 import { selectCustomResourceById } from "@app/deploy/custom-resource";
-import { fetchEdgesByResource } from "@app/deploy/edge";
+import { fetchDependencyEdgesByResource } from "@app/deploy/edge";
 import { selectEdgesForResource } from "@app/deploy/edge";
 import { useQuery } from "@app/react";
 import { useSelector } from "@app/react";
@@ -19,6 +19,7 @@ import {
 
 import "@xyflow/react/dist/style.css";
 import { customResourceDetailUrl } from "@app/routes";
+import { DateTime } from "luxon";
 import { useEffect, useMemo } from "react";
 import { Link } from "react-router-dom";
 import { IconCloud, IconCylinder } from "./icons";
@@ -44,10 +45,16 @@ export const DependencyGraph = ({ resourceItem }: DependencyGraphProps) => {
     return { resource: ResourceNode };
   }, []);
 
+  const now = useMemo(
+    () => DateTime.now().minus({ minutes: DateTime.local().offset }),
+    [],
+  );
+
   useQuery(
-    fetchEdgesByResource({
+    fetchDependencyEdgesByResource({
       resourceId: resourceItem.id,
       resourceType: resourceItem.type,
+      timeRangeStart: now.toUTC(0, { keepLocalTime: true }).toISO(),
     }),
   );
 
@@ -273,16 +280,18 @@ const getAllNodes = (
 };
 
 const getAllEdges = (edges: DeployEdge[]): Edge[] => {
-  return edges.map((edge) => ({
-    id: edge.id,
-    source: generateGraphId(edge.sourceResourceType, edge.sourceResourceId),
-    target: generateGraphId(
-      edge.destinationResourceType,
-      edge.destinationResourceId,
-    ),
-    animated: true,
-    data: { label: edge.relationshipType },
-  }));
+  return edges
+    .filter((edge) => edge.sourceResourceType !== edge.destinationResourceType)
+    .map((edge) => ({
+      id: edge.id,
+      source: generateGraphId(edge.sourceResourceType, edge.sourceResourceId),
+      target: generateGraphId(
+        edge.destinationResourceType,
+        edge.destinationResourceId,
+      ),
+      animated: true,
+      data: { label: edge.relationshipType },
+    }));
 };
 
 const CenterGraph = () => {

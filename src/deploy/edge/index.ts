@@ -89,10 +89,13 @@ export const fetchEdges = api.get(
   },
 );
 
-export const fetchEdgesByResource = api.get<{
+export const fetchDependencyEdgesByResource = api.get<{
   resourceId: string;
   resourceType: DeployEdgeType;
-}>("/edges?resource_id=:resourceId&resource_type=:resourceType");
+  timeRangeStart: string;
+}>(
+  "/edges?root_resource_id=:resourceId&root_resource_type=:resourceType&only_relationship_types[]=depends_on&time_range_start=:timeRangeStart",
+);
 
 export const createEdge = api.post<
   {
