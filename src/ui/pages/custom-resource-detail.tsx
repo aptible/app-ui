@@ -62,10 +62,8 @@ export const CustomResourceDetailPage = () => {
             />
           </FormGroup>
         </form>
-      </Box>
 
-      <Box>
-        <h2 className="text-lg font-medium mb-4">Resource Data</h2>
+        <h2 className="text-lg font-medium my-4">Resource Data</h2>
         <div className="font-mono flex w-fit">
           <Code className="bg-gray-50">
             <pre className="p-2">{JSON.stringify(resource.data, null, 2)}</pre>

@@ -21,7 +21,7 @@ import "@xyflow/react/dist/style.css";
 import { customResourceDetailUrl } from "@app/routes";
 import { useEffect, useMemo } from "react";
 import { Link } from "react-router-dom";
-import { IconBox, IconCloud, IconCylinder } from "./icons";
+import { IconCloud, IconCylinder } from "./icons";
 
 interface DependencyGraphProps {
   resourceItem: ResourceItem;
@@ -96,25 +96,46 @@ const ResourceNode = ({
         position={Position.Top}
         isConnectable={isConnectable}
       />
-      <div
-        className={`w-64 text-xs px-3 py-2 shadow border rounded-lg ${
-          data.isRoot
-            ? "border-blue-300 bg-white"
-            : "border-black-100 bg-gray-50"
-        }`}
-      >
-        {ResourceComponent ? (
-          <ResourceComponent id={resourceId} isRoot={data.isRoot} />
-        ) : (
-          data.label
-        )}
-      </div>
+      {ResourceComponent ? (
+        <ResourceComponent id={resourceId} isRoot={data.isRoot} />
+      ) : (
+        <StandardNode isRoot={data.isRoot}>{data.label}</StandardNode>
+      )}
       <Handle
         type="source"
         position={Position.Bottom}
         id="b"
         isConnectable={isConnectable}
       />
+    </div>
+  );
+};
+
+const StandardNode = ({
+  children,
+  isRoot,
+  providerIconUrl,
+}: {
+  children: React.ReactNode;
+  isRoot: boolean;
+  providerIconUrl?: string;
+}) => {
+  return (
+    <div
+      className={`w-64 text-xs px-3 py-2 shadow border rounded-lg relative ${
+        isRoot ? "border-blue-300 bg-white" : "border-black-100 bg-gray-50"
+      }`}
+    >
+      {providerIconUrl && (
+        <div className="flex w-6 h-6 absolute -top-3 -left-3 bg-white rounded-full border items-center justify-center p-0.5">
+          <img
+            src={providerIconUrl}
+            className="rounded-full"
+            alt="Resource Provider"
+          />
+        </div>
+      )}
+      {children}
     </div>
   );
 };
@@ -128,29 +149,42 @@ const CustomResourceNode = ({
   let icon = <IconCloud />;
 
   if (resource?.resourceType) {
-    if (resource.resourceType.includes("database")) {
+    if (resource.resourceType.includes(":ecs_service")) {
+      icon = <img src="/resource-types/logo-ecs.png" alt="ECS Service" />;
+    } else if (resource.resourceType.includes(":rds_database")) {
+      icon = <img src="/resource-types/logo-rds.png" alt="RDS Database" />;
+    } else if (resource.resourceType.includes(":redis_database")) {
+      icon = <img src="/database-types/logo-redis.png" alt="Redis Database" />;
+    } else if (resource.resourceType.includes(":database:")) {
       icon = <IconCylinder />;
-    } else if (resource.resourceType.includes("ecs")) {
-      icon = <IconBox />;
+    }
+  }
+
+  let providerIconUrl = undefined;
+  if (resource?.resourceType) {
+    if (resource.resourceType.includes("common:aws:")) {
+      providerIconUrl = "/resource-types/logo-aws.png";
     }
   }
 
   return (
-    <div className="flex gap-x-2 items-center">
-      <div className="flex w-6 h-6">{icon}</div>
-      <div className="overflow-hidden text-ellipsis whitespace-nowrap font-mono">
-        {isRoot ? (
-          <span className="">{resource?.handle}</span>
-        ) : (
-          <Link
-            className="text-gray-500 underline hover:no-underline"
-            to={customResourceDetailUrl(id)}
-          >
-            {resource?.handle}
-          </Link>
-        )}
+    <StandardNode isRoot={isRoot} providerIconUrl={providerIconUrl}>
+      <div className="flex gap-x-1 items-center">
+        <div className="flex w-5 h-5 items-center justify-center">{icon}</div>
+        <div className="overflow-hidden text-ellipsis whitespace-nowrap font-mono">
+          {isRoot ? (
+            <span className="">{resource?.handle}</span>
+          ) : (
+            <Link
+              className="text-gray-500 underline hover:no-underline"
+              to={customResourceDetailUrl(id)}
+            >
+              {resource?.handle}
+            </Link>
+          )}
+        </div>
       </div>
-    </div>
+    </StandardNode>
   );
 };
 
