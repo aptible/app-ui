@@ -88,7 +88,7 @@ export function EndpointUrl({ enp }: { enp: DeployEndpoint }) {
   const url = getEndpointUrl(enp);
 
   if (enp.status === "provisioning") {
-    return <p className="text-gray-500">Pending</p>;
+    return <p className="text-gray-500 leading-normal">Pending</p>;
   }
 
   if (
@@ -96,17 +96,19 @@ export function EndpointUrl({ enp }: { enp: DeployEndpoint }) {
     (enp.type === "http" || enp.type === "http_proxy_protocol")
   ) {
     return (
-      <ExternalLink
-        className="text-black group-hover:text-indigo hover:text-indigo"
-        href={`https://${url}`}
-        variant="default"
-      >
-        {url}
-      </ExternalLink>
+      <div className="leading-normal">
+        <ExternalLink
+          className="text-black group-hover:text-indigo hover:text-indigo"
+          href={`https://${url}`}
+          variant="default"
+        >
+          {url}
+        </ExternalLink>
+      </div>
     );
   }
 
-  return <p>{url}</p>;
+  return <p className="leading-normal">{url}</p>;
 }
 
 export const EndpointDeprovision = ({
