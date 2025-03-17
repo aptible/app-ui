@@ -42,7 +42,7 @@ export const DiagnosticsMessages = ({
     <div className="border rounded-lg p-4 bg-gray-50">
       <div className="flex justify-between items-center mb-4">
         <h2 className="text-lg font-semibold">Messages</h2>
-        {messages.length > 1 && (
+        {messages?.length > 1 && (
           <button
             type="button"
             onClick={() => setShowAllMessages(!showAllMessages)}

@@ -6,7 +6,7 @@ import { useDispatch, useQuery, useSelector } from "@app/react";
 import { selectAccessToken } from "@app/token";
 import type { DeployDashboard } from "@app/types/deploy";
 import { useEffect, useState } from "react";
-import useWebSocket, { ReadyState } from "react-use-websocket";
+import { useActionCable, useChannel } from "@app/ui/hooks/use-actioncable";
 
 const DASHBOARD_SAVE_DEBOUNCE_MS = 1000;
 
@@ -101,36 +101,46 @@ const useHotshotDashboard = ({
   const aptibleAiUrl = useSelector(selectAptibleAiUrl);
   const accessToken = useSelector(selectAccessToken);
 
-  const { lastJsonMessage: event, readyState: wsReadyState } = useWebSocket<
-    Record<string, any>
-  >(
-    `${aptibleAiUrl}/troubleshoot`,
-    {
-      queryParams: {
-        token: accessToken,
-        resource_id: dashboard.resourceId,
-        symptom_description: dashboard.symptoms,
-        start_time: dashboard.rangeBegin,
-        end_time: dashboard.rangeEnd,
-      },
-      heartbeat: {
-        timeout: 60000 * 30, // 30 minutes
-      },
-    },
-    useHotshot,
-  );
+  const { actionCable } = useActionCable(aptibleAiUrl);
+  const { subscribe, unsubscribe } = useChannel(actionCable, {
+    verbose: true,
+  });
 
   useEffect(() => {
-    if (event) {
-      setDashboardContents((prevDashboard) =>
-        handleDashboardEvent(prevDashboard, event),
-      );
+    if (!dashboard.id) {
+      return;
     }
-  }, [JSON.stringify(event)]);
 
-  useEffect(() => {
-    if (wsReadyState === ReadyState.CLOSED) {
-      setLoadingComplete(true);
-    }
-  }, [wsReadyState]);
+    subscribe({
+      channel: "HotshotChannel",
+      token: accessToken,
+      resource_id: dashboard.resourceId,
+      symptom_description: dashboard.symptoms,
+      start_time: dashboard.rangeBegin,
+      end_time: dashboard.rangeEnd,
+    }, {
+        initialized: () => {
+          console.log("initialized");
+        },
+        connected: () => {
+          console.log("connected");
+        },
+        received: (data: string) => {
+          setDashboardContents((prevDashboard) => {
+            try {
+              return handleDashboardEvent(prevDashboard, JSON.parse(data));
+            } catch (error) {
+              console.error(error);
+              return prevDashboard;
+            }
+          });
+        },
+        disconnected: () => {
+          setLoadingComplete(true);
+        },
+      },
+    );
+
+    return () => unsubscribe();
+  }, [dashboard.id]);
 };
