@@ -1023,7 +1023,7 @@ export const defaultDeployIntegration = (
   const now = new Date().toISOString();
   return {
     id: "",
-    type: "ElasticsearchIntegration",
+    type: "ElasticsearchIntegration", // Default type
     organizationId: "",
     awsRoleArn: "",
     apiKey: "",
