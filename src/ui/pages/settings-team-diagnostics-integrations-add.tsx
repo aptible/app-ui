@@ -25,6 +25,8 @@ import {
 const INTEGRATION_TYPES = [
   { value: "", label: "Select Integration Type" },
   { value: "ElasticsearchIntegration", label: "Elasticsearch" },
+  { value: "DatadogIntegration", label: "Datadog" },
+  { value: "PagerdutyIntegration", label: "PagerDuty" },
 ];
 
 // Define form data interface
@@ -34,6 +36,8 @@ interface FormData {
   port?: string;
   username?: string;
   password?: string;
+  apiKey?: string;
+  appKey?: string;
 }
 
 // Form validators
@@ -41,7 +45,21 @@ const validators = {
   type: (data: FormData) =>
     data.type ? undefined : "Please select an integration type",
   host: (data: FormData) =>
-    data.type && !data.host ? "Host is required" : undefined,
+    data.type === "ElasticsearchIntegration" && !data.host
+      ? "Host is required"
+      : undefined,
+  apiKey: (data: FormData) =>
+    data.type === "DatadogIntegration" && !data.apiKey
+      ? "API Key is required"
+      : undefined,
+  appKey: (data: FormData) =>
+    data.type === "DatadogIntegration" && !data.appKey
+      ? "Application Key is required"
+      : undefined,
+  pagerDutyKey: (data: FormData) =>
+    data.type === "PagerdutyIntegration" && !data.apiKey
+      ? "API Key is required"
+      : undefined,
 };
 
 // Elasticsearch integration form component
@@ -111,6 +129,90 @@ function ElasticsearchForm({
   );
 }
 
+// Datadog integration form component
+function DatadogForm({
+  formData,
+  setFormData,
+  errors,
+}: {
+  formData: FormData;
+  setFormData: (data: FormData) => void;
+  errors: Record<string, string | undefined>;
+}) {
+  return (
+    <>
+      <FormGroup
+        label="API Key"
+        htmlFor="apiKey"
+        feedbackMessage={errors.apiKey}
+        feedbackVariant={errors.apiKey ? "danger" : "info"}
+      >
+        <Input
+          id="apiKey"
+          name="apiKey"
+          type="password"
+          value={formData.apiKey || ""}
+          onChange={(e) =>
+            setFormData({ ...formData, apiKey: e.currentTarget.value })
+          }
+          placeholder="Your Datadog API key"
+        />
+      </FormGroup>
+
+      <FormGroup
+        label="Application Key"
+        htmlFor="appKey"
+        feedbackMessage={errors.appKey}
+        feedbackVariant={errors.appKey ? "danger" : "info"}
+      >
+        <Input
+          id="appKey"
+          name="appKey"
+          type="password"
+          value={formData.appKey || ""}
+          onChange={(e) =>
+            setFormData({ ...formData, appKey: e.currentTarget.value })
+          }
+          placeholder="Your Datadog Application key"
+        />
+      </FormGroup>
+    </>
+  );
+}
+
+// PagerDuty integration form component
+function PagerDutyForm({
+  formData,
+  setFormData,
+  errors,
+}: {
+  formData: FormData;
+  setFormData: (data: FormData) => void;
+  errors: Record<string, string | undefined>;
+}) {
+  return (
+    <>
+      <FormGroup
+        label="API Key"
+        htmlFor="apiKey"
+        feedbackMessage={errors.pagerDutyKey}
+        feedbackVariant={errors.pagerDutyKey ? "danger" : "info"}
+      >
+        <Input
+          id="apiKey"
+          name="apiKey"
+          type="password"
+          value={formData.apiKey || ""}
+          onChange={(e) =>
+            setFormData({ ...formData, apiKey: e.currentTarget.value })
+          }
+          placeholder="Your PagerDuty API key"
+        />
+      </FormGroup>
+    </>
+  );
+}
+
 export function SettingsTeamDiagnosticsIntegrationsAddPage() {
   const navigate = useNavigate();
   const dispatch = useDispatch();
@@ -134,6 +236,8 @@ export function SettingsTeamDiagnosticsIntegrationsAddPage() {
     port: formData.port,
     username: formData.username,
     password: formData.password,
+    api_key: formData.apiKey,
+    app_key: formData.appKey,
   });
 
   const loader = useLoader(action);
@@ -158,6 +262,22 @@ export function SettingsTeamDiagnosticsIntegrationsAddPage() {
       case "ElasticsearchIntegration":
         return (
           <ElasticsearchForm
+            formData={formData}
+            setFormData={setFormData}
+            errors={errors}
+          />
+        );
+      case "DatadogIntegration":
+        return (
+          <DatadogForm
+            formData={formData}
+            setFormData={setFormData}
+            errors={errors}
+          />
+        );
+      case "PagerdutyIntegration":
+        return (
+          <PagerDutyForm
             formData={formData}
             setFormData={setFormData}
             errors={errors}

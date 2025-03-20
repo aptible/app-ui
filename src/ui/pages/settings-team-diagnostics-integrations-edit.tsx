@@ -35,16 +35,35 @@ interface FormData {
   port?: string;
   username?: string;
   password?: string;
+  apiKey?: string;
+  appKey?: string;
 }
 
 // Form validators
 const validators = {
-  host: (data: FormData) => (!data.host ? "Host is required" : undefined),
+  host: (data: FormData, type?: string) =>
+    type === "ElasticsearchIntegration" && !data.host
+      ? "Host is required"
+      : undefined,
+  apiKey: (data: FormData, type?: string) =>
+    type === "DatadogIntegration" && !data.apiKey
+      ? "API Key is required"
+      : undefined,
+  appKey: (data: FormData, type?: string) =>
+    type === "DatadogIntegration" && !data.appKey
+      ? "Application Key is required"
+      : undefined,
+  pagerDutyKey: (data: FormData, type?: string) =>
+    type === "PagerdutyIntegration" && !data.apiKey
+      ? "API Key is required"
+      : undefined,
 };
 
 // Format integration type for display
 function formatIntegrationType(type: string): string {
   if (type === "ElasticsearchIntegration") return "Elasticsearch";
+  if (type === "DatadogIntegration") return "Datadog";
+  if (type === "PagerdutyIntegration") return "PagerDuty";
   return type.replace("Integration", "");
 }
 
@@ -116,6 +135,90 @@ function ElasticsearchForm({
   );
 }
 
+// Datadog integration form component
+function DatadogForm({
+  formData,
+  setFormData,
+  errors,
+}: {
+  formData: FormData;
+  setFormData: (data: FormData) => void;
+  errors: Record<string, string | undefined>;
+}) {
+  return (
+    <>
+      <FormGroup
+        label="API Key"
+        htmlFor="apiKey"
+        feedbackMessage={errors.apiKey}
+        feedbackVariant={errors.apiKey ? "danger" : "info"}
+      >
+        <Input
+          id="apiKey"
+          name="apiKey"
+          type="password"
+          value={formData.apiKey || ""}
+          onChange={(e) =>
+            setFormData({ ...formData, apiKey: e.currentTarget.value })
+          }
+          placeholder="Your Datadog API key"
+        />
+      </FormGroup>
+
+      <FormGroup
+        label="Application Key"
+        htmlFor="appKey"
+        feedbackMessage={errors.appKey}
+        feedbackVariant={errors.appKey ? "danger" : "info"}
+      >
+        <Input
+          id="appKey"
+          name="appKey"
+          type="password"
+          value={formData.appKey || ""}
+          onChange={(e) =>
+            setFormData({ ...formData, appKey: e.currentTarget.value })
+          }
+          placeholder="Your Datadog Application key"
+        />
+      </FormGroup>
+    </>
+  );
+}
+
+// PagerDuty integration form component
+function PagerDutyForm({
+  formData,
+  setFormData,
+  errors,
+}: {
+  formData: FormData;
+  setFormData: (data: FormData) => void;
+  errors: Record<string, string | undefined>;
+}) {
+  return (
+    <>
+      <FormGroup
+        label="API Key"
+        htmlFor="apiKey"
+        feedbackMessage={errors.pagerDutyKey}
+        feedbackVariant={errors.pagerDutyKey ? "danger" : "info"}
+      >
+        <Input
+          id="apiKey"
+          name="apiKey"
+          type="password"
+          value={formData.apiKey || ""}
+          onChange={(e) =>
+            setFormData({ ...formData, apiKey: e.currentTarget.value })
+          }
+          placeholder="Your PagerDuty API key"
+        />
+      </FormGroup>
+    </>
+  );
+}
+
 // Render form fields based on integration type
 function IntegrationForm({
   integration,
@@ -137,6 +240,8 @@ function IntegrationForm({
     port: integration.port,
     username: integration.username,
     password: "", // Don't prefill password for security reasons
+    apiKey: integration.apiKey,
+    appKey: integration.appKey,
   });
 
   // Update form data when integration data loads
@@ -146,12 +251,16 @@ function IntegrationForm({
       port: integration.port,
       username: integration.username,
       password: "", // Don't prefill password
+      apiKey: integration.apiKey,
+      appKey: integration.appKey,
     });
   }, [
     integration.id,
     integration.host,
     integration.port,
     integration.username,
+    integration.apiKey,
+    integration.appKey,
   ]);
 
   // Validation
@@ -174,6 +283,22 @@ function IntegrationForm({
       case "ElasticsearchIntegration":
         return (
           <ElasticsearchForm
+            formData={formData}
+            setFormData={setFormData}
+            errors={errors}
+          />
+        );
+      case "DatadogIntegration":
+        return (
+          <DatadogForm
+            formData={formData}
+            setFormData={setFormData}
+            errors={errors}
+          />
+        );
+      case "PagerdutyIntegration":
+        return (
+          <PagerDutyForm
             formData={formData}
             setFormData={setFormData}
             errors={errors}
@@ -255,6 +380,8 @@ export function SettingsTeamDiagnosticsIntegrationsEditPage() {
       port: formData.port,
       username: formData.username,
       ...(formData.password ? { password: formData.password } : {}),
+      ...(formData.apiKey ? { api_key: formData.apiKey } : {}),
+      ...(formData.appKey ? { app_key: formData.appKey } : {}),
     });
     setUpdateAction(action);
     dispatch(action);

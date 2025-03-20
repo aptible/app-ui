@@ -27,6 +27,8 @@ import {
 // Format the integration type for display
 function formatIntegrationType(type: string): string {
   if (type === "ElasticsearchIntegration") return "Elasticsearch";
+  if (type === "DatadogIntegration") return "Datadog";
+  if (type === "PagerdutyIntegration") return "PagerDuty";
   return type.replace("Integration", "");
 }
 

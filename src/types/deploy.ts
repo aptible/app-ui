@@ -761,7 +761,11 @@ export interface DeployEdge extends Timestamps {
   destinationResourceType: DeployEdgeType;
 }
 
-export type IntegrationType = "ElasticsearchIntegration" | "unknown";
+export type IntegrationType =
+  | "ElasticsearchIntegration"
+  | "DatadogIntegration"
+  | "PagerdutyIntegration"
+  | "unknown";
 
 export interface DeployIntegration extends Timestamps {
   id: string;
