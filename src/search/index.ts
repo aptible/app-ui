@@ -2,6 +2,7 @@ import { thunks } from "@app/api";
 import {
   getEndpointUrl,
   selectAppsByOrgAsList,
+  selectCustomResourcesByOrgAsList,
   selectDatabasesByOrgAsList,
   selectEndpointsByOrgAsList,
   selectEnvironmentsByOrgAsList,
@@ -12,6 +13,7 @@ import { type WebState, schema } from "@app/schema";
 import type {
   AbstractResourceItem,
   DeployApp,
+  DeployCustomResource,
   DeployDatabase,
   DeployEndpoint,
   DeployEnvironment,
@@ -44,12 +46,18 @@ export interface EndpointItem extends AbstractResourceItem {
   data?: DeployEndpoint;
 }
 
+export interface CustomResourceItem extends AbstractResourceItem {
+  type: "custom_resource";
+  data?: DeployCustomResource;
+}
+
 export type ResourceItem =
   | StackItem
   | EnvItem
   | AppItem
   | DbItem
-  | EndpointItem;
+  | EndpointItem
+  | CustomResourceItem;
 
 export const selectAllResourcesAsList = createSelector(
   selectStacksByOrgAsList,
@@ -57,7 +65,8 @@ export const selectAllResourcesAsList = createSelector(
   selectAppsByOrgAsList,
   selectDatabasesByOrgAsList,
   selectEndpointsByOrgAsList,
-  (stacks, envs, apps, dbs, enps): ResourceItem[] => {
+  selectCustomResourcesByOrgAsList,
+  (stacks, envs, apps, dbs, enps, crs): ResourceItem[] => {
     const resources: ResourceItem[] = [];
     stacks.forEach((stack) => {
       resources.push({
@@ -99,6 +108,14 @@ export const selectAllResourcesAsList = createSelector(
       });
     });
 
+    crs.forEach((cr) => {
+      resources.push({
+        type: "custom_resource",
+        id: cr.id,
+        data: cr,
+      });
+    });
+
     return resources;
   },
 );
@@ -119,6 +136,13 @@ export const selectResourcesForSearch = createSelector(
       } else if (resource.type === "endpoint") {
         const url = getEndpointUrl(resource.data);
         handleMatch = url ? url.includes(searchLower) : false;
+      } else if (resource.type === "custom_resource") {
+        handleMatch =
+          resource.data?.handle.toLocaleLowerCase().includes(searchLower) ||
+          resource.data?.resourceType
+            .toLocaleLowerCase()
+            .includes(searchLower) ||
+          false;
       } else {
         handleMatch = resource.data?.handle.includes(searchLower) || false;
       }

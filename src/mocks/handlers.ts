@@ -935,6 +935,9 @@ const apiHandlers = [
   rest.get(`${testEnv.apiUrl}/costs/:id/rates`, async (_, res, ctx) => {
     return res(ctx.json({}));
   }),
+  rest.get(`${testEnv.apiUrl}/custom_resources`, async (_, res, ctx) => {
+    return res(ctx.json({ _embedded: { custom_resources: [] } }));
+  }),
 ];
 
 const billingHandlers = [

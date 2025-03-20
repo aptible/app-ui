@@ -1,13 +1,16 @@
 import {
   selectAppById,
+  selectCustomResourceById,
   selectDatabaseById,
   selectEndpointById,
   selectEnvironmentById,
   selectStackById,
 } from "@app/deploy";
 import { useSelector } from "@app/react";
+import { customResourceDetailUrl } from "@app/routes";
 import {
   type AppItem,
+  type CustomResourceItem,
   type DbItem,
   type EndpointItem,
   type EnvItem,
@@ -20,7 +23,7 @@ import {
 } from "@app/search";
 import { capitalize } from "@app/string-utils";
 import cn from "classnames";
-import { useSearchParams } from "react-router-dom";
+import { Link, useSearchParams } from "react-router-dom";
 import { AppSidebarLayout } from "../layouts";
 import {
   AppItemView,
@@ -29,6 +32,7 @@ import {
   EnvironmentItemView,
   InputSearch,
   StackItemView,
+  tokens,
 } from "../shared";
 
 const ResourceView = ({ children }: { children: React.ReactNode }) => {
@@ -100,6 +104,31 @@ const EndpointResource = ({ resource }: { resource: EndpointItem }) => {
   );
 };
 
+const CustomResourceResource = ({
+  resource,
+}: { resource: CustomResourceItem }) => {
+  const cr = useSelector((s) =>
+    selectCustomResourceById(s, { id: resource.id }),
+  );
+  return (
+    <ResourceView>
+      <div className="flex">
+        <Link to={customResourceDetailUrl(cr.id)} className="flex">
+          <p className="flex flex-col">
+            <span className={tokens.type["table link"]}>{cr.handle}</span>
+            <span className={tokens.type["normal lighter"]}>
+              {cr.resourceType}
+            </span>
+          </p>
+        </Link>
+      </div>
+      <div className="text-black-300 text-base">
+        {capitalize(resource.type)} ID: {capitalize(resource.id)}
+      </div>
+    </ResourceView>
+  );
+};
+
 const ResourceItemView = ({ resource }: { resource: ResourceItem }) => {
   if (resource.type === "stack") {
     return <StackResource resource={resource} />;
@@ -115,6 +144,10 @@ const ResourceItemView = ({ resource }: { resource: ResourceItem }) => {
 
   if (resource.type === "endpoint") {
     return <EndpointResource resource={resource} />;
+  }
+
+  if (resource.type === "custom_resource") {
+    return <CustomResourceResource resource={resource} />;
   }
 
   return <DbResource resource={resource} />;

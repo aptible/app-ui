@@ -17,7 +17,11 @@ export function AppDetailDiagnosticsPage() {
         </Banner>
         <h3 className={tokens.type.h3}>Diagnostics</h3>
         <Box>
-          <DiagnosticsCreateForm appId={id} />
+          <DiagnosticsCreateForm
+            resourceId={id}
+            resourceType="App"
+            resourceName={app.handle}
+          />
         </Box>
       </Group>
     </PermissionGate>

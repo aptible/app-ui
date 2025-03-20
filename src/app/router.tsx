@@ -45,6 +45,8 @@ import {
   CreateMetricDrainPage,
   CreateOrgPage,
   CreateStackPage,
+  CustomResourceDetailPage,
+  CustomResourcesPage,
   DatabaseActivityPage,
   DatabaseBackupsPage,
   DatabaseClusterPage,
@@ -610,6 +612,15 @@ export const appRoutes: RouteObject[] = [
             element: <DiagnosticsDetailPage />,
           },
         ],
+      },
+
+      {
+        path: routes.CUSTOM_RESOURCES_URL,
+        element: <CustomResourcesPage />,
+      },
+      {
+        path: routes.CUSTOM_RESOURCE_DETAIL_URL,
+        element: <CustomResourceDetailPage />,
       },
 
       {

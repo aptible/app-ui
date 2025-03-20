@@ -11,11 +11,13 @@ import {
   type DeployContainer,
   type DeployCost,
   type DeployCostRates,
+  type DeployCustomResource,
   type DeployDashboard,
   type DeployDatabase,
   type DeployDatabaseCredential,
   type DeployDatabaseImage,
   type DeployDisk,
+  type DeployEdge,
   type DeployEndpoint,
   type DeployEnvironment,
   type DeployEnvironmentStats,
@@ -981,6 +983,37 @@ export const defaultDeployDashboard = (
     createdAt: now,
     updatedAt: now,
     ...s,
+  };
+};
+
+export const defaultDeployCustomResource = (
+  cr: Partial<DeployCustomResource> = {},
+): DeployCustomResource => {
+  const now = new Date().toISOString();
+  return {
+    id: "",
+    handle: "",
+    resourceType: "",
+    organizationId: "",
+    data: {},
+    createdAt: now,
+    updatedAt: now,
+    ...cr,
+  };
+};
+
+export const defaultDeployEdge = (e: Partial<DeployEdge> = {}): DeployEdge => {
+  const now = new Date().toISOString();
+  return {
+    id: "",
+    relationshipType: "",
+    sourceResourceId: "",
+    sourceResourceType: "custom_resource",
+    destinationResourceId: "",
+    destinationResourceType: "custom_resource",
+    createdAt: now,
+    updatedAt: now,
+    ...e,
   };
 };
 

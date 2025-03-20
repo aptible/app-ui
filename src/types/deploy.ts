@@ -178,6 +178,7 @@ export type OperationStatus =
 export type ResourceType =
   | "app"
   | "certificate"
+  | "custom_resource"
   | "service"
   | "database"
   | "database_credential"
@@ -193,6 +194,7 @@ export type ResourceType =
   | "container"
   | "vpc_peer"
   | "vpn_tunnel"
+  | "edge"
   | "integration"
   | "unknown";
 
@@ -732,6 +734,31 @@ export interface DeployDashboard extends Timestamps {
   rangeEnd: string;
   observationTimestamp: string;
   data: object;
+}
+
+export interface DeployCustomResource extends Timestamps {
+  id: string;
+  handle: string;
+  resourceType: string;
+  organizationId: string;
+  data: Record<string, any>;
+}
+
+export type DeployEdgeType =
+  | "stack"
+  | "environment"
+  | "app"
+  | "database"
+  | "endpoint"
+  | "custom_resource";
+
+export interface DeployEdge extends Timestamps {
+  id: string;
+  relationshipType: string;
+  sourceResourceId: string;
+  sourceResourceType: DeployEdgeType;
+  destinationResourceId: string;
+  destinationResourceType: DeployEdgeType;
 }
 
 export type IntegrationType = "ElasticsearchIntegration" | "unknown";
