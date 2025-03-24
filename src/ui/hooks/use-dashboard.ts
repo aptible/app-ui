@@ -5,13 +5,19 @@ import { fetchDashboard, selectDashboardById } from "@app/deploy/dashboard";
 import { useDispatch, useQuery, useSelector } from "@app/react";
 import { selectAccessToken } from "@app/token";
 import type { DeployDashboard } from "@app/types/deploy";
-import { useEffect, useState } from "react";
+import { i } from "node_modules/react-router/dist/development/route-data-DuV3tXo2.mjs";
+import { useEffect, useMemo, useState } from "react";
 import useWebSocket, { ReadyState } from "react-use-websocket";
 
 const DASHBOARD_SAVE_DEBOUNCE_MS = 1000;
 
 type UseDashboardParams = {
   id: string;
+  resourceId?: string;
+  resourceType?: string;
+  symptoms?: string;
+  rangeBegin?: string;
+  rangeEnd?: string;
 };
 
 type UseHotshotDashboardParams = {
@@ -21,11 +27,17 @@ type UseHotshotDashboardParams = {
   setLoadingComplete: React.Dispatch<React.SetStateAction<boolean>>;
 };
 
-export const useDashboard = ({ id }: UseDashboardParams) => {
-  const { isSuccess: isDashboardLoaded } = useQuery(fetchDashboard({ id }));
-  const dashboard = useSelector((s) => selectDashboardById(s, { id }));
+export const useDashboard = ({
+  id,
+  resourceId,
+  resourceType,
+  symptoms,
+  rangeBegin,
+  rangeEnd,
+}: UseDashboardParams) => {
   const dispatch = useDispatch();
-  const [useHotshot, setUseHotshot] = useState(false);
+  const isEphemeral = id === "ephemeral";
+  const [useHotshot, setUseHotshot] = useState(isEphemeral);
   const [loadingComplete, setLoadingComplete] = useState(false);
   const [debouncedDashboardContents, setDebouncedDashboardContents] =
     useState<DashboardContents>();
@@ -37,15 +49,39 @@ export const useDashboard = ({ id }: UseDashboardParams) => {
       ranked_plots: [],
     },
   );
-  useHotshotDashboard({
-    dashboard,
-    useHotshot,
-    setDashboardContents,
-    setLoadingComplete,
-  });
+
+  const { isSuccess: isDashboardLoaded } = useQuery(fetchDashboard({ id }));
+  const persistedDashboard = useSelector((s) => selectDashboardById(s, { id }));
+  const [dashboard, setDashboard] = useState<DeployDashboard>(persistedDashboard);
 
   useEffect(() => {
-    if (isDashboardLoaded) {
+    if (isEphemeral) {
+      setDashboard({
+        id,
+        name: "Ephemeral",
+        organizationId: "",
+        resourceId: resourceId as string,
+        resourceType: resourceType as string,
+        rangeBegin: rangeBegin as string,
+        rangeEnd: rangeEnd as string,
+        symptoms: symptoms as string,
+        data: {},
+        observationTimestamp: new Date().toISOString(),
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString(),
+      });
+    }
+  }, [isEphemeral, id, resourceId, resourceType, rangeBegin, rangeEnd, symptoms]);
+
+  // Update dashboard when persistedDashboard changes
+  useEffect(() => {
+    if (!isEphemeral && persistedDashboard) {
+      setDashboard(persistedDashboard);
+    }
+  }, [persistedDashboard, isEphemeral]);
+
+  useEffect(() => {
+    if (isDashboardLoaded && dashboard) {
       if (Object.entries(dashboard.data).length > 0) {
         // If we have saved content from the backend, use it
         setDashboardContents(dashboard.data as DashboardContents);
@@ -55,7 +91,14 @@ export const useDashboard = ({ id }: UseDashboardParams) => {
         setUseHotshot(true);
       }
     }
-  }, [isDashboardLoaded]);
+  }, [isDashboardLoaded, dashboard]);
+
+  useHotshotDashboard({
+    dashboard,
+    useHotshot,
+    setDashboardContents,
+    setLoadingComplete,
+  });
 
   // Debounce to limit backend requests as Hotshot data comes in
   useEffect(() => {
@@ -120,13 +163,13 @@ const useHotshotDashboard = ({
     useHotshot,
   );
 
-  useEffect(() => {
-    if (event) {
-      setDashboardContents((prevDashboard) =>
-        handleDashboardEvent(prevDashboard, event),
-      );
-    }
-  }, [JSON.stringify(event)]);
+  // useEffect(() => {
+  //   if (event) {
+  //     setDashboardContents((prevDashboard) =>
+  //       handleDashboardEvent(prevDashboard, event),
+  //     );
+  //   }
+  // }, [JSON.stringify(event)]);
 
   useEffect(() => {
     if (wsReadyState === ReadyState.CLOSED) {

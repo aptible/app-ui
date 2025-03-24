@@ -3,7 +3,7 @@ import { useDispatch, useSelector } from "@app/react";
 import { diagnosticsUrl } from "@app/routes";
 import { selectTokenHasWriteAccess } from "@app/token";
 import { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import { useParams, useSearchParams } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
 import { useDashboard } from "../hooks/use-dashboard";
 import { AppSidebarLayout } from "../layouts";
@@ -22,8 +22,21 @@ import { DiagnosticsResource } from "../shared/diagnostics/resource";
 
 export const DiagnosticsDetailPage = () => {
   const { id = "" } = useParams();
+
+  const [searchParams] = useSearchParams();
+  const resourceId = searchParams.get("resourceId") ?? undefined;
+  const resourceType = searchParams.get("resourceType") ?? undefined;
+  const symptoms = searchParams.get("symptoms") ?? undefined;
+  const rangeBegin = searchParams.get("rangeBegin") ?? undefined;
+  const rangeEnd = searchParams.get("rangeEnd") ?? undefined;
+
   const { dashboard, dashboardContents, loadingComplete } = useDashboard({
     id,
+    resourceId,
+    resourceType,
+    symptoms,
+    rangeBegin,
+    rangeEnd,
   });
   const [dashboardName, setDashboardName] = useState(dashboard.name);
   const [showAllMessages, setShowAllMessages] = useState(false);
@@ -175,7 +188,7 @@ export const DiagnosticsDetailPage = () => {
                               title: " ",
                               labels:
                                 plot.series[0]?.points.map(
-                                  (point) => point.timestamp,
+                                  (point) => point.timestamp
                                 ) || [],
                               datasets: plot.series.map((series) => ({
                                 label: series.label,
@@ -196,7 +209,7 @@ export const DiagnosticsDetailPage = () => {
                         </div>
                       </div>
                     </div>
-                  ),
+                  )
                 )}
               </div>
             </>
@@ -214,7 +227,7 @@ export const DiagnosticsDetailPage = () => {
                   endTime={dashboard.rangeEnd}
                   synchronizedHoverContext={HoverContext}
                 />
-              ),
+              )
             )}
           </div>
         </HoverContext.Provider>
