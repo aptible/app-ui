@@ -5137,7 +5137,8 @@ __metadata:
 "react-use-websocket@npm:^4.11.1":
   version: 4.11.1
   resolution: "react-use-websocket@npm:4.11.1"
-  checksum: 8104c2a5c1e5cd32a152a1f03cfa7786a629e72e997fd5ee5b9be4f8fdeef75913e2af2c8689b0aaae37087ba5cf2be3fb69d2bb3282e3a92c8f3f2f88fc7709  languageName: node
+  checksum: 8104c2a5c1e5cd32a152a1f03cfa7786a629e72e997fd5ee5b9be4f8fdeef75913e2af2c8689b0aaae37087ba5cf2be3fb69d2bb3282e3a92c8f3f2f88fc7709
+  languageName: node
   linkType: hard
 
 "react@npm:^18.2.0, react@npm:^18.3.1":
