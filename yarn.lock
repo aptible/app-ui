@@ -2165,7 +2165,7 @@ __metadata:
     react-dom: ^18.3.1
     react-router: ^7.0.2
     react-router-dom: ^7.0.2
-    react-use-websocket: ^4.11.1
+    react-use-websocket: ^4.13.0
     starfx: ^0.13.4
     tailwindcss: ^3.4.16
     typescript: ^5.7.2
@@ -5134,10 +5134,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react-use-websocket@npm:^4.11.1":
-  version: 4.11.1
-  resolution: "react-use-websocket@npm:4.11.1"
-  checksum: 8104c2a5c1e5cd32a152a1f03cfa7786a629e72e997fd5ee5b9be4f8fdeef75913e2af2c8689b0aaae37087ba5cf2be3fb69d2bb3282e3a92c8f3f2f88fc7709
+"react-use-websocket@npm:^4.13.0":
+  version: 4.13.0
+  resolution: "react-use-websocket@npm:4.13.0"
+  checksum: 9f6061ecc43b5dfc63199d05be4ad4f19eb6566c6fd54373a54bfe55262096a0f2a5994cf8bafde8df99ef99649593975b7b30ca8f317bcec776f88e0aa04b04
   languageName: node
   linkType: hard
 

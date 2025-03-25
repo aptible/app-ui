@@ -24,6 +24,7 @@ import {
   EmptyTr,
   FilterBar,
   Group,
+  IconChevronDown,
   IconPlusCircle,
   InputSearch,
   LoadingBar,
@@ -37,6 +38,7 @@ import {
   TitleBar,
   Tr,
 } from "../shared";
+import { useState, useMemo } from "react";
 
 export function StacksPage() {
   return (
@@ -83,15 +85,83 @@ function StackList() {
   const { isLoading } = useLoader(fetchStacks());
   const [params, setParams] = useSearchParams();
   const search = params.get("search") || "";
+  const [sortKey, setSortKey] = useState<keyof DeployStackRow | "envCount" | "appCount" | "dbCount">("name");
+  const [sortDirection, setSortDirection] = useState<"asc" | "desc">("asc");
+
   const onChange = (ev: React.ChangeEvent<HTMLInputElement>) => {
     setParams({ search: ev.currentTarget.value }, { replace: true });
   };
+
+  const onSort = (key: keyof DeployStackRow | "envCount" | "appCount" | "dbCount") => {
+    if (sortKey === key) {
+      setSortDirection(sortDirection === "asc" ? "desc" : "asc");
+    } else {
+      setSortKey(key);
+      setSortDirection("asc");
+    }
+  };
+
   const stacks = useSelector((s) =>
     selectStacksForTableSearch(s, {
       search,
+      sortKey: sortKey as keyof DeployStackRow,
+      sortDirection,
     }),
   );
-  const paginated = usePaginate(stacks);
+
+  const envCounts = useSelector((s) => {
+    const counts = new Map<string, number>();
+    stacks.forEach((stack) => {
+      counts.set(stack.id, selectEnvironmentsCountByStack(s, { stackId: stack.id }));
+    });
+    return counts;
+  });
+
+  const appCounts = useSelector((s) => {
+    const counts = new Map<string, number>();
+    stacks.forEach((stack) => {
+      counts.set(stack.id, selectAppsCountByStack(s, { stackId: stack.id }));
+    });
+    return counts;
+  });
+
+  const dbCounts = useSelector((s) => {
+    const counts = new Map<string, number>();
+    stacks.forEach((stack) => {
+      counts.set(stack.id, selectDatabasesCountByStack(s, { stackId: stack.id }));
+    });
+    return counts;
+  });
+
+  const sortedStacks = useMemo(() => {
+    if (sortKey === "envCount" || sortKey === "appCount" || sortKey === "dbCount") {
+      return [...stacks].sort((a, b) => {
+        const aCount = sortKey === "envCount"
+          ? envCounts.get(a.id) || 0
+          : sortKey === "appCount"
+          ? appCounts.get(a.id) || 0
+          : dbCounts.get(a.id) || 0;
+        const bCount = sortKey === "envCount"
+          ? envCounts.get(b.id) || 0
+          : sortKey === "appCount"
+          ? appCounts.get(b.id) || 0
+          : dbCounts.get(b.id) || 0;
+        return sortDirection === "asc" ? aCount - bCount : bCount - aCount;
+      });
+    }
+    return stacks;
+  }, [stacks, sortKey, sortDirection, envCounts, appCounts, dbCounts]);
+
+  const paginated = usePaginate(sortedStacks);
+
+  const SortIcon = () => (
+    <div className="inline-block">
+      <IconChevronDown
+        variant="sm"
+        className="top-1 -ml-1 relative group-hover:opacity-100 opacity-50"
+      />
+    </div>
+  );
 
   return (
     <Group>
@@ -128,21 +198,58 @@ function StackList() {
 
       <Table>
         <THead>
-          <Th>Name</Th>
-          <Th>ID</Th>
-          <Th>Region</Th>
+          <Th
+            className="cursor-pointer hover:text-black group"
+            onClick={() => onSort("name")}
+          >
+            Name <SortIcon />
+          </Th>
+          <Th
+            className="cursor-pointer hover:text-black group"
+            onClick={() => onSort("id")}
+          >
+            ID <SortIcon />
+          </Th>
+          <Th
+            className="cursor-pointer hover:text-black group"
+            onClick={() => onSort("region")}
+          >
+            Region <SortIcon />
+          </Th>
           <Th>Type</Th>
           <Th>Enabled Limits</Th>
-          <Th variant="center">Environments</Th>
-          <Th variant="center">Apps</Th>
-          <Th variant="center">Databases</Th>
-          <Th className="flex space-x-2">
+          <Th
+            className="cursor-pointer hover:text-black group"
+            onClick={() => onSort("envCount")}
+            variant="center"
+          >
+            Environments <SortIcon />
+          </Th>
+          <Th
+            className="cursor-pointer hover:text-black group"
+            onClick={() => onSort("appCount")}
+            variant="center"
+          >
+            Apps <SortIcon />
+          </Th>
+          <Th
+            className="cursor-pointer hover:text-black group"
+            onClick={() => onSort("dbCount")}
+            variant="center"
+          >
+            Databases <SortIcon />
+          </Th>
+          <Th
+            className="cursor-pointer hover:text-black group flex space-x-2"
+            onClick={() => onSort("cost")}
+          >
             <div>Est. Monthly Cost</div>
+            <SortIcon />
           </Th>
         </THead>
 
         <TBody>
-          {paginated.data.length === 0 ? <EmptyTr colSpan={8} /> : null}
+          {paginated.data.length === 0 ? <EmptyTr colSpan={9} /> : null}
           {paginated.data.map((stack) => (
             <StackListRow key={stack.id} stack={stack} />
           ))}
