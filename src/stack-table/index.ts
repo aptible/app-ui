@@ -53,9 +53,30 @@ const createStackSortFn = (
 
 export const selectStacksForTableSearch = createSelector(
   selectStacksByOrgAsList,
-  (_: WebState, p: { search: string; sortKey: keyof DeployStackRow; sortDirection: "asc" | "desc" }) => p.search,
-  (_: WebState, p: { search: string; sortKey: keyof DeployStackRow; sortDirection: "asc" | "desc" }) => p.sortKey,
-  (_: WebState, p: { search: string; sortKey: keyof DeployStackRow; sortDirection: "asc" | "desc" }) => p.sortDirection,
+  (
+    _: WebState,
+    p: {
+      search: string;
+      sortKey: keyof DeployStackRow;
+      sortDirection: "asc" | "desc";
+    },
+  ) => p.search,
+  (
+    _: WebState,
+    p: {
+      search: string;
+      sortKey: keyof DeployStackRow;
+      sortDirection: "asc" | "desc";
+    },
+  ) => p.sortKey,
+  (
+    _: WebState,
+    p: {
+      search: string;
+      sortKey: keyof DeployStackRow;
+      sortDirection: "asc" | "desc";
+    },
+  ) => p.sortDirection,
   schema.costs.selectTable,
   (stacks, search, sortKey, sortDirection, costs): DeployStackRow[] => {
     let results = stacks;

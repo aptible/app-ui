@@ -13,6 +13,7 @@ import {
   type DeployStackRow,
   selectStacksForTableSearch,
 } from "@app/stack-table";
+import { useMemo, useState } from "react";
 import { useSearchParams } from "react-router-dom";
 import { usePaginate } from "../hooks";
 import { AppSidebarLayout } from "../layouts";
@@ -38,7 +39,6 @@ import {
   TitleBar,
   Tr,
 } from "../shared";
-import { useState, useMemo } from "react";
 
 export function StacksPage() {
   return (
@@ -85,14 +85,18 @@ function StackList() {
   const { isLoading } = useLoader(fetchStacks());
   const [params, setParams] = useSearchParams();
   const search = params.get("search") || "";
-  const [sortKey, setSortKey] = useState<keyof DeployStackRow | "envCount" | "appCount" | "dbCount">("name");
+  const [sortKey, setSortKey] = useState<
+    keyof DeployStackRow | "envCount" | "appCount" | "dbCount"
+  >("name");
   const [sortDirection, setSortDirection] = useState<"asc" | "desc">("asc");
 
   const onChange = (ev: React.ChangeEvent<HTMLInputElement>) => {
     setParams({ search: ev.currentTarget.value }, { replace: true });
   };
 
-  const onSort = (key: keyof DeployStackRow | "envCount" | "appCount" | "dbCount") => {
+  const onSort = (
+    key: keyof DeployStackRow | "envCount" | "appCount" | "dbCount",
+  ) => {
     if (sortKey === key) {
       setSortDirection(sortDirection === "asc" ? "desc" : "asc");
     } else {
@@ -112,7 +116,10 @@ function StackList() {
   const envCounts = useSelector((s) => {
     const counts = new Map<string, number>();
     stacks.forEach((stack) => {
-      counts.set(stack.id, selectEnvironmentsCountByStack(s, { stackId: stack.id }));
+      counts.set(
+        stack.id,
+        selectEnvironmentsCountByStack(s, { stackId: stack.id }),
+      );
     });
     return counts;
   });
@@ -128,24 +135,33 @@ function StackList() {
   const dbCounts = useSelector((s) => {
     const counts = new Map<string, number>();
     stacks.forEach((stack) => {
-      counts.set(stack.id, selectDatabasesCountByStack(s, { stackId: stack.id }));
+      counts.set(
+        stack.id,
+        selectDatabasesCountByStack(s, { stackId: stack.id }),
+      );
     });
     return counts;
   });
 
   const sortedStacks = useMemo(() => {
-    if (sortKey === "envCount" || sortKey === "appCount" || sortKey === "dbCount") {
+    if (
+      sortKey === "envCount" ||
+      sortKey === "appCount" ||
+      sortKey === "dbCount"
+    ) {
       return [...stacks].sort((a, b) => {
-        const aCount = sortKey === "envCount"
-          ? envCounts.get(a.id) || 0
-          : sortKey === "appCount"
-          ? appCounts.get(a.id) || 0
-          : dbCounts.get(a.id) || 0;
-        const bCount = sortKey === "envCount"
-          ? envCounts.get(b.id) || 0
-          : sortKey === "appCount"
-          ? appCounts.get(b.id) || 0
-          : dbCounts.get(b.id) || 0;
+        const aCount =
+          sortKey === "envCount"
+            ? envCounts.get(a.id) || 0
+            : sortKey === "appCount"
+              ? appCounts.get(a.id) || 0
+              : dbCounts.get(a.id) || 0;
+        const bCount =
+          sortKey === "envCount"
+            ? envCounts.get(b.id) || 0
+            : sortKey === "appCount"
+              ? appCounts.get(b.id) || 0
+              : dbCounts.get(b.id) || 0;
         return sortDirection === "asc" ? aCount - bCount : bCount - aCount;
       });
     }
