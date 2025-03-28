@@ -101,7 +101,7 @@ export const selectCustomResourcesByOrgAsList = createSelector(
   },
 );
 
-export const fetchCustomResources = api.get("/custom_resources");
+export const fetchCustomResources = api.get("/custom_resources?per_page=5000");
 
 export const fetchCustomResource = api.get<{ id: string }>(
   "/custom_resources/:id",
