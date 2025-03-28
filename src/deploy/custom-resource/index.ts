@@ -101,9 +101,11 @@ export const selectCustomResourcesByOrgAsList = createSelector(
   },
 );
 
-export const fetchCustomResources = api.get("/custom_resources?per_page=5000", {
-  supervisor: cacheMinTimer(),
-},
+export const fetchCustomResources = api.get(
+  "/custom_resources?per_page=5000",
+  {
+    supervisor: cacheMinTimer(),
+  },
   function* (ctx, next) {
     yield* next();
     if (!ctx.json.ok) {
