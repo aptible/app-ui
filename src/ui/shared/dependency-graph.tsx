@@ -281,7 +281,7 @@ const getAllNodes = (
 
 const getAllEdges = (edges: DeployEdge[]): Edge[] => {
   return edges
-    .filter((edge) => edge.sourceResourceType !== edge.destinationResourceType)
+    .filter((edge) => edge.sourceResourceId !== edge.destinationResourceId)
     .map((edge) => ({
       id: edge.id,
       source: generateGraphId(edge.sourceResourceType, edge.sourceResourceId),
