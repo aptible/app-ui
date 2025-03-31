@@ -1,4 +1,4 @@
-import { api } from "@app/api";
+import { api, cacheMinTimer } from "@app/api";
 import { createSelector } from "@app/fx";
 import { defaultEntity, extractIdFromLink } from "@app/hal";
 import { selectOrganizationSelectedId } from "@app/organizations";
@@ -101,7 +101,19 @@ export const selectCustomResourcesByOrgAsList = createSelector(
   },
 );
 
-export const fetchCustomResources = api.get("/custom_resources");
+export const fetchCustomResources = api.get(
+  "/custom_resources?per_page=5000",
+  {
+    supervisor: cacheMinTimer(),
+  },
+  function* (ctx, next) {
+    yield* next();
+    if (!ctx.json.ok) {
+      return;
+    }
+    yield* schema.update(schema.customResources.reset());
+  },
+);
 
 export const fetchCustomResource = api.get<{ id: string }>(
   "/custom_resources/:id",
