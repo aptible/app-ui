@@ -17,6 +17,7 @@ import {
   TitleBar,
 } from "../shared";
 import { DependencyGraph } from "../shared/dependency-graph";
+import { DiagnosticsCreateForm } from "./diagnostics-create";
 
 export const CustomResourceDetailPage = () => {
   const { id = "" } = useParams();
@@ -74,6 +75,14 @@ export const CustomResourceDetailPage = () => {
       <Box>
         <h2 className="text-lg font-medium mb-4">Relationships</h2>
         <DependencyGraph resourceItem={resourceItem} />
+      </Box>
+
+      <Box>
+        <DiagnosticsCreateForm
+          resourceId={id}
+          resourceType="CustomResource"
+          resourceName={resource.handle}
+        />
       </Box>
 
       <Group className="mt-4 flex w-fit">
