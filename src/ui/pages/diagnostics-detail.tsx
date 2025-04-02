@@ -15,11 +15,11 @@ import {
   IconTrash,
   Tooltip,
 } from "../shared";
+import { DiagnosticsSummaryDependencyGraph } from "../shared/dependencies";
 import { HoverContext } from "../shared/diagnostics/hover";
 import { DiagnosticsLineChart } from "../shared/diagnostics/line-chart";
 import { DiagnosticsMessages } from "../shared/diagnostics/messages";
 import { DiagnosticsResource } from "../shared/diagnostics/resource";
-
 export const DiagnosticsDetailPage = () => {
   const { id = "" } = useParams();
   const { dashboard, dashboardContents, loadingComplete } = useDashboard({
@@ -199,6 +199,8 @@ export const DiagnosticsDetailPage = () => {
                   ),
                 )}
               </div>
+              <h2 className="text-lg font-semibold my-2">Dependency Graph</h2>
+              <DiagnosticsSummaryDependencyGraph dashboard={dashboard} />
             </>
           )}
 
