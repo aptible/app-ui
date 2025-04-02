@@ -3,6 +3,7 @@ import { selectAptibleAiUrl } from "@app/config";
 import { updateDashboard } from "@app/deploy/dashboard";
 import { fetchDashboard, selectDashboardById } from "@app/deploy/dashboard";
 import { useDispatch, useQuery, useSelector } from "@app/react";
+import { camelToSnakeCase } from "@app/string-utils";
 import { selectAccessToken } from "@app/token";
 import type { DeployDashboard } from "@app/types/deploy";
 import { useEffect, useState } from "react";
@@ -109,6 +110,7 @@ const useHotshotDashboard = ({
       queryParams: {
         token: accessToken,
         resource_id: dashboard.resourceId,
+        resource_type: camelToSnakeCase(dashboard.resourceType),
         symptom_description: dashboard.symptoms,
         start_time: dashboard.rangeBegin,
         end_time: dashboard.rangeEnd,
