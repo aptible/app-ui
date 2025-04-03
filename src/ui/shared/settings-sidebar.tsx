@@ -169,7 +169,7 @@ export function SettingsSidebar() {
 
         {(hasBetaFeatures || hasDiagnosticsPoc) && (
           <NavLink className={navLink} to={teamLlmIntegrationsUrl()}>
-            AI/LLM Integrations
+            LLM Integrations
           </NavLink>
         )}
 

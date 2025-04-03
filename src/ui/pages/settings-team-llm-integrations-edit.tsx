@@ -15,7 +15,7 @@ import {
 } from "@app/react";
 import { teamLlmIntegrationsUrl } from "@app/routes";
 import type { DeployLlmIntegration } from "@app/types";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { useValidator } from "../hooks";
 import {
@@ -48,9 +48,9 @@ const validators = {
       (type === "OpenaiIntegration" ||
         type === "AzureIntegration" ||
         type === "AnthropicIntegration") &&
-      !data.api_key
+      data.api_key === "" // Only error if explicitly set to empty string
     ) {
-      return "API Key is required";
+      return "API Key cannot be empty if you intend to change it";
     }
     return undefined;
   },
@@ -96,7 +96,7 @@ const validators = {
 // Format provider type for display
 function formatProviderType(type: string): string {
   if (type === "OpenaiIntegration") return "OpenAI";
-  if (type === "AzureIntegration") return "Azure OpenAI";
+  if (type === "AzureIntegration") return "Azure";
   if (type === "AnthropicIntegration") return "Anthropic";
   if (type === "BedrockIntegration") return "AWS Bedrock";
   return type.replace("Integration", "");
@@ -195,7 +195,7 @@ function AzureForm({
           onChange={(e) =>
             setFormData({ ...formData, base_url: e.currentTarget.value })
           }
-          placeholder="e.g., https://your-resource.openai.azure.com/openai"
+          placeholder="e.g., https://example-endpoint.openai.azure.com"
         />
       </FormGroup>
 
@@ -356,24 +356,24 @@ function IntegrationForm({
 }) {
   // Form state
   const [formData, setFormData] = useState<FormData>({
-    api_key: "",
+    api_key: undefined, // Initialize as undefined
     base_url: integration.baseUrl,
     openai_organization: integration.openaiOrganization,
     api_version: integration.apiVersion,
     aws_access_key_id: integration.awsAccessKeyId,
-    aws_secret_access_key: "",
+    aws_secret_access_key: undefined, // Initialize as undefined
     aws_region: integration.awsRegion,
   });
 
   // Update form data when integration data loads
   useEffect(() => {
     setFormData({
-      api_key: "", // Don't prefill sensitive data
+      api_key: undefined, // Don't prefill sensitive data, start as undefined
       base_url: integration.baseUrl,
       openai_organization: integration.openaiOrganization,
       api_version: integration.apiVersion,
       aws_access_key_id: integration.awsAccessKeyId,
-      aws_secret_access_key: "", // Don't prefill sensitive data
+      aws_secret_access_key: undefined, // Don't prefill sensitive data, start as undefined
       aws_region: integration.awsRegion,
     });
   }, [
@@ -385,16 +385,38 @@ function IntegrationForm({
     integration.awsRegion,
   ]);
 
-  // Validation
-  const [errors, validate] = useValidator<FormData, typeof validators>(
-    validators,
+  // Create dynamic validators based on the integration type
+  const dynamicValidators = useMemo(() => {
+    const type = integration.providerType;
+    const currentValidators: Partial<
+      Record<keyof FormData, (data: FormData) => string | undefined>
+    > = {};
+    for (const key in validators) {
+      if (Object.prototype.hasOwnProperty.call(validators, key)) {
+        const validatorKey = key as keyof typeof validators;
+        const originalValidator = validators[validatorKey];
+        // Bind the provider type to each validator function
+        currentValidators[validatorKey] = (data: FormData) =>
+          originalValidator(data, type);
+      }
+    }
+
+    return currentValidators as Record<
+      keyof FormData,
+      (data: FormData) => string | undefined
+    >;
+  }, [integration.providerType]);
+
+  // Pass the dynamic validators to the hook
+  const [errors, validate] = useValidator<FormData, typeof dynamicValidators>(
+    dynamicValidators,
   );
 
   // Form submission handler
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    // Validate form with the selected provider type
-    if (!validate(formData, integration.providerType)) {
+    // Validate form using the dynamic validators (now only needs formData)
+    if (!validate(formData)) {
       return;
     }
     onSubmit(formData);

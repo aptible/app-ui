@@ -65,8 +65,8 @@ export function SettingsTeamLlmIntegrationsPage() {
 
   return (
     <Group>
-      <TitleBar description="Manage AI/LLM integrations for advanced features">
-        AI/LLM Integrations
+      <TitleBar description="Manage LLM integrations for advanced features">
+        LLM Integrations
       </TitleBar>
 
       <div className="flex justify-end mb-4">
@@ -87,7 +87,7 @@ export function SettingsTeamLlmIntegrationsPage() {
         <TBody>
           {integrations.length === 0 ? (
             <EmptyTr colSpan={2}>
-              No LLM integrations found. Add an integration to use AI features.
+              No LLM integrations found. Add an integration to use LLM features.
             </EmptyTr>
           ) : (
             integrations.map((integration) => (

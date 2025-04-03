@@ -25,7 +25,7 @@ import {
 const LLM_INTEGRATION_TYPES = [
   { value: "", label: "Select LLM Provider" },
   { value: "OpenaiIntegration", label: "OpenAI" },
-  { value: "AzureIntegration", label: "Azure OpenAI" },
+  { value: "AzureIntegration", label: "Azure" },
   { value: "AnthropicIntegration", label: "Anthropic" },
   { value: "BedrockIntegration", label: "AWS Bedrock" },
 ];
@@ -192,7 +192,7 @@ function AzureForm({
           onChange={(e) =>
             setFormData({ ...formData, base_url: e.currentTarget.value })
           }
-          placeholder="e.g., https://your-resource.openai.azure.com/openai"
+          placeholder="e.g., https://example-endpoint.openai.azure.com"
         />
       </FormGroup>
 
@@ -423,7 +423,7 @@ export function SettingsTeamLlmIntegrationsAddPage() {
       <Breadcrumbs
         crumbs={[
           {
-            name: "AI/LLM Integrations",
+            name: "LLM Integrations",
             to: teamLlmIntegrationsUrl(),
           },
           { name: "Add LLM Integration", to: null },
