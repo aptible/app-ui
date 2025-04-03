@@ -355,12 +355,17 @@ export const CustomResourceDiagnosticsCreateForm = () => {
   const resource = useSelector((s) =>
     selectCustomResourceById(s, { id: resourceId }),
   );
+  const resourceOptions = useMemo(() => {
+    return resources
+      .map((r) => ({ label: r.handle, value: r.id }))
+      .sort((a, b) => a.label.localeCompare(b.label));
+  }, [resources]);
 
   useEffect(() => {
-    if (resources.length > 0) {
-      setResourceId(resources[0].id);
+    if (resourceOptions.length > 0) {
+      setResourceId(resourceOptions[0].value);
     }
-  }, [resources]);
+  }, [resourceOptions]);
 
   return (
     <>
@@ -374,7 +379,7 @@ export const CustomResourceDiagnosticsCreateForm = () => {
         className="mb-4"
       >
         <Select
-          options={resources.map((r) => ({ label: r.handle, value: r.id }))}
+          options={resourceOptions}
           onSelect={(o) => setResourceId(o.value)}
           value={resourceId}
         />
