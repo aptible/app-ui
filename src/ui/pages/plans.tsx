@@ -45,7 +45,6 @@ export const PlansPage = () => {
   const onSelectPlan = ({ planId, name }: { planId: string; name: string }) => {
     dispatch(
       updateActivePlan({
-        id: activePlan.id,
         planId,
         name,
       }),

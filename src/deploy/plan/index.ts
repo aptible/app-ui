@@ -245,13 +245,12 @@ export const fetchActivePlans = api.get<{ orgId: string }>(
 );
 
 interface UpdateActivePlan {
-  id: string;
   planId: string;
   name: string;
 }
 
 export const updateActivePlan = api.put<UpdateActivePlan>(
-  "/active_plans/:id",
+  "/active_plans/update_by_organization",
   function* (ctx, next) {
     const { planId } = ctx.payload;
     const body = {
@@ -265,7 +264,6 @@ export const updateActivePlan = api.put<UpdateActivePlan>(
       return;
     }
 
-    yield* schema.update(schema.activePlans.remove([ctx.payload.id]));
     const name = capitalize(ctx.payload.name);
     ctx.loader = {
       message: `Successfully updated plan to ${name}.`,
