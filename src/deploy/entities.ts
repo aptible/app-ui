@@ -18,6 +18,7 @@ import { endpointEntities } from "./endpoint";
 import { environmentEntities } from "./environment";
 import { imageEntities } from "./image";
 import { integrationEntities } from "./integration";
+import { llmIntegrationEntities } from "./llm-integration";
 import { logDrainEntities } from "./log-drain";
 import { manualScaleRecommendationEntities } from "./manual_scale_recommendation";
 import { metricDrainEntities } from "./metric-drain";
@@ -65,4 +66,5 @@ export const entities = {
   ...customResourceEntities,
   ...edgeEntities,
   ...integrationEntities,
+  ...llmIntegrationEntities,
 };

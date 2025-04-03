@@ -23,6 +23,7 @@ import {
   type DeployEnvironmentStats,
   type DeployImage,
   type DeployIntegration,
+  type DeployLlmIntegration,
   type DeployLogDrain,
   type DeployMetricDrain,
   type DeployOperation,
@@ -1032,6 +1033,27 @@ export const defaultDeployIntegration = (
     port: "",
     username: "",
     database: "",
+    createdAt: now,
+    updatedAt: now,
+    ...i,
+  };
+};
+
+export const defaultDeployLlmIntegration = (
+  i: Partial<DeployLlmIntegration> = {},
+): DeployLlmIntegration => {
+  const now = new Date().toISOString();
+  return {
+    id: "",
+    providerType: "OpenaiIntegration", // Default type
+    organizationId: "",
+    apiKey: "",
+    baseUrl: "",
+    openaiOrganization: "",
+    apiVersion: "",
+    awsAccessKeyId: "",
+    awsSecretAccessKey: "",
+    awsRegion: "",
     createdAt: now,
     updatedAt: now,
     ...i,

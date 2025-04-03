@@ -103,5 +103,8 @@ export const [schema, initialState] = createSchema({
   }),
   edges: slice.table({ empty: factory.defaultDeployEdge() }),
   integrations: slice.table({ empty: factory.defaultDeployIntegration() }),
+  llmIntegrations: slice.table({
+    empty: factory.defaultDeployLlmIntegration(),
+  }),
 });
 export type WebState = typeof initialState;
