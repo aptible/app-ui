@@ -118,7 +118,7 @@ export const createDashboard = api.post<
   };
 });
 
-export const fetchDashboards = api.get("/dashboards");
+export const fetchDashboards = api.get("/dashboards?per_page=500&no_data=true");
 
 export const fetchDashboard = api.get<{ id: string }, DeployDashboardResponse>(
   "/dashboards/:id",
