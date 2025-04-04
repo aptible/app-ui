@@ -16,7 +16,7 @@ import {
   Input,
   TitleBar,
 } from "../shared";
-import { DependencyGraph } from "../shared/dependency-graph";
+import { SingleResourceDependencyGraph } from "../shared/dependencies";
 import { DiagnosticsCreateForm } from "./diagnostics-create";
 
 export const CustomResourceDetailPage = () => {
@@ -74,7 +74,7 @@ export const CustomResourceDetailPage = () => {
 
       <Box>
         <h2 className="text-lg font-medium mb-4">Relationships</h2>
-        <DependencyGraph resourceItem={resourceItem} />
+        <SingleResourceDependencyGraph resourceItem={resourceItem} />
       </Box>
 
       <Box>
