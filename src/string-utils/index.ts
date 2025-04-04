@@ -43,7 +43,9 @@ export const stringSort = (a = "", b = "") => {
 
 // https://stackoverflow.com/a/54246501/1713216
 export const camelToSnakeCase = (str: string) =>
-  str.replace(/[A-Z]/g, (letter) => `_${letter.toLowerCase()}`);
+  str
+    .replace(/[A-Z]/g, (letter) => `_${letter.toLowerCase()}`)
+    .replace(/^_/, "");
 
 export const snakeToCamelCase = (str: string) =>
   str.replace(/_(\w)/g, (_substr, letter) => letter.toUpperCase());

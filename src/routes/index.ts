@@ -423,6 +423,16 @@ export const TEAM_DIAGNOSTICS_INTEGRATIONS_EDIT_PATH =
 export const teamDiagnosticsIntegrationsEditUrl = (id: string) =>
   `/settings/team/diagnostics-integrations/${id}/edit`;
 
+export const TEAM_LLM_INTEGRATIONS_PATH = "/settings/team/llm-integrations";
+export const teamLlmIntegrationsUrl = () => TEAM_LLM_INTEGRATIONS_PATH;
+export const TEAM_LLM_INTEGRATIONS_ADD_PATH =
+  "/settings/team/llm-integrations/add";
+export const teamLlmIntegrationsAddUrl = () => TEAM_LLM_INTEGRATIONS_ADD_PATH;
+export const TEAM_LLM_INTEGRATIONS_EDIT_PATH =
+  "/settings/team/llm-integrations/:id/edit";
+export const teamLlmIntegrationsEditUrl = (id: string) =>
+  `/settings/team/llm-integrations/${id}/edit`;
+
 export const CUSTOM_RESOURCES_URL = "/custom-resources";
 export const customResourcesUrl = () => CUSTOM_RESOURCES_URL;
 export const CUSTOM_RESOURCE_DETAIL_URL = "/custom-resources/:id";

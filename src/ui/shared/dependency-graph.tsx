@@ -60,7 +60,7 @@ export const DependencyGraph = ({ resourceItem }: DependencyGraphProps) => {
 
   const edges = useSelector((s) =>
     selectEdgesForResource(s, {
-      resourceId: resourceItem.id,
+      resourceId: "",
       resourceType: resourceItem.type,
     }),
   );

@@ -47,8 +47,8 @@ export function ServicePricingCalc({
         <Label>Estimated Cost Breakdown</Label>
         <div className="grid grid-cols-[auto,1fr] gap-x-3 text-black-500">
           <div>
-            1 x {service.containerMemoryLimitMb / 1024} GB container x{" "}
-            {formatCurrency(costPerGBHour)} per GB/hour
+            {service.containerCount} x {service.containerMemoryLimitMb / 1024}{" "}
+            GB container x {formatCurrency(costPerGBHour)} per GB/hour
           </div>
           <div>= {formatCurrency(containerCost)}/month</div>
           {disk == null ? null : (

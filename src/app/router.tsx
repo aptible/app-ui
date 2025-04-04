@@ -160,6 +160,9 @@ import { SettingsProfilePage } from "@app/ui/pages/settings-profile";
 import { SettingsTeamDiagnosticsIntegrationsPage } from "@app/ui/pages/settings-team-diagnostics-integrations";
 import { SettingsTeamDiagnosticsIntegrationsAddPage } from "@app/ui/pages/settings-team-diagnostics-integrations-add";
 import { SettingsTeamDiagnosticsIntegrationsEditPage } from "@app/ui/pages/settings-team-diagnostics-integrations-edit";
+import { SettingsTeamLlmIntegrationsPage } from "@app/ui/pages/settings-team-llm-integrations";
+import { SettingsTeamLlmIntegrationsAddPage } from "@app/ui/pages/settings-team-llm-integrations-add";
+import { SettingsTeamLlmIntegrationsEditPage } from "@app/ui/pages/settings-team-llm-integrations-edit";
 import { SourcesSetupPage } from "@app/ui/pages/sources-setup";
 import { type RouteObject, createBrowserRouter } from "react-router-dom";
 import { Tuna } from "./tuna";
@@ -959,6 +962,21 @@ export const appRoutes: RouteObject[] = [
       {
         path: routes.TEAM_DIAGNOSTICS_INTEGRATIONS_EDIT_PATH,
         element: <SettingsTeamDiagnosticsIntegrationsEditPage />,
+      },
+
+      {
+        path: routes.TEAM_LLM_INTEGRATIONS_PATH,
+        element: <SettingsTeamLlmIntegrationsPage />,
+      },
+
+      {
+        path: routes.TEAM_LLM_INTEGRATIONS_ADD_PATH,
+        element: <SettingsTeamLlmIntegrationsAddPage />,
+      },
+
+      {
+        path: routes.TEAM_LLM_INTEGRATIONS_EDIT_PATH,
+        element: <SettingsTeamLlmIntegrationsEditPage />,
       },
 
       {

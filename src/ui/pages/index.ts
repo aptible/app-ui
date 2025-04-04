@@ -127,3 +127,6 @@ export * from "./custom-resource-detail";
 export * from "./settings-team-diagnostics-integrations";
 export * from "./settings-team-diagnostics-integrations-add";
 export * from "./settings-team-diagnostics-integrations-edit";
+export * from "./settings-team-llm-integrations";
+export * from "./settings-team-llm-integrations-add";
+export * from "./settings-team-llm-integrations-edit";

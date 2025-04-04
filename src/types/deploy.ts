@@ -196,6 +196,7 @@ export type ResourceType =
   | "vpn_tunnel"
   | "edge"
   | "integration"
+  | "llm_integration"
   | "unknown";
 
 // https://github.com/aptible/deploy-api/blob/3b197beaa5bcbbed991c1eac73d5c99a4fdf8f95/app/models/operation.rb#L54
@@ -797,4 +798,36 @@ export interface DeployIntegrationResponse {
     self: LinkResponse;
   };
   _type: "integration";
+}
+
+export interface DeployLlmIntegration extends Timestamps {
+  id: string;
+  providerType: string;
+  organizationId: string;
+  apiKey?: string;
+  baseUrl?: string;
+  openaiOrganization?: string;
+  apiVersion?: string;
+  awsAccessKeyId?: string;
+  awsSecretAccessKey?: string;
+  awsRegion?: string;
+}
+
+export interface DeployLlmIntegrationResponse {
+  id: string;
+  provider_type: string;
+  organization_id: string;
+  api_key?: string;
+  base_url?: string;
+  openai_organization?: string;
+  api_version?: string;
+  aws_access_key_id?: string;
+  aws_secret_access_key?: string;
+  aws_region?: string;
+  created_at: string;
+  updated_at: string;
+  _links: {
+    self: LinkResponse;
+  };
+  _type: "llm_integration";
 }
