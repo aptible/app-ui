@@ -15,6 +15,7 @@ import {
   teamContactsUrl,
   teamDiagnosticsIntegrationsUrl,
   teamGithubIntegrationUrl,
+  teamLlmIntegrationsUrl,
   teamMembersUrl,
   teamPendingInvitesUrl,
   teamRolesUrl,
@@ -163,6 +164,12 @@ export function SettingsSidebar() {
         {(hasBetaFeatures || hasDiagnosticsPoc) && (
           <NavLink className={navLink} to={teamDiagnosticsIntegrationsUrl()}>
             Diagnostics Integrations
+          </NavLink>
+        )}
+
+        {(hasBetaFeatures || hasDiagnosticsPoc) && (
+          <NavLink className={navLink} to={teamLlmIntegrationsUrl()}>
+            LLM Integrations
           </NavLink>
         )}
 
