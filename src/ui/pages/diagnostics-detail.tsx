@@ -200,7 +200,10 @@ export const DiagnosticsDetailPage = () => {
                 )}
               </div>
               <h2 className="text-lg font-semibold my-2">Dependency Graph</h2>
-              <DiagnosticsSummaryDependencyGraph dashboard={dashboard} />
+              <DiagnosticsSummaryDependencyGraph
+                dashboard={dashboard}
+                dashboardContents={dashboardContents}
+              />
             </>
           )}
 
