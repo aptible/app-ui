@@ -18,6 +18,7 @@ interface DiagnosticsSummaryDependencyGraphProps {
 interface DegradedResource {
   resourceId: string;
   resourceType: string;
+  label: string;
 }
 
 export const DiagnosticsSummaryDependencyGraph = ({
@@ -96,6 +97,7 @@ const getResourcesFromRankedPlots = (
         resources.push({
           resourceId: resourceIdString,
           resourceType: resource.type,
+          label: plot.analysis ? plot.analysis : "Anomaly found",
         });
       }
     }
@@ -130,6 +132,7 @@ const getAllEdgesForDashboard = (
 
       if (degradedResource) {
         edgeData.type = "degraded";
+        edgeData.label = degradedResource.label;
       }
 
       return edgeData;

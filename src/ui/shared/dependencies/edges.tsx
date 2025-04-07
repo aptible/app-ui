@@ -15,6 +15,7 @@ export const DegradedEdge = ({
   targetPosition,
   style = {},
   markerEnd,
+  label,
 }: EdgeProps) => {
   const [edgePath] = getBezierPath({
     sourceX,
@@ -35,18 +36,24 @@ export const DegradedEdge = ({
       <BaseEdge path={edgePath} markerEnd={markerEnd} style={style} />
       <EdgeLabelRenderer>
         <div
-          className="button-edge__label nodrag nopan flex flex-row"
+          className="nodrag nopan flex flex-row absolute z-10 cursor-default"
           style={{
             transform: `translate(-50%, -50%) translate(${midX}px,${midY}px)`,
-            position: "absolute",
+            pointerEvents: "all",
           }}
         >
           <div
             style={{ backgroundColor: "#E09600" }}
-            className="text-white rounded-full inline-block text-xs p-1 vertical-center"
+            className="peer text-white rounded-full inline-block text-xs p-1 vertical-center"
           >
             <IconAlertCircle color="white" className="w-4 h-4" />
           </div>
+
+          {label && (
+            <div className="peer-hover:block hidden absolute -top-10 left-6 w-auto bg-black text-white rounded-md p-2 z-20 whitespace-nowrap">
+              <div>{label}</div>
+            </div>
+          )}
         </div>
       </EdgeLabelRenderer>
     </>
