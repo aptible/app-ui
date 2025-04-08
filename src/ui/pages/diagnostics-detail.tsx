@@ -213,7 +213,6 @@ export const DiagnosticsDetailPage = () => {
               ([resourceId, resource]) => (
                 <DiagnosticsResource
                   key={resourceId}
-                  resourceId={resourceId}
                   resource={resource}
                   startTime={dashboard.rangeBegin}
                   endTime={dashboard.rangeEnd}

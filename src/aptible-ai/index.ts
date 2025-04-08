@@ -42,6 +42,7 @@ export interface Plot {
 
 export interface Resource {
   id: string;
+  label: string;
   type: string;
   notes: string;
   edge_id: string;
@@ -81,6 +82,7 @@ export const handleDashboardEvent = (
           ...dashboard.resources,
           [event.resource_id]: {
             id: event.resource_id,
+            label: event.resource_label,
             type: event.resource_type,
             edge_id: event.edge_id,
             notes: event.notes,

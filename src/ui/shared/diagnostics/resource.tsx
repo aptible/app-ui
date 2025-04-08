@@ -69,13 +69,11 @@ const AnalysisSection = ({ analysis }: { analysis: string }) => {
 };
 
 export const DiagnosticsResource = ({
-  resourceId,
   resource,
   startTime,
   endTime,
   synchronizedHoverContext,
 }: {
-  resourceId: string;
   resource: Resource;
   startTime: string;
   endTime: string;
@@ -102,7 +100,7 @@ export const DiagnosticsResource = ({
       >
         <div className="flex gap-2 items-center">
           <ResourceIcon type={resource.type} />
-          <span className="font-mono text-lg font-bold">{resourceId}</span>
+          <span className="font-mono text-lg font-bold">{resource.label}</span>
         </div>
         <button
           type="button"
