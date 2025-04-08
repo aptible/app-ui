@@ -44,6 +44,7 @@ export interface Resource {
   id: string;
   type: string;
   notes: string;
+  edge_id: string;
   plots: {
     [key: string]: Plot;
   };
@@ -81,6 +82,7 @@ export const handleDashboardEvent = (
           [event.resource_id]: {
             id: event.resource_id,
             type: event.resource_type,
+            edge_id: event.edge_id,
             notes: event.notes,
             plots: {},
             operations: [],

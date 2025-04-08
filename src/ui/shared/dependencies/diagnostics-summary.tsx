@@ -15,9 +15,8 @@ interface DiagnosticsSummaryDependencyGraphProps {
   dashboardContents: DashboardContents;
 }
 
-interface DegradedResource {
-  resourceId: string;
-  resourceType: string;
+interface DegradedEdge {
+  edgeId: string;
   label: string;
 }
 
@@ -45,8 +44,8 @@ export const DiagnosticsSummaryDependencyGraph = ({
     }),
   );
 
-  const degradedResources: DegradedResource[] = useMemo(() => {
-    return getResourcesFromRankedPlots(dashboardContents);
+  const degradedEdges: DegradedEdge[] = useMemo(() => {
+    return getDegradedEdges(dashboardContents);
   }, [dashboardContents]);
 
   const resourceItem: ResourceItem = {
@@ -54,7 +53,7 @@ export const DiagnosticsSummaryDependencyGraph = ({
     id: dashboard.resourceId,
   };
   const graphNodes: Node[] = getAllNodes(resourceItem, edges);
-  const graphEdges: Edge[] = getAllEdgesForDashboard(edges, degradedResources);
+  const graphEdges: Edge[] = getAllEdgesForDashboard(edges, degradedEdges);
 
   return (
     <>
@@ -83,10 +82,10 @@ const convertResourceTypeToEdgeType = (
   }
 };
 
-const getResourcesFromRankedPlots = (
+const getDegradedEdges = (
   dashboardContents: DashboardContents,
-): DegradedResource[] => {
-  const resources: DegradedResource[] = [];
+): DegradedEdge[] => {
+  const edges: DegradedEdge[] = [];
 
   if (Array.isArray(dashboardContents.ranked_plots)) {
     for (const plot of dashboardContents.ranked_plots) {
@@ -94,21 +93,21 @@ const getResourcesFromRankedPlots = (
 
       if (dashboardContents.resources[resourceIdString]) {
         const resource = dashboardContents.resources[resourceIdString];
-        resources.push({
-          resourceId: resourceIdString,
-          resourceType: resource.type,
+
+        edges.push({
+          edgeId: resource.edge_id.toString(),
           label: plot.analysis ? plot.analysis : "Anomaly found",
         });
       }
     }
   }
 
-  return resources;
+  return edges;
 };
 
 const getAllEdgesForDashboard = (
   edges: DeployEdge[],
-  degradedResources: DegradedResource[],
+  degradedEdges: DegradedEdge[],
 ): Edge[] => {
   return edges
     .filter((edge) => edge.sourceResourceId !== edge.destinationResourceId)
@@ -124,15 +123,13 @@ const getAllEdgesForDashboard = (
         data: { label: edge.relationshipType },
       };
 
-      const degradedResource = degradedResources.find(
-        (r) =>
-          r.resourceType === edge.destinationResourceType &&
-          r.resourceId === edge.destinationResourceId,
+      const degradedEdge = degradedEdges.find(
+        (e) => e.edgeId === edge.id,
       );
 
-      if (degradedResource) {
+      if (degradedEdge) {
         edgeData.type = "degraded";
-        edgeData.label = degradedResource.label;
+        edgeData.label = degradedEdge.label;
       }
 
       return edgeData;
