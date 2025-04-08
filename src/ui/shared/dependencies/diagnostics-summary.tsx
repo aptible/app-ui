@@ -123,9 +123,7 @@ const getAllEdgesForDashboard = (
         data: { label: edge.relationshipType },
       };
 
-      const degradedEdge = degradedEdges.find(
-        (e) => e.edgeId === edge.id,
-      );
+      const degradedEdge = degradedEdges.find((e) => e.edgeId === edge.id);
 
       if (degradedEdge) {
         edgeData.type = "degraded";

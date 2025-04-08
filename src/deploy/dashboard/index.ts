@@ -1,6 +1,7 @@
 import { api } from "@app/api";
+import { createSelector } from "@app/fx";
 import { defaultEntity, defaultHalHref } from "@app/hal";
-import { schema } from "@app/schema";
+import { type WebState, schema } from "@app/schema";
 import type { LinkResponse } from "@app/types";
 import type { DeployDashboard } from "@app/types/deploy";
 
@@ -81,6 +82,22 @@ export const deserializeDeployDashboard = (
 export const selectDashboardsAsList = schema.dashboards.selectTableAsList;
 export const selectDashboardById = schema.dashboards.selectById;
 
+export const selectDashboardsByResourceAsList = createSelector(
+  selectDashboardsAsList,
+  (
+    _: WebState,
+    props: { resourceId: string; resourceType: string; timeRangeStart: string },
+  ) => props,
+  (dashboards, { resourceId, resourceType, timeRangeStart }) => {
+    return dashboards.filter(
+      (d) =>
+        d.resourceId.toString() === resourceId &&
+        d.resourceType === resourceType &&
+        d.rangeEnd >= timeRangeStart,
+    );
+  },
+);
+
 export const createDashboard = api.post<
   CreateDashboardProps,
   DeployDashboardResponse
@@ -119,6 +136,7 @@ export const createDashboard = api.post<
 });
 
 export const fetchDashboards = api.get("/dashboards?per_page=500&no_data=true");
+export const fetchDashboardsWithData = api.get("/dashboards?per_page=100");
 
 export const fetchDashboard = api.get<{ id: string }, DeployDashboardResponse>(
   "/dashboards/:id",

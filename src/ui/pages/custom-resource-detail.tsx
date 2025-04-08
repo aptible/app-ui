@@ -22,7 +22,7 @@ import { DiagnosticsCreateForm } from "./diagnostics-create";
 export const CustomResourceDetailPage = () => {
   const { id = "" } = useParams();
 
-  useQuery(fetchCustomResources());
+  const { isSuccess: isResourcesLoaded } = useQuery(fetchCustomResources());
   const resource = useSelector((s) => selectCustomResourceById(s, { id }));
 
   if (!resource) {
@@ -67,14 +67,18 @@ export const CustomResourceDetailPage = () => {
         <h2 className="text-lg font-medium my-4">Resource Data</h2>
         <div className="font-mono flex w-fit">
           <Code className="bg-gray-50">
-            <pre className="p-2">{JSON.stringify(resource.data, null, 2)}</pre>
+            <pre className="p-2 whitespace-pre-wrap">
+              {JSON.stringify(resource.data, null, 2)}
+            </pre>
           </Code>
         </div>
       </Box>
 
       <Box>
         <h2 className="text-lg font-medium mb-4">Relationships</h2>
-        <SingleResourceDependencyGraph resourceItem={resourceItem} />
+        {isResourcesLoaded && (
+          <SingleResourceDependencyGraph resourceItem={resourceItem} />
+        )}
       </Box>
 
       <Box>

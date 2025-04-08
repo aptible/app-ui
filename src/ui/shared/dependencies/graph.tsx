@@ -16,7 +16,7 @@ import "@xyflow/react/dist/style.css";
 import { useMemo } from "react";
 import { AppNode, DatabaseNode } from "./aptible-nodes";
 import { CustomResourceNode } from "./custom-nodes";
-import { DegradedEdge } from "./edges";
+import { AnomalyHistoryEdge, DegradedEdge } from "./edges";
 import { type ResourceNodeProps, StandardNode } from "./node";
 interface DependencyGraphProps {
   nodes: Node[];
@@ -54,7 +54,7 @@ export const DependencyGraph = ({
   }, []);
 
   const edgeTypes = useMemo(() => {
-    return { degraded: DegradedEdge };
+    return { degraded: DegradedEdge, anomalyHistory: AnomalyHistoryEdge };
   }, []);
 
   // Compute layout
