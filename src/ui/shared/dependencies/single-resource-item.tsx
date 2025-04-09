@@ -106,10 +106,8 @@ const getDegradedEdges = (dashboards: DeployDashboard[]): DegradedEdges => {
 
     if (Array.isArray(dashboardContents.ranked_plots)) {
       for (const plot of dashboardContents.ranked_plots) {
-        const resourceIdString = plot.resource_id.toString();
-
-        if (dashboardContents.resources[resourceIdString]) {
-          const resource = dashboardContents.resources[resourceIdString];
+        if (dashboardContents.resources[plot.resource_label]) {
+          const resource = dashboardContents.resources[plot.resource_label];
           if (!resource.edge_id) {
             continue;
           }
