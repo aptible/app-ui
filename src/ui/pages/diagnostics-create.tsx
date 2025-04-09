@@ -357,7 +357,7 @@ export const CustomResourceDiagnosticsCreateForm = () => {
   );
   const resourceOptions = useMemo(() => {
     return resources
-      .map((r) => ({ label: r.handle, value: r.id }))
+      .map((r) => ({ label: `${r.resourceType} / ${r.handle}`, value: r.id }))
       .sort((a, b) => a.label.localeCompare(b.label));
   }, [resources]);
 
