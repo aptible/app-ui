@@ -164,7 +164,7 @@ export const DiagnosticsDetailPage = () => {
                       className="border rounded-lg bg-white shadow-sm animate-fade-in"
                     >
                       <h3 className="font-medium text-gray-900 p-3 rounded-t-lg border-b">
-                        {plot.title}
+                        {plot.resource_label} / {plot.title}
                       </h3>
                       <div className="pb-6 px-6">
                         <div className="mt-2 min-h-[200px]">

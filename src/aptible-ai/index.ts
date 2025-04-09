@@ -29,6 +29,9 @@ export interface Plot {
   id: string;
   title: string;
   description: string;
+  resource_id: string;
+  resource_type: string;
+  resource_label: string;
   interpretation: string;
   analysis: string;
   unit: string;
@@ -80,7 +83,7 @@ export const handleDashboardEvent = (
         ...dashboard,
         resources: {
           ...dashboard.resources,
-          [event.resource_id]: {
+          [event.resource_label]: {
             id: event.resource_id,
             label: event.resource_label,
             type: event.resource_type,
@@ -96,10 +99,10 @@ export const handleDashboardEvent = (
         ...dashboard,
         resources: {
           ...dashboard.resources,
-          [event.resource_id]: {
-            ...dashboard.resources[event.resource_id],
+          [event.resource_label]: {
+            ...dashboard.resources[event.resource_label],
             plots: {
-              ...dashboard.resources[event.resource_id].plots,
+              ...dashboard.resources[event.resource_label].plots,
               [event.plot.id]: {
                 id: event.plot.id,
                 title: event.plot.title,
@@ -121,12 +124,14 @@ export const handleDashboardEvent = (
         ...dashboard,
         resources: {
           ...dashboard.resources,
-          [event.resource_id]: {
-            ...dashboard.resources[event.resource_id],
+          [event.resource_label]: {
+            ...dashboard.resources[event.resource_label],
             plots: {
-              ...dashboard.resources[event.resource_id].plots,
+              ...dashboard.resources[event.resource_label].plots,
               [event.plot_id]: {
-                ...dashboard.resources[event.resource_id].plots[event.plot_id],
+                ...dashboard.resources[event.resource_label].plots[
+                  event.plot_id
+                ],
                 analysis: event.analysis,
                 annotations: event.annotations,
               },
@@ -139,10 +144,10 @@ export const handleDashboardEvent = (
         ...dashboard,
         resources: {
           ...dashboard.resources,
-          [event.resource_id]: {
-            ...dashboard.resources[event.resource_id],
+          [event.resource_label]: {
+            ...dashboard.resources[event.resource_label],
             operations: [
-              ...dashboard.resources[event.resource_id].operations,
+              ...dashboard.resources[event.resource_label].operations,
               ...event.operations,
             ],
           },
