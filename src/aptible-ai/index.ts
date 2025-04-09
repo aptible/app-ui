@@ -37,8 +37,6 @@ export interface Plot {
   unit: string;
   series: Series[];
   annotations: Annotation[];
-  resource_id: number;
-  resource_label: string;
   x_axis_range: [string, string];
   y_axis_range: [number, number];
 }
