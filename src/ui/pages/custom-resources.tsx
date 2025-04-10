@@ -39,9 +39,7 @@ export const CustomResourcesPage = () => {
 
   return (
     <AppSidebarLayout>
-      <TitleBar description="Manage your custom resources.">
-        Custom Resources
-      </TitleBar>
+      <TitleBar description="Manage your resources.">Software Catalog</TitleBar>
 
       <FilterBar>
         <div className="flex justify-between">
@@ -55,7 +53,7 @@ export const CustomResourcesPage = () => {
         </div>
 
         <Group variant="horizontal" size="lg" className="items-center mt-1">
-          <DescBar>{paginated.totalItems} Custom Resources</DescBar>
+          <DescBar>{paginated.totalItems} Resources</DescBar>
           <PaginateBar {...paginated} />
         </Group>
       </FilterBar>

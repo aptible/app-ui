@@ -433,11 +433,18 @@ export const TEAM_LLM_INTEGRATIONS_EDIT_PATH =
 export const teamLlmIntegrationsEditUrl = (id: string) =>
   `/settings/team/llm-integrations/${id}/edit`;
 
+export const SOFTWARE_CATALOG_URL = "/software-catalog";
+export const softwareCatalogUrl = () => SOFTWARE_CATALOG_URL;
+export const SOFTWARE_CATALOG_DETAIL_URL = "/software-catalog/:id";
+export const softwareCatalogDetailUrl = (id: string) =>
+  `/software-catalog/${id}`;
+
+// Legacy URLs with redirects
 export const CUSTOM_RESOURCES_URL = "/custom-resources";
-export const customResourcesUrl = () => CUSTOM_RESOURCES_URL;
+export const customResourcesUrl = () => SOFTWARE_CATALOG_URL;
 export const CUSTOM_RESOURCE_DETAIL_URL = "/custom-resources/:id";
 export const customResourceDetailUrl = (id: string) =>
-  `/custom-resources/${id}`;
+  softwareCatalogDetailUrl(id);
 
 export const SOURCES_PATH = "/sources";
 export const sourcesUrl = () => SOURCES_PATH;
