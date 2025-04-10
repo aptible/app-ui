@@ -47,9 +47,13 @@ export const CustomResourceNode = ({ id, isRoot }: ResourceNodeProps) => {
     } else if (resource.resourceType === "aws:elb") {
       icon = <img src="/resource-types/logo-vhost.png" alt="ELB" />;
     } else if (resource.resourceType.includes("k8s:")) {
-      icon = <img src="/resource-types/logo-eks.png" alt="Kubernetes Resource" />;
+      icon = (
+        <img src="/resource-types/logo-eks.png" alt="Kubernetes Resource" />
+      );
     } else if (resource.resourceType === "datadog:service") {
-      icon = <img src="/resource-types/logo-datadog.png" alt="Datadog Service" />;
+      icon = (
+        <img src="/resource-types/logo-datadog.png" alt="Datadog Service" />
+      );
     } else if (resource.resourceType === "datadog:team") {
       icon = <IconUserCircle />;
     }

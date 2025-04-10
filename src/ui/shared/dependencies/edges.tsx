@@ -32,6 +32,7 @@ export const AnomalyHistoryEdge = ({
   style = {},
   markerEnd,
   data,
+  label,
 }: AnomalyHistoryEdgeProps) => {
   const [edgePath] = getBezierPath({
     sourceX,
@@ -46,6 +47,9 @@ export const AnomalyHistoryEdge = ({
 
   const midX = (sourceX + targetX) / 2;
   const midY = (sourceY + targetY) / 2;
+
+  // Format relationship type by replacing underscores with spaces
+  const relationshipLabel = data?.label ? data.label.replace(/_/g, " ") : "";
 
   return (
     <>
@@ -63,6 +67,11 @@ export const AnomalyHistoryEdge = ({
 
             <div className="group-hover:visible invisible absolute -top-7 w-auto p-6">
               <div className="flex flex-col bg-white shadow border rounded-md p-2 z-20 whitespace-nowrap">
+                {relationshipLabel && (
+                  <div className="font-medium border-b pb-1 mb-2">
+                    {relationshipLabel}
+                  </div>
+                )}
                 {Object.entries(data?.anomalyHistory || {}).map(
                   ([dashboardId, anomalyHistory]) => {
                     return (
@@ -90,6 +99,12 @@ export const AnomalyHistoryEdge = ({
   );
 };
 
+interface DegradedEdgeProps extends EdgeProps {
+  data?: {
+    label?: string;
+  };
+}
+
 export const DegradedEdge = ({
   sourceX,
   sourceY,
@@ -99,8 +114,9 @@ export const DegradedEdge = ({
   targetPosition,
   style = {},
   markerEnd,
+  data,
   label,
-}: EdgeProps) => {
+}: DegradedEdgeProps) => {
   const [edgePath] = getBezierPath({
     sourceX,
     sourceY,
@@ -114,6 +130,9 @@ export const DegradedEdge = ({
 
   const midX = (sourceX + targetX) / 2;
   const midY = (sourceY + targetY) / 2;
+
+  // Format the relationship type from the label by replacing underscores with spaces
+  const relationshipLabel = data?.label ? data.label.replace(/_/g, " ") : "";
 
   return (
     <>
@@ -133,11 +152,9 @@ export const DegradedEdge = ({
             <IconAlertCircle color="white" className="w-4 h-4" />
           </div>
 
-          {label && (
-            <div className="peer-hover:block hidden absolute -top-10 left-6 w-auto bg-black text-white rounded-md p-2 z-20 whitespace-nowrap">
-              <div>{label}</div>
-            </div>
-          )}
+          <div className="peer-hover:block hidden absolute -top-10 left-6 w-auto bg-black text-white rounded-md p-2 z-20 whitespace-nowrap">
+            {relationshipLabel && <div>{relationshipLabel}</div>}
+          </div>
         </div>
       </EdgeLabelRenderer>
     </>

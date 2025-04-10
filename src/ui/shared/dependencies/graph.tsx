@@ -66,6 +66,14 @@ export const DependencyGraph = ({
     deletable: false,
     selectable: false,
     focusable: false,
+    style: {
+      strokeWidth: 1,
+    },
+    labelStyle: {
+      fontSize: 10,
+      fill: "gray",
+      fontFamily: "monospace",
+    },
   };
 
   return (
