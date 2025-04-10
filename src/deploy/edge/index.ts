@@ -94,7 +94,7 @@ export const fetchDependencyEdgesByResource = api.get<{
   resourceType: DeployEdgeType;
   timeRangeStart: string;
 }>(
-  "/edges?root_resource_id=:resourceId&root_resource_type=:resourceType&only_relationship_types[]=depends_on&time_range_start=:timeRangeStart&max_distance=1",
+  "/edges?root_resource_id=:resourceId&root_resource_type=:resourceType&time_range_start=:timeRangeStart&max_distance=1",
 );
 
 export const createEdge = api.post<
