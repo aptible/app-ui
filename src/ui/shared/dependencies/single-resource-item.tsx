@@ -145,6 +145,8 @@ const getAllEdges = (
         ),
         animated: true,
         data: { label: edge.relationshipType },
+        // Add visible label to all edges with formatted relationship type
+        label: edge.relationshipType.replace(/_/g, " "),
       };
 
       if (degradedEdges[edge.id]) {
@@ -167,6 +169,8 @@ const getAllEdges = (
         edgeData.data = {
           ...edgeData.data,
           anomalyHistory,
+          // Ensure the label is also passed in data for edge components
+          label: edge.relationshipType,
         };
       }
 

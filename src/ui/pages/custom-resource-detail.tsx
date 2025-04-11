@@ -3,7 +3,7 @@ import {
   selectCustomResourceById,
 } from "@app/deploy/custom-resource";
 import { useQuery, useSelector } from "@app/react";
-import { customResourcesUrl } from "@app/routes";
+import { softwareCatalogUrl } from "@app/routes";
 import type { ResourceItem } from "@app/search";
 import { useParams } from "react-router-dom";
 import { AppSidebarLayout } from "../layouts";
@@ -28,8 +28,8 @@ export const CustomResourceDetailPage = () => {
   if (!resource) {
     return (
       <AppSidebarLayout>
-        <TitleBar description="Loading custom resource details...">
-          Custom Resource Details
+        <TitleBar description="Loading resource details...">
+          Software Catalog Details
         </TitleBar>
       </AppSidebarLayout>
     );
@@ -44,9 +44,7 @@ export const CustomResourceDetailPage = () => {
 
   return (
     <AppSidebarLayout>
-      <TitleBar description="View custom resource details">
-        {resource.handle}
-      </TitleBar>
+      <TitleBar description="View resource details">{resource.handle}</TitleBar>
 
       <Box className="mb-4">
         <h2 className="text-lg font-medium mb-4">Resource Details</h2>
@@ -90,8 +88,8 @@ export const CustomResourceDetailPage = () => {
       </Box>
 
       <Group className="mt-4 flex w-fit">
-        <ButtonLink to={customResourcesUrl()} size="md">
-          Back to Custom Resources
+        <ButtonLink to={softwareCatalogUrl()} size="md">
+          Back to Software Catalog
         </ButtonLink>
       </Group>
     </AppSidebarLayout>

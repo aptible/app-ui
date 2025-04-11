@@ -164,7 +164,11 @@ import { SettingsTeamLlmIntegrationsPage } from "@app/ui/pages/settings-team-llm
 import { SettingsTeamLlmIntegrationsAddPage } from "@app/ui/pages/settings-team-llm-integrations-add";
 import { SettingsTeamLlmIntegrationsEditPage } from "@app/ui/pages/settings-team-llm-integrations-edit";
 import { SourcesSetupPage } from "@app/ui/pages/sources-setup";
-import { type RouteObject, createBrowserRouter } from "react-router-dom";
+import {
+  Navigate,
+  type RouteObject,
+  createBrowserRouter,
+} from "react-router-dom";
 import { Tuna } from "./tuna";
 
 const trackingPatch = (appRoute: RouteObject) => ({
@@ -618,12 +622,22 @@ export const appRoutes: RouteObject[] = [
       },
 
       {
-        path: routes.CUSTOM_RESOURCES_URL,
+        path: routes.SOFTWARE_CATALOG_URL,
         element: <CustomResourcesPage />,
       },
       {
-        path: routes.CUSTOM_RESOURCE_DETAIL_URL,
+        path: routes.SOFTWARE_CATALOG_DETAIL_URL,
         element: <CustomResourceDetailPage />,
+      },
+      {
+        path: routes.CUSTOM_RESOURCES_URL,
+        element: <Navigate to={routes.SOFTWARE_CATALOG_URL} replace />,
+      },
+      {
+        path: routes.CUSTOM_RESOURCE_DETAIL_URL,
+        element: (
+          <Navigate to={routes.softwareCatalogDetailUrl(":id")} replace />
+        ),
       },
 
       {
