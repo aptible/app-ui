@@ -35,7 +35,7 @@ import {
   PaginateBar,
   TitleBar,
 } from "../resource-list-view";
-import { EmptyTr, TBody, THead, Table, Td, Th, Tr } from "../table";
+import { EmptyTr, TBody, TFoot, THead, Table, Td, Th, Tr } from "../table";
 import { tokens } from "../tokens";
 
 interface EnvironmentCellProps {
@@ -160,6 +160,10 @@ export function EnvironmentList({
     selectEnvironmentsForTableSearch(s, { search, stackId, sortBy, sortDir }),
   );
   const paginated = usePaginate(envs);
+
+  // Calculate total cost of all environments
+  const totalCost = envs.reduce((sum, env) => sum + (env.cost || 0), 0);
+
   const onSort = (key: keyof DeployEnvironmentRow) => {
     if (key === sortBy) {
       setSortDir(sortDir === "asc" ? "desc" : "asc");
@@ -252,7 +256,7 @@ export function EnvironmentList({
         </THead>
 
         <TBody>
-          {paginated.data.length === 0 ? <EmptyTr colSpan={5} /> : null}
+          {paginated.data.length === 0 ? <EmptyTr colSpan={6} /> : null}
           {paginated.data.map((env) => (
             <Tr key={env.id}>
               <EnvironmentPrimaryCell env={env} />
@@ -264,6 +268,24 @@ export function EnvironmentList({
             </Tr>
           ))}
         </TBody>
+
+        {paginated.data.length > 0 && (
+          <TFoot>
+            <Tr className="font-medium">
+              <Td colSpan={5} className="text-right font-semibold text-black">
+                Total Est. Monthly Cost
+              </Td>
+              <Td>
+                <CostEstimateTooltip
+                  cost={totalCost}
+                  text={`Total includes all environments across all pages of results. \
+This is an estimate of the total cost across selected environments for one month, \
+and excludes some costs, such as account-level and stack-level costs.`}
+                />
+              </Td>
+            </Tr>
+          </TFoot>
+        )}
       </Table>
     </Group>
   );

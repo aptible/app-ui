@@ -1,6 +1,7 @@
 import {
   fetchCostsByStacks,
   fetchStacks,
+  formatCurrency,
   getStackTypeTitle,
   selectAppsCountByStack,
   selectDatabasesCountByStack,
@@ -32,6 +33,7 @@ import {
   PaginateBar,
   StackItemView,
   TBody,
+  TFoot,
   THead,
   Table,
   Td,
@@ -168,6 +170,9 @@ function StackList() {
     return stacks;
   }, [stacks, sortKey, sortDirection, envCounts, appCounts, dbCounts]);
 
+  // Calculate total cost of all stacks
+  const totalCost = stacks.reduce((sum, stack) => sum + (stack.cost || 0), 0);
+
   const paginated = usePaginate(sortedStacks);
 
   const SortIcon = () => (
@@ -270,6 +275,21 @@ function StackList() {
             <StackListRow key={stack.id} stack={stack} />
           ))}
         </TBody>
+
+        {paginated.data.length > 0 && (
+          <TFoot>
+            <Tr className="font-medium">
+              <Td colSpan={8} className="text-right font-semibold text-black">
+                Total Est. Monthly Cost
+              </Td>
+              <Td>
+                <span className="font-semibold text-black">
+                  {formatCurrency(totalCost)}
+                </span>
+              </Td>
+            </Tr>
+          </TFoot>
+        )}
       </Table>
     </Group>
   );

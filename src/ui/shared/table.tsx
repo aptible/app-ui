@@ -33,6 +33,12 @@ export const TBody = ({ children }: { children: React.ReactNode }) => {
   );
 };
 
+export const TFoot = ({ children }: { children: React.ReactNode }) => {
+  return (
+    <tfoot className="bg-gray-50 border-t border-gray-300">{children}</tfoot>
+  );
+};
+
 export const Tr = ({
   children,
   className = "",
