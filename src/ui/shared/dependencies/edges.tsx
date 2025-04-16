@@ -42,8 +42,13 @@ export const AnomalyHistoryEdge = ({
     targetY,
     targetPosition,
   });
-  style.stroke = "#E09600"; // orange-400
-  style.strokeWidth = "1px";
+
+  // Create a new style object instead of modifying the existing one
+  const edgeStyle = {
+    ...style,
+    stroke: "#E09600", // orange-400
+    strokeWidth: "1px",
+  };
 
   const midX = (sourceX + targetX) / 2;
   const midY = (sourceY + targetY) / 2;
@@ -53,7 +58,7 @@ export const AnomalyHistoryEdge = ({
 
   return (
     <>
-      <BaseEdge path={edgePath} markerEnd={markerEnd} style={style} />
+      <BaseEdge path={edgePath} markerEnd={markerEnd} style={edgeStyle} />
       <EdgeLabelRenderer>
         <div
           className="nodrag nopan flex flex-row absolute z-10 cursor-default"
@@ -125,8 +130,13 @@ export const DegradedEdge = ({
     targetY,
     targetPosition,
   });
-  style.stroke = "#E09600"; // orange-400
-  style.strokeWidth = "2px";
+
+  // Create a new style object instead of modifying the existing one
+  const edgeStyle = {
+    ...style,
+    stroke: "#E09600", // orange-400
+    strokeWidth: "2px",
+  };
 
   const midX = (sourceX + targetX) / 2;
   const midY = (sourceY + targetY) / 2;
@@ -136,7 +146,7 @@ export const DegradedEdge = ({
 
   return (
     <>
-      <BaseEdge path={edgePath} markerEnd={markerEnd} style={style} />
+      <BaseEdge path={edgePath} markerEnd={markerEnd} style={edgeStyle} />
       <EdgeLabelRenderer>
         <div
           className="nodrag nopan flex flex-row absolute z-10 cursor-default"
