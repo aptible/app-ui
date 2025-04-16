@@ -90,7 +90,6 @@ export const [schema, initialState] = createSchema({
     empty: factory.defaultManualScaleRecommendation(),
   }),
   notices: slice.obj<Record<NoticeType, string>>({
-    [NoticeType.BackupRPNotice]: "",
     [NoticeType.NONE]: "",
   }),
   costs: slice.table({
