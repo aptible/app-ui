@@ -13,6 +13,7 @@ import {
   testEndpoint,
   testEnv,
   testServiceRails,
+  testTlsEndpoint,
   verifiedUserHandlers,
 } from "@app/mocks";
 import { endpointDetailSettingsUrl } from "@app/routes";
@@ -78,7 +79,51 @@ describe("EndpointSettings for an Endpoint associated with an App", () => {
       await screen.findByText(/Operations show real-time changes to resources/);
     });
   });
-  //TODO: add test checking container ports, using a TCP/TLS endpoint.
+
+  describe("when user edits container ports for a TLS endpoint", () => {
+    it("should update the container ports", async () => {
+      server.use(
+        ...verifiedUserHandlers(),
+        ...stacksWithResources({
+          accounts: [testAccount],
+          apps: [testApp],
+          services: [testServiceRails],
+        }),
+        rest.get(`${testEnv.apiUrl}/vhosts/:id`, (_, res, ctx) => {
+          return res(ctx.json(testTlsEndpoint));
+        }),
+        rest.get(`${testEnv.apiUrl}/vhosts`, (_, res, ctx) => {
+          return res(ctx.json({ _embedded: { vhosts: [testTlsEndpoint] } }));
+        }),
+        rest.patch(`${testEnv.apiUrl}/vhosts/:id`, async (req, res, ctx) => {
+          const data = await req.json();
+          return res(
+            ctx.json({
+              ...testTlsEndpoint,
+              container_ports: data.container_ports,
+            }),
+          );
+        }),
+      );
+
+      const { App, store } = setupAppIntegrationTest({
+        initEntries: [endpointDetailSettingsUrl(`${testTlsEndpoint.id}`)],
+      });
+      await waitForBootup(store);
+      render(<App />);
+
+      const input = await screen.findByRole("textbox", { name: "ports" });
+      await act(() => userEvent.clear(input));
+      await act(() => userEvent.type(input, "5000,5001"));
+
+      const btn = await screen.findByRole("button", { name: /Save Changes/ });
+      fireEvent.click(btn);
+
+      await screen.findByText(/Current container ports: 5000,5001/);
+      await screen.findByText(/Operations show real-time changes to resources/);
+    });
+  });
+
   describe("when endpoint does not require a cert", () => {
     it("should *not* display cert selector", async () => {
       server.use(...verifiedUserHandlers());
