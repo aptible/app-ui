@@ -745,7 +745,7 @@ export interface EndpointUpdateProps extends EndpointPatchProps {
   privKey?: string;
   envId: string;
   requiresCert: boolean;
-  enpType?: EndpointType;
+  enpType: EndpointType;
 }
 
 const patchEndpoint = api.patch<EndpointPatchProps>(
