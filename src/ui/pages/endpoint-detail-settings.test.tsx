@@ -78,7 +78,7 @@ describe("EndpointSettings for an Endpoint associated with an App", () => {
       await screen.findByText(/Operations show real-time changes to resources/);
     });
   });
-
+  //TODO: add test checking container ports, using a TCP/TLS endpoint.
   describe("when endpoint does not require a cert", () => {
     it("should *not* display cert selector", async () => {
       server.use(...verifiedUserHandlers());
