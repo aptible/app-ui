@@ -101,7 +101,7 @@ const validators = {
       return;
     if (p.url === "") return "Must provide a URL for log drain";
     if (!p.url.startsWith("https")) return "Must begin with https://";
-  }
+  },
 };
 
 const options: SelectOption<LogDrainType>[] = [
@@ -443,8 +443,6 @@ export const CreateLogDrainPage = () => {
                 </>
               }
               htmlFor="logging-token"
-              feedbackMessage={errors.loggingToken}
-              feedbackVariant={errors.loggingToken ? "danger" : "info"}
             >
               <Input
                 type="text"
