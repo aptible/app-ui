@@ -916,6 +916,10 @@ export const canHaveTokenHeader = (enp: DeployEndpoint) => {
   );
 };
 
+export const isTlsOrTcp = (enp: DeployEndpoint) => {
+  return enp.type === "tls" || enp.type === "tcp";
+};
+
 export const getContainerPort = (
   enp: Pick<DeployEndpoint, "containerPort" | "containerPorts">,
   exposedPorts: number[],
@@ -926,7 +930,7 @@ export const getContainerPort = (
     port = `${ports[0]}`;
   }
   if (enp.containerPorts.length > 0) {
-    return enp.containerPorts.join(",");
+    return enp.containerPorts.join(", ");
   }
   return enp.containerPort || `Default (${port})`;
 };

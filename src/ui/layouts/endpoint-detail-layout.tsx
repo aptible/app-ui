@@ -7,6 +7,7 @@ import {
   getContainerPort,
   getEndpointText,
   getEndpointUrl,
+  isTlsOrTcp,
   pollFetchEndpoint,
   requiresAcmeSetup,
   selectAppById,
@@ -114,7 +115,11 @@ export function EndpointAppHeaderInfo({
         </DetailInfoItem>
         <DetailInfoItem title="IP Allowlist">{txt.ipAllowlist}</DetailInfoItem>
         <DetailInfoItem title="Placement">{txt.placement}</DetailInfoItem>
-        <DetailInfoItem title="Port">{portTxt}</DetailInfoItem>
+        {isTlsOrTcp(enp) ? (
+          <DetailInfoItem title="Ports">{portTxt}</DetailInfoItem>
+        ) : (
+          <DetailInfoItem title="Port">{portTxt}</DetailInfoItem>
+        )}
         <DetailInfoItem title="Status">
           <EndpointStatusPill status={enp.status} />
         </DetailInfoItem>

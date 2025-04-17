@@ -119,7 +119,7 @@ describe("EndpointSettings for an Endpoint associated with an App", () => {
       const btn = await screen.findByRole("button", { name: /Save Changes/ });
       fireEvent.click(btn);
 
-      await screen.findByText(/Current container ports: 5000,5001/);
+      await screen.findByText(/Current container ports: 5000, 5001/);
       await screen.findByText(/Operations show real-time changes to resources/);
     });
   });

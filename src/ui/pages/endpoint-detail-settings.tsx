@@ -3,6 +3,7 @@ import {
   fetchImageById,
   getContainerPort,
   isRequiresCert,
+  isTlsOrTcp,
   parseIpStr,
   parsePortsStrToNum,
   selectAppById,
@@ -82,7 +83,7 @@ const EndpointSettings = ({ endpointId }: { endpointId: string }) => {
   const hasTokenHeaderFeature = useSelector(selectHasTokenHeaderFeature);
   const exposedPorts = image.exposedPorts;
   const origAllowlist = enp.ipWhitelist.join("\n");
-  const origContainerPorts = exposedPorts.join("s");
+  const origContainerPorts = enp.containerPorts.join(", ");
   const [ipAllowlist, setIpAllowlist] = useState(origAllowlist);
   const [port, setPort] = useState(enp.containerPort);
   const [ports, setPorts] = useState(origContainerPorts);
@@ -224,10 +225,8 @@ const EndpointSettings = ({ endpointId }: { endpointId: string }) => {
       </>
     ) : null;
 
-  const isTlsOrTcp = enp.type === "tls" || enp.type === "tcp";
-
   const portForm = service.appId ? (
-    isTlsOrTcp ? (
+    isTlsOrTcp(enp) ? (
       <FormGroup
         label="Container Ports"
         description={`Current container ports: ${curPortText}`}
