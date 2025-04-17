@@ -39,7 +39,7 @@
     "@types/node": "^22.10.2",
     "@types/react": "^18.3.16",
     "@types/react-dom": "^18.3.5",
-    "@vitejs/plugin-react": "^4.3.4",
+    "@vitejs/plugin-react": "^4.4.0",
     "@xyflow/react": "^12.4.4",
     "autoprefixer": "^10.4.20",
     "chart.js": "^4.4.7",
@@ -64,7 +64,7 @@
     "starfx": "^0.13.4",
     "tailwindcss": "^3.4.16",
     "typescript": "^5.7.2",
-    "vite": "^6.0.3",
+    "vite": "^6.0.15",
     "vite-tsconfig-paths": "^5.1.4",
     "vitest": "^2.1.8"
   }
