@@ -101,12 +101,7 @@ const validators = {
       return;
     if (p.url === "") return "Must provide a URL for log drain";
     if (!p.url.startsWith("https")) return "Must begin with https://";
-  },
-  // insightops
-  loggingToken: (p: CreateLogDrainProps) => {
-    if (!(p.drainType === "insightops")) return;
-    if (p.loggingToken === "") return "Must provide a token for log drain.";
-  },
+  }
 };
 
 const options: SelectOption<LogDrainType>[] = [
