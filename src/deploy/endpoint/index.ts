@@ -37,7 +37,7 @@ export interface DeployEndpointResponse {
   acme_status: string;
   container_exposed_ports: string[] | null;
   container_port: string | null;
-  container_ports: string[];
+  container_ports: number[];
   default: boolean;
   docker_name: string | null;
   elastic_load_balancer_name: string | null;
@@ -735,6 +735,7 @@ interface EndpointPatchProps {
   id: string;
   ipAllowlist: string[];
   containerPort: string;
+  containerPorts: number[];
   certId: string;
   tokenHeader: string | undefined;
 }
@@ -744,6 +745,7 @@ export interface EndpointUpdateProps extends EndpointPatchProps {
   privKey?: string;
   envId: string;
   requiresCert: boolean;
+  enpType: EndpointType;
 }
 
 const patchEndpoint = api.patch<EndpointPatchProps>(
@@ -753,6 +755,7 @@ const patchEndpoint = api.patch<EndpointPatchProps>(
     const data: Record<string, any> = {
       ip_whitelist: ctx.payload.ipAllowlist,
       container_port: ctx.payload.containerPort,
+      container_ports: ctx.payload.containerPorts,
       token_header: ctx.payload.tokenHeader,
     };
     if (ctx.payload.certId) {
@@ -792,6 +795,7 @@ export const updateEndpoint = thunks.create<EndpointUpdateProps>(
       id: ctx.payload.id,
       ipAllowlist: ctx.payload.ipAllowlist,
       containerPort: ctx.payload.containerPort,
+      containerPorts: ctx.payload.containerPorts,
       certId,
       tokenHeader: ctx.payload.tokenHeader,
     });
@@ -912,6 +916,10 @@ export const canHaveTokenHeader = (enp: DeployEndpoint) => {
   );
 };
 
+export const isTlsOrTcp = (enp: DeployEndpoint) => {
+  return enp.type === "tls" || enp.type === "tcp";
+};
+
 export const getContainerPort = (
   enp: Pick<DeployEndpoint, "containerPort" | "containerPorts">,
   exposedPorts: number[],
@@ -922,7 +930,7 @@ export const getContainerPort = (
     port = `${ports[0]}`;
   }
   if (enp.containerPorts.length > 0) {
-    return enp.containerPorts.join(",");
+    return enp.containerPorts.join(", ");
   }
   return enp.containerPort || `Default (${port})`;
 };
@@ -977,4 +985,11 @@ export const getEndpointText = (enp: DeployEndpoint) => {
 
 export const parseIpStr = (ips: string) => {
   return ips.split(/\s+/).filter(Boolean);
+};
+
+export const parsePortsStrToNum = (ports: string) => {
+  return ports
+    .split(/[,\s]+/)
+    .filter(Boolean)
+    .map((port) => Number(port));
 };

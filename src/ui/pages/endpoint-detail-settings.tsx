@@ -3,7 +3,9 @@ import {
   fetchImageById,
   getContainerPort,
   isRequiresCert,
+  isTlsOrTcp,
   parseIpStr,
+  parsePortsStrToNum,
   selectAppById,
   selectEndpointById,
   selectImageById,
@@ -37,7 +39,22 @@ import {
 } from "../shared";
 
 const validators = {
-  port: (data: EndpointUpdateProps) => portValidator(data.containerPort),
+  port: (data: EndpointUpdateProps) => {
+    if (data.enpType !== "tls" && data.enpType !== "tcp") {
+      return portValidator(data.containerPort);
+    }
+  },
+  ports: (data: EndpointUpdateProps) => {
+    if (data.enpType === "tls" || data.enpType === "tcp") {
+      const errs: string[] = [];
+      data.containerPorts.forEach((port) => {
+        const result = portValidator(port.toString());
+        if (result) errs.push(`[${port}] is not between 1 and 65535`);
+      });
+      if (errs.length === 0) return;
+      return errs.join(", ");
+    }
+  },
   ipAllowlist: (data: EndpointUpdateProps) => ipValidator(data.ipAllowlist),
   cert: (data: EndpointUpdateProps) => {
     if (data.requiresCert && data.certId === "" && data.cert === "") {
@@ -66,8 +83,10 @@ const EndpointSettings = ({ endpointId }: { endpointId: string }) => {
   const hasTokenHeaderFeature = useSelector(selectHasTokenHeaderFeature);
   const exposedPorts = image.exposedPorts;
   const origAllowlist = enp.ipWhitelist.join("\n");
+  const origContainerPorts = enp.containerPorts.join(", ");
   const [ipAllowlist, setIpAllowlist] = useState(origAllowlist);
   const [port, setPort] = useState(enp.containerPort);
+  const [ports, setPorts] = useState(origContainerPorts);
   const [certId, setCertId] = useState(enp.certificateId);
   const [cert, setCert] = useState("");
   const [privKey, setPrivKey] = useState("");
@@ -83,6 +102,9 @@ const EndpointSettings = ({ endpointId }: { endpointId: string }) => {
     setPort(enp.containerPort);
   }, [enp.containerPort]);
   useEffect(() => {
+    setPorts(origContainerPorts);
+  }, [origContainerPorts]);
+  useEffect(() => {
     setCertId(enp.certificateId);
   }, [enp.certificateId]);
 
@@ -90,6 +112,7 @@ const EndpointSettings = ({ endpointId }: { endpointId: string }) => {
     id: endpointId,
     ipAllowlist: parseIpStr(ipAllowlist),
     containerPort: port,
+    containerPorts: parsePortsStrToNum(ports),
     certId,
     envId: service.environmentId,
     cert,
@@ -100,10 +123,11 @@ const EndpointSettings = ({ endpointId }: { endpointId: string }) => {
   };
   const ipsSame = origAllowlist === ipAllowlist;
   const portSame = enp.containerPort === port;
+  const portsSame = origContainerPorts === ports;
   const certSame = enp.certificateId === certId;
   const tokenSame = enp.tokenHeader === tokenHeader;
   const isDisabled =
-    ipsSame && portSame && certSame && cert === "" && tokenSame;
+    ipsSame && portSame && portsSame && certSame && cert === "" && tokenSame;
   const curPortText = getContainerPort(enp, exposedPorts);
   const loader = useLoader(updateEndpoint);
   const [errors, validate] = useValidator<
@@ -202,21 +226,39 @@ const EndpointSettings = ({ endpointId }: { endpointId: string }) => {
     ) : null;
 
   const portForm = service.appId ? (
-    <FormGroup
-      label="Container Port"
-      description={`Current container port: ${curPortText}`}
-      htmlFor="port"
-      feedbackMessage={errors.port}
-      feedbackVariant={errors.port ? "danger" : "info"}
-    >
-      <Input
-        type="text"
-        id="port"
-        name="port"
-        value={port}
-        onChange={(e) => setPort(e.currentTarget.value)}
-      />
-    </FormGroup>
+    isTlsOrTcp(enp) ? (
+      <FormGroup
+        label="Container Ports"
+        description={`Current container ports: ${curPortText}`}
+        htmlFor="ports"
+        feedbackMessage={errors.ports}
+        feedbackVariant={errors.ports ? "danger" : "info"}
+      >
+        <Input
+          type="text"
+          id="ports"
+          name="ports"
+          value={ports}
+          onChange={(e) => setPorts(e.currentTarget.value)}
+        />
+      </FormGroup>
+    ) : (
+      <FormGroup
+        label="Container Port"
+        description={`Current container port: ${curPortText}`}
+        htmlFor="port"
+        feedbackMessage={errors.port}
+        feedbackVariant={errors.port ? "danger" : "info"}
+      >
+        <Input
+          type="text"
+          id="port"
+          name="port"
+          value={port}
+          onChange={(e) => setPort(e.currentTarget.value)}
+        />
+      </FormGroup>
+    )
   ) : null;
 
   const tokenEditForm =

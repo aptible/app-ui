@@ -494,6 +494,17 @@ export const testEndpoint = defaultEndpointResponse({
   },
 });
 
+export const testTlsEndpoint = defaultEndpointResponse({
+  id: createId(),
+  type: "tls",
+  _links: {
+    service: defaultHalHref(
+      `${testEnv.apiUrl}/services/${testServiceRails.id}`,
+    ),
+    certificate: defaultHalHref(),
+  },
+});
+
 export const testPlan = defaultPlanResponse({
   id: createId(),
 });

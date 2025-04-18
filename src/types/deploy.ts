@@ -95,7 +95,7 @@ export interface DeployEndpoint extends Provisionable, Timestamps {
   acmeStatus: AcmeStatus;
   containerExposedPorts: any;
   containerPort: string;
-  containerPorts: string[];
+  containerPorts: number[];
   default: boolean;
   dockerName: string;
   externalHost: string;

@@ -2,7 +2,37 @@
 
 import { createId } from "@app/mocks";
 import { defaultDeployEndpoint } from "@app/schema";
-import { getEndpointDisplayHost, getEndpointUrl } from "./index";
+import {
+  getEndpointDisplayHost,
+  getEndpointUrl,
+  parsePortsStrToNum,
+} from "./index";
+
+describe("parsePortsStrToNum", () => {
+  describe("when parsing comma-separated ports", () => {
+    it("should convert to number array", () => {
+      expect(parsePortsStrToNum("8080,9000,3000")).toEqual([8080, 9000, 3000]);
+    });
+  });
+
+  describe("when parsing space-separated ports", () => {
+    it("should convert to number array", () => {
+      expect(parsePortsStrToNum("8080 9000 3000")).toEqual([8080, 9000, 3000]);
+    });
+  });
+
+  describe("when handling empty strings", () => {
+    it("should return empty array", () => {
+      expect(parsePortsStrToNum("")).toEqual([]);
+    });
+  });
+
+  describe("when filtering empty items", () => {
+    it("should ignore empty items", () => {
+      expect(parsePortsStrToNum("8080,,9000")).toEqual([8080, 9000]);
+    });
+  });
+});
 
 describe("getDisplayHost", () => {
   describe("when no endpoint is provided", () => {
