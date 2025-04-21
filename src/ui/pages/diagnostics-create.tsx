@@ -25,6 +25,7 @@ import {
   Button,
   EnvironmentSelect,
   FormGroup,
+  Input,
   Select,
   Tooltip,
 } from "../shared";
@@ -54,30 +55,13 @@ export const DiagnosticsCreateForm = ({
 
   const resourceTypeLabel = resourceType === "App" ? "App" : "Resource";
 
-  const symptomOptions = [
-    {
-      label: `${resourceTypeLabel} is slow`,
-      value: `${resourceTypeLabel} is slow`,
-    },
-    {
-      label: `${resourceTypeLabel} is unavailable`,
-      value: `${resourceTypeLabel} is unavailable`,
-    },
-    {
-      label: `${resourceTypeLabel} is experiencing high error rate`,
-      value: `${resourceTypeLabel} is experiencing high error rate`,
-    },
-  ];
-  const [symptoms, setSymptom] = useState(symptomOptions[0].value);
+  const [symptoms, setSymptom] = useState("");
   const canCreateDiagnostics = useSelector(selectTokenHasWriteAccess);
 
   // We need to memoize the now date because the date picker will re-render the
   // component when the date changes, making the timestamps in the options
-  // invalid.
-  const now = useMemo(
-    () => DateTime.now().minus({ minutes: DateTime.local().offset }),
-    [],
-  );
+  // invalid. We use the local time now, not UTC.
+  const now = useMemo(() => DateTime.now(), []);
 
   const timePresets = [
     { label: "Last 15 minutes", value: now.minus({ minutes: 15 }).toISO() },
@@ -145,8 +129,8 @@ export const DiagnosticsCreateForm = ({
     resourceType: resourceType,
     organizationId: orgId,
     symptoms,
-    rangeBegin: startDate.toUTC(0, { keepLocalTime: true }).toISO() ?? "",
-    rangeEnd: endDate.toUTC(0, { keepLocalTime: true }).toISO() ?? "",
+    rangeBegin: startDate.toUTC().toISO() ?? "",
+    rangeEnd: endDate.toUTC().toISO() ?? "",
   });
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
@@ -184,10 +168,12 @@ export const DiagnosticsCreateForm = ({
           feedbackVariant="info"
           className="flex-1 mb-4"
         >
-          <Select
-            onSelect={(o) => setSymptom(o.value)}
+          <Input
+            placeholder={`e.g., ${resourceTypeLabel} is slow`}
             value={symptoms}
-            options={symptomOptions}
+            onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+              setSymptom(e.target.value)
+            }
           />
         </FormGroup>
         <div className="flex flex-col gap-2">
@@ -226,7 +212,9 @@ export const DiagnosticsCreateForm = ({
             </FormGroup>
             <div className="flex gap-1 flex-col">
               <div className="block">&nbsp;</div>
-              <div className="text-gray-500">UTC</div>
+              <div className="text-gray-500">
+                {DateTime.local().offsetNameShort}
+              </div>
             </div>
           </div>
         </div>

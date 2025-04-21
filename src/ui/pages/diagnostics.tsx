@@ -73,11 +73,12 @@ export const DiagnosticsPage = () => {
       <Table>
         <THead>
           <Th>Dashboard</Th>
+          <Th>Time Created</Th>
           <Th>Time Range</Th>
         </THead>
 
         <TBody>
-          {paginated.data.length === 0 ? <EmptyTr colSpan={5} /> : null}
+          {paginated.data.length === 0 ? <EmptyTr colSpan={6} /> : null}
           {paginated.data.map((dashboard) => (
             <Tr key={dashboard.id}>
               <Td className="flex-1">
@@ -93,7 +94,13 @@ export const DiagnosticsPage = () => {
                 </Link>
               </Td>
               <Td className="flex-1">
-                <p>{new Date(dashboard.createdAt).toLocaleString()} UTC</p>
+                <p>{new Date(dashboard.createdAt).toLocaleString()}</p>
+              </Td>
+              <Td className="flex-1">
+                <p>
+                  {new Date(dashboard.rangeBegin).toLocaleString()} -{" "}
+                  {new Date(dashboard.rangeEnd).toLocaleString()}
+                </p>
               </Td>
             </Tr>
           ))}
