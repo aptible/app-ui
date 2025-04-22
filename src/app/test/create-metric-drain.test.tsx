@@ -48,6 +48,11 @@ describe("Create Metric Drain flow", () => {
       const apiKey = await screen.findByRole("textbox", { name: /API Key/ });
       await act(() => userEvent.type(apiKey, "some-api-key"));
 
+      const ddSite = await screen.findByRole("textbox", {
+        name: /Datadog Site/,
+      });
+      await act(() => userEvent.type(ddSite, "US1"));
+
       const btn = await screen.findByRole("button", {
         name: /Save Metric Drain/,
       });

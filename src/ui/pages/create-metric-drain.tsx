@@ -1,6 +1,7 @@
 import {
   type CreateMetricDrainProps,
   type MetricDrainType,
+  datadogSites,
   fetchDatabasesByEnvId,
   provisionMetricDrain,
   selectEnvironmentById,
@@ -92,6 +93,11 @@ const validators = {
     if (p.drainType !== "datadog") return;
     if (p.apiKey === "") return "Must provide a Datadog API key";
   },
+  ddSite: (p: CreateMetricDrainProps) => {
+    if (p.drainType !== "datadog") return;
+    if (!(p.ddSite in datadogSites) && p.ddSite !== "")
+      return `Must provide a Datadog Site in ${Object.keys(datadogSites).join(", ")}`;
+  },
 };
 
 export const CreateMetricDrainPage = () => {
@@ -105,6 +111,7 @@ export const CreateMetricDrainPage = () => {
   const [dbId, setDbId] = useState("");
   const [handle, setHandle] = useState("");
   const [apiKey, setApiKey] = useState("");
+  const [ddSite, setDdSite] = useState("");
   const [protocol, setProtocol] = useState<"http" | "https">("https");
   const [hostname, setHostname] = useState("");
   const [port, setPort] = useState("");
@@ -147,6 +154,7 @@ export const CreateMetricDrainPage = () => {
         ...def,
         drainType: "datadog",
         apiKey,
+        ddSite,
       };
     }
 
@@ -259,33 +267,50 @@ export const CreateMetricDrainPage = () => {
           ) : null}
 
           {drainType === "datadog" ? (
-            <FormGroup
-              label="API Key"
-              htmlFor="api-key"
-              description={
-                <div>
-                  <p>
-                    Create a new API Key in Datadog under{" "}
-                    <ExternalLink
-                      variant="info"
-                      href="https://app.datadoghq.com/account/settings#api"
-                    >
-                      Integrations / APIs
-                    </ExternalLink>{" "}
-                    (or reuse an existing one) and paste it here.
-                  </p>
-                </div>
-              }
-              feedbackMessage={errors.apiKey}
-              feedbackVariant={errors.apiKey ? "danger" : "info"}
-            >
-              <Input
-                type="text"
-                id="api-key"
-                value={apiKey}
-                onChange={(e) => setApiKey(e.currentTarget.value)}
-              />
-            </FormGroup>
+            <>
+              <FormGroup
+                label="API Key"
+                htmlFor="api-key"
+                description={
+                  <div>
+                    <p>
+                      Create a new API Key in Datadog under{" "}
+                      <ExternalLink
+                        variant="info"
+                        href="https://app.datadoghq.com/account/settings#api"
+                      >
+                        Integrations / APIs
+                      </ExternalLink>{" "}
+                      (or reuse an existing one) and paste it here.
+                    </p>
+                  </div>
+                }
+                feedbackMessage={errors.apiKey}
+                feedbackVariant={errors.apiKey ? "danger" : "info"}
+              >
+                <Input
+                  type="text"
+                  id="api-key"
+                  value={apiKey}
+                  onChange={(e) => setApiKey(e.currentTarget.value)}
+                />
+              </FormGroup>
+
+              <FormGroup
+                label="Datadog Site"
+                htmlFor="dd-site"
+                description={`Enter the Datadog Site to use. Valid sites are ${Object.keys(datadogSites).join(", ")}. If left blank, we assume US1.`}
+                feedbackMessage={errors.ddSite}
+                feedbackVariant={errors.ddSite ? "danger" : "info"}
+              >
+                <Input
+                  type="text"
+                  id="dd-site"
+                  value={ddSite}
+                  onChange={(e) => setDdSite(e.currentTarget.value)}
+                />
+              </FormGroup>
+            </>
           ) : null}
 
           {drainType === "influxdb" || drainType === "influxdb2" ? (
