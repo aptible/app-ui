@@ -171,6 +171,8 @@ export function EndpointDatabaseHeaderInfo({
         </DetailInfoItem>
 
         <DetailInfoItem title="IP Allowlist">{txt.ipAllowlist}</DetailInfoItem>
+
+        <DetailInfoItem title="Placement">{txt.placement}</DetailInfoItem>
       </DetailInfoGrid>
     </DetailHeader>
   );
