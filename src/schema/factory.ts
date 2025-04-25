@@ -349,6 +349,7 @@ export const defaultDeployDatabaseImage = (
     type: "",
     version: "",
     visible: true,
+    pitrSupported: false,
     createdAt: now,
     updatedAt: now,
     ...db,
@@ -649,12 +650,13 @@ export const defaultBackupRp = (
   bk: Partial<DeployBackupRetentionPolicy> = {},
 ): DeployBackupRetentionPolicy => {
   const now = new Date().toISOString();
-  // based on https://github.com/aptible/deploy-api/blob/b537960533f3cb6fb8f57f339de3a46207e70f4b/app/models/backup_retention_policy.rb#L8
+  // based on https://github.com/aptible/deploy-api/blob/16e9334dc873b64cff2863d7bbd017e11a2caf24/app/models/backup_retention_policy.rb#L8
   return {
     id: "",
-    daily: 90,
-    monthly: 72,
-    yearly: 0,
+    daily: 30,
+    monthly: 12,
+    yearly: 6,
+    pitrDays: 0,
     makeCopy: true,
     keepFinal: true,
     environmentId: "",

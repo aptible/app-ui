@@ -16,6 +16,7 @@ export interface DeployDatabaseImageResponse {
   created_at: string;
   updated_at: string;
   eol_at: string;
+  pitr_supported: boolean;
   _type: "database_image";
 }
 
@@ -33,6 +34,7 @@ export const defaultDatabaseImageResponse = (
     version: "",
     visible: true,
     eol_at: "",
+    pitr_supported: false,
     created_at: now,
     updated_at: now,
     _type: "database_image",
@@ -53,6 +55,7 @@ export const deserializeDeployDatabaseImage = (
     type: payload.type,
     version: payload.version,
     visible: payload.visible,
+    pitrSupported: payload.pitr_supported,
     createdAt: payload.created_at,
     updatedAt: payload.updated_at,
   };

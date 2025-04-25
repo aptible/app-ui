@@ -1,10 +1,12 @@
 import { prettyDateTime } from "@app/date";
 import {
+  fetchBackupRp,
   fetchBackupsByDatabaseId,
   fetchDatabaseImageById,
   fetchDatabaseImages,
   fetchEndpointsByServiceId,
   fetchRelease,
+  selectLatestBackupRpByEnvId,
 } from "@app/deploy";
 import {
   calcMetrics,
@@ -30,6 +32,7 @@ import {
   databaseDetailUrl,
   databaseEndpointsUrl,
   databaseMetricsUrl,
+  databasePitrUrl,
   databaseScaleUrl,
   databaseSettingsUrl,
   environmentDatabasesUrl,
@@ -68,6 +71,7 @@ export function DatabaseHeader({
   useQuery(fetchEndpointsByServiceId({ id: database.serviceId }));
   useQuery(fetchBackupsByDatabaseId({ id: database.id }));
   useQuery(fetchRelease({ id: service.currentReleaseId }));
+  useQuery(fetchBackupRp({ envId: database.environmentId }));
 
   const metrics = calcMetrics([service]);
   useQuery(fetchDiskById({ id: database.diskId }));
@@ -152,8 +156,14 @@ function DatabasePageHeader() {
   const service = useSelector((s) =>
     selectServiceById(s, { id: database.serviceId }),
   );
+  const image = useSelector((s) =>
+    selectDatabaseImageById(s, { id: database.databaseImageId }),
+  );
   const environment = useSelector((s) =>
     selectEnvironmentById(s, { id: database.environmentId }),
+  );
+  const backupPolicy = useSelector((s) =>
+    selectLatestBackupRpByEnvId(s, { envId: database.environmentId }),
   );
   const loaderDb = useQuery(fetchDatabase({ id }));
   const loaderService = useQuery(fetchService({ id: database.serviceId }));
@@ -172,8 +182,18 @@ function DatabasePageHeader() {
     { name: "Backups", href: databaseBackupsUrl(id) },
     { name: "Cluster", href: databaseClusterUrl(id) },
     { name: "Connection URLs", href: databaseCredentialsUrl(id) },
-    { name: "Settings", href: databaseSettingsUrl(id) },
   ] as TabItem[];
+
+  // TODO: Create database pitr enabled helper
+  if (
+    backupPolicy.pitrDays > 0 &&
+    database.enableBackups &&
+    image.pitrSupported
+  ) {
+    tabs.push({ name: "Recovery", href: databasePitrUrl(id) });
+  }
+
+  tabs.push({ name: "Settings", href: databaseSettingsUrl(id) });
 
   return (
     <>

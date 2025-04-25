@@ -9,6 +9,7 @@ export interface BackupRpResponse {
   daily: number;
   monthly: number;
   yearly: number;
+  pitr_days: number;
   make_copy: boolean;
   keep_final: boolean;
   created_at: string;
@@ -27,6 +28,7 @@ export const defaultBackupRpResponse = (
     daily: 0,
     monthly: 0,
     yearly: 0,
+    pitr_days: 0,
     make_copy: false,
     keep_final: false,
     created_at: now,
@@ -46,6 +48,7 @@ const deserializeBackupRp = (
     daily: bk.daily,
     monthly: bk.monthly,
     yearly: bk.yearly,
+    pitrDays: bk.pitr_days,
     makeCopy: bk.make_copy,
     keepFinal: bk.keep_final,
     environmentId: extractIdFromLink(bk._links.account),

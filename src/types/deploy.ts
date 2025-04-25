@@ -323,6 +323,7 @@ export interface DeployDatabaseImage extends Timestamps {
   type: string;
   version: string;
   visible: boolean;
+  pitrSupported: boolean;
 }
 
 export interface ContainerProfile {
@@ -581,6 +582,7 @@ export interface DeployBackupRetentionPolicy {
   daily: number;
   monthly: number;
   yearly: number;
+  pitrDays: number;
   makeCopy: boolean;
   keepFinal: boolean;
   environmentId: string;
