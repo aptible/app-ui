@@ -113,7 +113,7 @@ export const CreateMetricDrainPage = () => {
   const [dbId, setDbId] = useState("");
   const [handle, setHandle] = useState("");
   const [apiKey, setApiKey] = useState("");
-  const [ddSite, setDdSite] = useState("");
+  const [ddSite, setDdSite] = useState("US1");
   const [protocol, setProtocol] = useState<"http" | "https">("https");
   const [hostname, setHostname] = useState("");
   const [port, setPort] = useState("");
