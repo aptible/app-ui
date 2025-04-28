@@ -160,16 +160,27 @@ interface CreateInfluxDb2MetricDrain extends CreateMetricDrainBase {
   port?: string;
 }
 
-interface CreateDatabaseMetricDrain extends CreateMetricDrainBase {
+interface CreateDatadogMetricDrain extends CreateMetricDrainBase {
   drainType: "datadog";
   apiKey: string;
+  ddSite: string;
 }
+
+export const datadogSites: Record<string, string> = {
+  US1: "https://app.datadoghq.com",
+  US3: "https://us3.datadoghq.com",
+  US5: "https://us5.datadoghq.com",
+  EU1: "https://app.datadoghq.eu",
+  "US1-FED": "https://app.ddog-gov.com",
+};
+
+export const datadogPath = "/api/v1/series";
 
 export type CreateMetricDrainProps =
   | CreateInfluxDbEnvMetricDrain
   | CreateInfluxDb1MetricDrain
   | CreateInfluxDb2MetricDrain
-  | CreateDatabaseMetricDrain;
+  | CreateDatadogMetricDrain;
 
 export const createMetricDrain = api.post<
   CreateMetricDrainProps,
@@ -214,9 +225,14 @@ export const createMetricDrain = api.post<
       },
     });
   } else if (ctx.payload.drainType === "datadog") {
+    const site = ctx.payload.ddSite || "US1";
+    const series_url = datadogSites[site] + datadogPath;
     body = JSON.stringify({
       ...preBody,
-      drain_configuration: { api_key: ctx.payload.apiKey },
+      drain_configuration: {
+        api_key: ctx.payload.apiKey,
+        series_url: series_url,
+      },
     });
   }
 
