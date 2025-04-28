@@ -1,6 +1,7 @@
 import {
   type CreateMetricDrainProps,
   type MetricDrainType,
+  datadogSites,
   fetchDatabasesByEnvId,
   provisionMetricDrain,
   selectEnvironmentById,
@@ -40,8 +41,8 @@ const options: SelectOption<MetricDrainType>[] = [
   { value: "datadog", label: "Datadog" },
 ];
 
-const datadogSiteOptions: SelectOption[] = Object.keys(datadogSites).map((site) => (
-  { label: site, value: site })
+const datadogSiteOptions: SelectOption[] = Object.keys(datadogSites).map(
+  (site) => ({ label: site, value: site }),
 );
 
 const validators = {
