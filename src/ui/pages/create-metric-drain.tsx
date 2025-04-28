@@ -40,13 +40,9 @@ const options: SelectOption<MetricDrainType>[] = [
   { value: "datadog", label: "Datadog" },
 ];
 
-const datadogSiteOptions: SelectOption[] = [
-  { label: "US1", value: "US1" },
-  { label: "US3", value: "US3" },
-  { label: "US5", value: "US5" },
-  { label: "EU1", value: "EU1" },
-  { label: "US1-FED", value: "US1-FED" },
-];
+const datadogSiteOptions: SelectOption[] = Object.keys(datadogSites).map((site) => (
+  { label: site, value: site })
+);
 
 const validators = {
   // all
