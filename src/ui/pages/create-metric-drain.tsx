@@ -1,7 +1,6 @@
 import {
   type CreateMetricDrainProps,
   type MetricDrainType,
-  datadogSites,
   fetchDatabasesByEnvId,
   provisionMetricDrain,
   selectEnvironmentById,
@@ -39,6 +38,14 @@ const options: SelectOption<MetricDrainType>[] = [
   { value: "influxdb", label: "InfluxDb v1 (anywhere)" },
   { value: "influxdb2", label: "InfluxDb v2 (anywhere)" },
   { value: "datadog", label: "Datadog" },
+];
+
+const datadogSiteOptions: SelectOption[] = [
+  { label: "US1", value: "US1" },
+  { label: "US3", value: "US3" },
+  { label: "US5", value: "US5" },
+  { label: "EU1", value: "EU1" },
+  { label: "US1-FED", value: "US1-FED" },
 ];
 
 const validators = {
@@ -92,11 +99,6 @@ const validators = {
   apiKey: (p: CreateMetricDrainProps) => {
     if (p.drainType !== "datadog") return;
     if (p.apiKey === "") return "Must provide a Datadog API key";
-  },
-  ddSite: (p: CreateMetricDrainProps) => {
-    if (p.drainType !== "datadog") return;
-    if (!(p.ddSite in datadogSites) && p.ddSite !== "")
-      return `Must provide a Datadog Site in ${Object.keys(datadogSites).join(", ")}`;
   },
 };
 
@@ -299,15 +301,13 @@ export const CreateMetricDrainPage = () => {
               <FormGroup
                 label="Datadog Site"
                 htmlFor="dd-site"
-                description={`Enter the Datadog Site to use. Valid sites are ${Object.keys(datadogSites).join(", ")}. If left blank, we assume US1.`}
-                feedbackMessage={errors.ddSite}
-                feedbackVariant={errors.ddSite ? "danger" : "info"}
+                description="Select the Datadog Site to use."
               >
-                <Input
-                  type="text"
+                <Select
+                  ariaLabel="Datadog Site"
                   id="dd-site"
-                  value={ddSite}
-                  onChange={(e) => setDdSite(e.currentTarget.value)}
+                  options={datadogSiteOptions}
+                  onSelect={(opt) => setDdSite(opt.value)}
                 />
               </FormGroup>
             </>
