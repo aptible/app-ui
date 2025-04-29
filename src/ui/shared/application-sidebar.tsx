@@ -43,6 +43,7 @@ import {
   IconGlobe,
   IconHamburger,
   IconHeart,
+  IconHome,
   IconLayers,
   IconPlusCircle,
   IconSearch,
@@ -72,6 +73,7 @@ export const ApplicationSidebar = () => {
   const navigation = [
     ...(!hasDiagnosticsPoc
       ? [
+          { name: "Home", to: "/", icon: <IconHome /> },
           { name: "Stacks", to: stacksUrl(), icon: <IconLayers /> },
           { name: "Environments", to: environmentsUrl(), icon: <IconGlobe /> },
           { name: "Apps", to: appsUrl(), icon: <IconBox /> },
