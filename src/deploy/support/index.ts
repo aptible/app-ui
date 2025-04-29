@@ -54,7 +54,7 @@ export const resetSupportTicket = thunks.create(
 interface AttachmentProps {
   attachment: File;
   callback: (p: { token: string; filename: string }) => void;
-  errorCallback?: (message: string) => void;
+  errorCallback?: (message: string | null) => void;
 }
 
 export const uploadAttachment = api.post<AttachmentProps>(
@@ -69,11 +69,11 @@ export const uploadAttachment = api.post<AttachmentProps>(
     yield* next();
 
     if (!ctx.json.ok) {
-      const errorMessage =
-        ctx.json.error?.message ||
-        (typeof ctx.json.value?.message === "string"
-          ? ctx.json.value.message
-          : "File upload failed. Please try again.");
+      let errorMessage = "File upload failed. Please try again.";
+
+      if (ctx.json.error && typeof ctx.json.error.message === "string") {
+        errorMessage = ctx.json.error.message;
+      }
 
       // Call errorCallback if provided
       if (ctx.payload.errorCallback) {
