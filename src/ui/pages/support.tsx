@@ -56,6 +56,7 @@ export const SupportPage = () => {
   const isDisabled = formState.subject === "" || formState.description === "";
   const [attachedFiles, setAttachedFiles] = useState<AttachmentObject[]>([]);
   const [viewedSuggestion, setViewedSuggestion] = useState(false);
+  const [attachmentError, setAttachmentError] = useState<string | null>(null);
 
   // Drag and Drop reference hook and functions
   const drop = useRef(null);
@@ -94,11 +95,27 @@ export const SupportPage = () => {
     }
   }, [user.email, user.name]);
 
-  // fucntion for final submission of form
+  // Convert line breaks to HTML breaks for proper formatting
+  const convertLineBreaks = (text: string): string => {
+    return text.replace(/\n/g, "<br />");
+  };
+
+  // function for final submission of form
   const onSubmitForm = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const attachments = attachedFiles.map((file) => file.token);
-    dispatch(createSupportTicket({ ...formState, attachments: attachments }));
+
+    // Convert description line breaks to HTML breaks
+    const formattedDescription = convertLineBreaks(formState.description);
+
+    dispatch(
+      createSupportTicket({
+        ...formState,
+        description: formattedDescription,
+        attachments: attachments,
+      }),
+    );
+
     tunaEvent(
       "submittedAppUiSupportForm",
       `{ "viewedDocs": "${viewedSuggestion}", "email": "${user.email}" }`,
@@ -122,10 +139,24 @@ export const SupportPage = () => {
     ]);
   };
 
+  // Handle attachment error messages
+  const handleAttachmentError = (message: string | null) => {
+    setAttachmentError(message);
+  };
+
   // function for calling api to attach file to zendesk then returns a token to to local state
   const onAttachmentUpload = async (attachments: Array<any>) => {
+    // Clear any previous errors
+    setAttachmentError(null);
+
     for (const attachment of attachments) {
-      dispatch(uploadAttachment({ attachment, callback: assignAttachment }));
+      dispatch(
+        uploadAttachment({
+          attachment,
+          callback: assignAttachment,
+          errorCallback: handleAttachmentError,
+        }),
+      );
     }
   };
 
@@ -261,6 +292,12 @@ export const SupportPage = () => {
                 <Group size="sm">
                   {attachmentLoader.isLoading ? (
                     <Banner>Uploading attachment ...</Banner>
+                  ) : null}
+
+                  {attachmentError ? (
+                    <Banner variant="error" className="mb-3">
+                      {attachmentError}
+                    </Banner>
                   ) : null}
 
                   {attachedFiles?.map((file) => {
