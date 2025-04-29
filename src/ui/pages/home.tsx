@@ -830,10 +830,7 @@ const RecentActivitySection = () => {
 
 export const HomePage = () => {
   const [showWhatsNew, setShowWhatsNew] = useState(true);
-  const [showFeedbackBanner, setShowFeedbackBanner] = useState(() => {
-    const dismissed = localStorage.getItem('feedbackBannerDismissed');
-    return !dismissed;
-  });
+  const [showFeedbackBanner, setShowFeedbackBanner] = useState(true);
 
   // Add state for delayed data display
   const [isDataStable, setIsDataStable] = useState(false);
@@ -874,33 +871,27 @@ export const HomePage = () => {
 
   // Add loading state checks for Redux data
   const isSourcesInitialLoad = sources === null || sourcesWithLiveCommits === null;
-  const isSourcesEmpty = !sources?.length || !sourcesWithLiveCommits?.length;
+  const [isForceLoading, setIsForceLoading] = useState(true);
+  
+  // Add forced loading delay on initial mount
+  useEffect(() => {
+    // Only start the timer once we have the data
+    if (!isSourcesInitialLoad) {
+      const timer = setTimeout(() => {
+        setIsForceLoading(false);
+      }, 300);
+      return () => clearTimeout(timer);
+    }
+  }, [isSourcesInitialLoad]);
   
   // Combine loading states
-  const isSourcesLoading = isSourcesInitialLoad || isSourcesEmpty || !isDataStable;
+  const isSourcesLoading = isSourcesInitialLoad || isForceLoading;
 
-  // Only compute sourceWithMostLiveCommits when data is ready
-  const sourceWithMostLiveCommits = !isSourcesLoading ? sourcesWithLiveCommits[0] : null;
+  // Only compute sourceWithMostLiveCommits when data is ready and force loading is done
+  const sourceWithMostLiveCommits = (!isSourcesInitialLoad && !isForceLoading) ? sourcesWithLiveCommits?.[0] : null;
 
-  // Add useEffect to handle data stability
-  useEffect(() => {
-    let stabilityTimer: NodeJS.Timeout;
-    
-    if (!isSourcesInitialLoad && !isSourcesEmpty && sources && sourcesWithLiveCommits) {
-      // Wait for 500ms after data is loaded before showing it
-      stabilityTimer = setTimeout(() => {
-        setIsDataStable(true);
-      }, 500);
-    } else {
-      setIsDataStable(false);
-    }
-
-    return () => {
-      if (stabilityTimer) {
-        clearTimeout(stabilityTimer);
-      }
-    };
-  }, [sources, sourcesWithLiveCommits, isSourcesInitialLoad, isSourcesEmpty]);
+  // Empty state check should only happen after all loading is complete
+  const isSourcesEmpty = !isSourcesInitialLoad && !isForceLoading && (!sources?.length || !sourcesWithLiveCommits?.length);
 
   // Add useEffect to trigger sources data load
   useEffect(() => {
@@ -1010,8 +1001,8 @@ export const HomePage = () => {
 
   const handleDismiss = () => {
     setShowFeedbackBanner(false);
-    // Store dismissal in localStorage
-    localStorage.setItem('feedbackBannerDismissed', 'true');
+    // Keeping localStorage code commented out for future use
+    // localStorage.setItem('feedbackBannerDismissed', 'true');
   };
 
   return (
@@ -1044,6 +1035,7 @@ export const HomePage = () => {
             </div>
           </div>
           <div className="p-6 space-y-8">
+            {/* Temporarily hidden What's New section
             {showWhatsNew && (
               <div className="relative bg-gradient-to-r from-blue-50 to-indigo-50 rounded-lg border border-blue-100 p-4 shadow">
                 <div className="flex items-start justify-between">
@@ -1075,6 +1067,7 @@ export const HomePage = () => {
                 </div>
               </div>
             )}
+            */}
 
             <div>
               <h2 className="text-lg font-medium mb-4">Overview</h2>
@@ -1248,37 +1241,52 @@ export const HomePage = () => {
                       </Link>
                     </div>
                     <div className="px-6 py-4">
-                      <div className="flex items-center justify-between">
-                        <div className="flex items-center gap-2">
-                          {isSourcesLoading ? (
-                            <>
-                              <div className="h-5 w-32 bg-gray-200 rounded animate-pulse" />
-                              <div className="h-5 w-24 bg-gray-200 rounded animate-pulse" />
-                            </>
-                          ) : sourceWithMostLiveCommits && (
-                            <>
-                              <Link
-                                to={sourceDetailUrl(sourceWithMostLiveCommits.id)}
-                                className="text-sm font-medium text-gray-900 hover:text-blue-600"
-                              >
-                                {sourceWithMostLiveCommits.displayName}
-                              </Link>
-                              <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-blue-100 text-blue-800">
-                                {sourceWithMostLiveCommits.liveCommits?.length || 0} Live Commits
-                              </span>
-                            </>
-                          )}
-                        </div>
-                        <div className="flex items-center gap-4">
-                          {isSourcesLoading ? (
+                      {isSourcesLoading ? (
+                        <div className="flex items-center justify-between">
+                          <div className="flex items-center gap-2">
+                            <div className="h-5 w-32 bg-gray-200 rounded animate-pulse" />
                             <div className="h-5 w-24 bg-gray-200 rounded animate-pulse" />
-                          ) : sources && (
-                            <span className="text-sm text-gray-500">
-                              {sources.length} Total Repositories
-                            </span>
-                          )}
+                          </div>
+                          <div className="flex items-center gap-4">
+                            <div className="h-5 w-24 bg-gray-200 rounded animate-pulse" />
+                          </div>
                         </div>
-                      </div>
+                      ) : isSourcesEmpty ? (
+                        <div className="flex items-start py-2">
+                          <div className="flex flex-col items-start gap-1">
+                            <span className="text-sm text-gray-500">No repositories found</span>
+                            <Link 
+                              to="/sources/setup"
+                              className="text-sm font-medium text-blue-600 hover:text-blue-800"
+                            >
+                              Setup a source →
+                            </Link>
+                          </div>
+                        </div>
+                      ) : sourceWithMostLiveCommits ? (
+                        <div className="flex items-center justify-between">
+                          <div className="flex items-center gap-2">
+                            <Link
+                              to={sourceDetailUrl(sourceWithMostLiveCommits?.id || '')}
+                              className="text-sm font-medium text-gray-900 hover:text-blue-600"
+                            >
+                              {sourceWithMostLiveCommits?.displayName}
+                            </Link>
+                            <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-blue-100 text-blue-800">
+                              {sourceWithMostLiveCommits?.liveCommits?.length || 0} Live Commits
+                            </span>
+                          </div>
+                          <div className="flex items-center gap-4">
+                            <span className="text-sm text-gray-500">
+                              {Array.isArray(sources) ? sources.length : 0} Total Repositories
+                            </span>
+                          </div>
+                        </div>
+                      ) : (
+                        <div className="flex items-center justify-center py-2">
+                          <span className="text-sm text-gray-500">No repositories found</span>
+                        </div>
+                      )}
                     </div>
                   </div>
                 </div>
@@ -1383,9 +1391,9 @@ export const HomePage = () => {
           <Banner variant="info" className="shadow-lg bg-gradient-to-br from-blue-50 to-white">
             <div className="flex items-start justify-between gap-4">
               <div>
-                <div className="font-semibold mb-1">BETA Page</div>
+                <div className="font-semibold mb-1">Share feedback</div>
                 <div className="text-sm text-gray-600">
-                  We are in the proccess of designing a home page. Want to see something specific here? Have feedback? Let us know!
+                  This landing page is in BETA. Have feedback? Experiencing a bug? Let us know!
                 </div>
                 <div className="mt-2">
                   <a
