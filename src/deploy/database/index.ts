@@ -280,9 +280,10 @@ interface CreateDbResult {
     | null
     | (Omit<DeployApiCtx<any, any>, "payload" | "json"> &
         Payload<
-          | CreateDatabaseOpProps
+          | ProvisionDatabaseOpProps
           | DeprovisionDatabaseOpProps
           | BackupDatabaseOpProps
+          | PitrRestoreDatabaseOpProps
         > &
         FetchJson<DeployOperationResponse, any>);
 }
@@ -416,7 +417,6 @@ export const provisionDatabase = thunks.create<
         containerSize: ctx.payload.containerSize || 1024,
         diskSize: ctx.payload.diskSize || 10,
         type: "provision",
-        envId: ctx.payload.envId,
       }),
     ),
   );
@@ -444,14 +444,15 @@ export const provisionDatabase = thunks.create<
   );
 });
 
-interface CreateDatabaseOpProps {
+interface ProvisionDatabaseOpProps {
   dbId: string;
-  containerSize: number;
-  diskSize: number;
+  type: "provision";
+  containerSize?: number;
+  diskSize?: number;
   containerProfile?: InstanceClass;
   iops?: number;
-  type: "provision";
-  envId: string;
+  recoveryTargetType?: string;
+  recoveryTarget?: string;
 }
 
 interface DeprovisionDatabaseOpProps {
@@ -464,8 +465,20 @@ interface BackupDatabaseOpProps {
   type: "backup";
 }
 
+interface PitrRestoreDatabaseOpProps {
+  // TODO: Allow disk size properties
+  dbId: string;
+  type: "pitr_restore";
+  handle: string;
+  recoveryTargetType: string;
+  recoveryTarget?: string;
+}
+
 export const createDatabaseOperation = api.post<
-  CreateDatabaseOpProps | DeprovisionDatabaseOpProps | BackupDatabaseOpProps,
+  | ProvisionDatabaseOpProps
+  | DeprovisionDatabaseOpProps
+  | BackupDatabaseOpProps
+  | PitrRestoreDatabaseOpProps,
   DeployOperationResponse
 >("/databases/:dbId/operations", function* (ctx, next) {
   const { type } = ctx.payload;
@@ -480,14 +493,32 @@ export const createDatabaseOperation = api.post<
       }
 
       case "provision": {
-        const { containerSize, diskSize, type, iops, containerProfile } =
-          ctx.payload;
+        const {
+          containerSize,
+          diskSize,
+          iops,
+          containerProfile,
+          recoveryTargetType,
+          recoveryTarget,
+        } = ctx.payload;
         return {
           container_size: containerSize,
           disk_size: diskSize,
           provisioned_iops: iops,
           instance_profile: containerProfile,
+          recovery_target_type: recoveryTargetType,
+          recovery_target: recoveryTarget,
           type,
+        };
+      }
+
+      case "pitr_restore": {
+        const { handle, recoveryTargetType, recoveryTarget } = ctx.payload;
+        return {
+          type,
+          handle,
+          recovery_target_type: recoveryTargetType,
+          recovery_target: recoveryTarget,
         };
       }
 
@@ -527,7 +558,6 @@ export const deprovisionDatabase = thunks.create<{
   thunkLoader,
   function* (ctx, next) {
     const { dbId } = ctx.payload;
-    yield* select((s: WebState) => selectDatabaseById(s, { id: dbId }));
 
     const deprovisionCtx = yield* call(() =>
       createDatabaseOperation.run(
@@ -720,6 +750,101 @@ export const scaleDatabase = api.post<
     message: `Restart (and scale) database operation queued (operation ID: ${opId})`,
     meta: { opId: `${opId}` },
   };
+});
+
+export interface PitrRestoreDatabaseProps {
+  // TODO: Add container and disk options
+  dbId: string;
+  handle: string;
+  recoveryTargetType: string;
+  recoveryTarget?: string;
+}
+
+export const pitrRestoreDatabase = thunks.create<
+  PitrRestoreDatabaseProps,
+  ThunkCtx<PitrRestoreDatabaseProps, { databaseId: string }>
+>("pitr-restore-database", function* (ctx, next) {
+  yield* schema.update(schema.loaders.start({ id: ctx.key }));
+
+  const { dbId, handle, recoveryTargetType, recoveryTarget } = ctx.payload;
+  const db = yield* select((s: WebState) =>
+    selectDatabaseById(s, { id: dbId }),
+  );
+
+  // PITR involves two operations, first pitr_restore to create the new
+  // database in the API with a restored disk, then provision to perform setup
+  // and recovery
+  const restoreCtx = yield* call(() =>
+    createDatabaseOperation.run(
+      createDatabaseOperation({
+        dbId,
+        type: "pitr_restore",
+        handle,
+        recoveryTargetType,
+        recoveryTarget,
+      }),
+    ),
+  );
+
+  if (!restoreCtx.json.ok) {
+    yield* schema.update(
+      schema.loaders.error({
+        id: ctx.key,
+        message: restoreCtx.json.error.message,
+      }),
+    );
+    return;
+  }
+
+  const restoreData = restoreCtx.json.value;
+  // TODO: POnly wait for the expected database, not the operation to complete.
+  // The operation could take a while and we can immediately enqueue the
+  // provision once the database is created, it will wait for the restore.
+  const res = yield* call(() => waitForOperation({ id: `${restoreData.id}` }));
+
+  if (res?.status !== "succeeded") {
+    yield* schema.update(
+      schema.loaders.error({
+        id: ctx.key,
+        message: `Operation ${restoreData.id} did not succeed`,
+      }),
+    );
+    return;
+  }
+
+  // Fetch databases in the environment to make sure the new one is loaded
+  yield* call(() =>
+    fetchDatabasesByEnvId.run(
+      fetchDatabasesByEnvId({ envId: db.environmentId }),
+    ),
+  );
+  const newDb = yield* select((s: WebState) =>
+    selectDatabaseByHandle(s, { envId: db.environmentId, handle }),
+  );
+
+  const provisionCtx = yield* call(
+    createDatabaseOperation.run(
+      createDatabaseOperation({
+        dbId: newDb.id,
+        type: "provision",
+        recoveryTargetType,
+        recoveryTarget,
+      }),
+    ),
+  );
+
+  if (!provisionCtx.json.ok) {
+    yield* schema.update(
+      schema.loaders.error({
+        id: ctx.key,
+        message: provisionCtx.json.error.message,
+      }),
+    );
+    return;
+  }
+
+  yield* schema.update(schema.loaders.success({ id: ctx.key }));
+  yield* next();
 });
 
 export const formatDatabaseType = (type: string, version: string) => {

@@ -52,6 +52,7 @@ export * from "./database-detail-creds";
 export * from "./database-create-endpoint";
 export * from "./database-detail";
 export * from "./database-detail-metrics";
+export * from "./database-detail-pitr";
 export * from "./services";
 export * from "./settings";
 export * from "./verify-email";

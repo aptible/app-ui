@@ -56,6 +56,7 @@ import {
   DatabaseDetailPage,
   DatabaseEndpointsPage,
   DatabaseMetricsPage,
+  DatabasePitrPage,
   DatabaseScalePage,
   DatabaseSettingsPage,
   DatabasesPage,
@@ -468,6 +469,10 @@ export const appRoutes: RouteObject[] = [
               {
                 path: routes.DATABASE_CREDENTIALS_PATH,
                 element: <DatabaseCredentialsPage />,
+              },
+              {
+                path: routes.DATABASE_PITR_PATH,
+                element: <DatabasePitrPage />,
               },
             ],
           },

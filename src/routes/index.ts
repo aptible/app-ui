@@ -191,6 +191,9 @@ export const databaseCredentialsUrl = (id: string) =>
 export const DATABASE_ENDPOINT_CREATE_PATH = `${DATABASE_DETAIL_PATH}/endpoints/create`;
 export const databaseEndpointCreateUrl = (id: string) =>
   `${databaseDetailUrl(id)}/endpoints/create`;
+export const DATABASE_PITR_PATH = `${DATABASE_DETAIL_PATH}/recovery`;
+export const databasePitrUrl = (id: string) =>
+  `${databaseDetailUrl(id)}/recovery`;
 
 export const SERVICES_PATH = "/services";
 export const servicesUrl = () => SERVICES_PATH;
