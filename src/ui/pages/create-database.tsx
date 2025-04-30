@@ -20,7 +20,7 @@ import {
   existValidator,
   handleValidator,
 } from "@app/validator";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { useDatabaseScaler, useValidator } from "../hooks";
 import { EnvironmentDetailLayout } from "../layouts";
@@ -108,6 +108,17 @@ export const CreateDatabasePage = () => {
     navigate(environmentActivityUrl(envId));
   });
 
+  useEffect(() => {
+    if (imgSelected?.type === "elasticsearch") {
+      if (scaler.containerSize < 1024) {
+        dispatchScaler({
+          type: "containerSize",
+          payload: 1024,
+        });
+      }
+    }
+  }, [imgSelected?.type, scaler.containerSize]);
+
   if (!envId) {
     return (
       <EnvSelectorPage
@@ -157,6 +168,7 @@ export const CreateDatabasePage = () => {
             <ContainerSizeInput
               scaler={scaler}
               dispatchScaler={dispatchScaler}
+              minSize={imgSelected?.type === "elasticsearch" ? 1024 : 0}
             />
             <CpuShareView
               cpuShare={requestedContainerProfile.cpuShare}
