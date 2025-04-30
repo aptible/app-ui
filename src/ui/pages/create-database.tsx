@@ -108,6 +108,8 @@ export const CreateDatabasePage = () => {
     navigate(environmentActivityUrl(envId));
   });
 
+  // Elasticsearch requires at least 1GB to start up
+  const minContainerSize = imgSelected?.type === "elasticsearch" ? 1024 : 0;
   useEffect(() => {
     if (imgSelected?.type === "elasticsearch") {
       if (scaler.containerSize < 1024) {
@@ -168,7 +170,7 @@ export const CreateDatabasePage = () => {
             <ContainerSizeInput
               scaler={scaler}
               dispatchScaler={dispatchScaler}
-              minSize={imgSelected?.type === "elasticsearch" ? 1024 : 0}
+              minSize={minContainerSize}
             />
             <CpuShareView
               cpuShare={requestedContainerProfile.cpuShare}
