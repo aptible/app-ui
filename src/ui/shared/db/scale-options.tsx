@@ -38,18 +38,20 @@ export function CpuShareView({
 export function ContainerSizeInput({
   scaler,
   dispatchScaler,
+  minSize = 0,
 }: {
   scaler: DbScaleOptions;
   dispatchScaler: (a: DbScaleAction) => void;
+  minSize?: number;
 }) {
-  const containerSizeOptions = containerSizesByProfile(
-    scaler.containerProfile,
-  ).map((containerSizeOption) => {
-    return {
-      label: `${containerSizeOption / 1024} GB`,
-      value: `${containerSizeOption}`,
-    };
-  });
+  const containerSizeOptions = containerSizesByProfile(scaler.containerProfile)
+    .filter((containerSizeOption) => containerSizeOption >= minSize)
+    .map((containerSizeOption) => {
+      return {
+        label: `${containerSizeOption / 1024} GB`,
+        value: `${containerSizeOption}`,
+      };
+    });
   return (
     <FormGroup
       splitWidthInputs

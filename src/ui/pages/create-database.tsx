@@ -20,7 +20,7 @@ import {
   existValidator,
   handleValidator,
 } from "@app/validator";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { useDatabaseScaler, useValidator } from "../hooks";
 import { EnvironmentDetailLayout } from "../layouts";
@@ -108,6 +108,19 @@ export const CreateDatabasePage = () => {
     navigate(environmentActivityUrl(envId));
   });
 
+  // Elasticsearch requires at least 1GB to start up
+  const minContainerSize = imgSelected?.type === "elasticsearch" ? 1024 : 0;
+  useEffect(() => {
+    if (imgSelected?.type === "elasticsearch") {
+      if (scaler.containerSize < 1024) {
+        dispatchScaler({
+          type: "containerSize",
+          payload: 1024,
+        });
+      }
+    }
+  }, [imgSelected?.type, scaler.containerSize]);
+
   if (!envId) {
     return (
       <EnvSelectorPage
@@ -157,6 +170,7 @@ export const CreateDatabasePage = () => {
             <ContainerSizeInput
               scaler={scaler}
               dispatchScaler={dispatchScaler}
+              minSize={minContainerSize}
             />
             <CpuShareView
               cpuShare={requestedContainerProfile.cpuShare}
