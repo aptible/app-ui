@@ -27,6 +27,7 @@ import {
   FormGroup,
   Input,
   Select,
+  TimezoneToggle,
   Tooltip,
 } from "../shared";
 import { AppSelect } from "../shared/select-apps";
@@ -38,6 +39,7 @@ import {
 } from "@app/deploy/custom-resource";
 import { selectTokenHasWriteAccess } from "@app/token";
 import { useNavigate } from "react-router-dom";
+import type { TimezoneMode } from "../shared/timezone-context";
 
 export interface DiagnosticsCreateFormProps {
   resourceId: string;
@@ -57,6 +59,8 @@ export const DiagnosticsCreateForm = ({
 
   const [symptoms, setSymptom] = useState("");
   const canCreateDiagnostics = useSelector(selectTokenHasWriteAccess);
+
+  const [timezone, setTimezone] = useState<TimezoneMode>("utc");
 
   // We need to memoize the now date because the date picker will re-render the
   // component when the date changes, making the timestamps in the options
@@ -123,6 +127,7 @@ export const DiagnosticsCreateForm = ({
   // Submit the form.
   const [isLoading, setIsLoading] = useState(false);
   const orgId = useSelector(selectOrganizationSelectedId);
+
   const action = createDashboard({
     name: `${resourceName}: ${symptoms}`,
     resourceId: resourceId,
@@ -186,6 +191,8 @@ export const DiagnosticsCreateForm = ({
                 options={timePresets}
               />
             </FormGroup>
+          </div>
+          <div className="flex items-center gap-2">
             <FormGroup label="Start Time" htmlFor="Start Date">
               <DatePicker
                 selected={startDate?.toJSDate()}
@@ -210,12 +217,11 @@ export const DiagnosticsCreateForm = ({
                 filterTime={(time) => time < now.toJSDate()}
               />
             </FormGroup>
-            <div className="flex gap-1 flex-col">
-              <div className="block">&nbsp;</div>
-              <div className="text-gray-500">
-                {DateTime.local().offsetNameShort}
-              </div>
-            </div>
+            <TimezoneToggle
+              value={timezone}
+              onChange={setTimezone}
+              limitedOptions={true}
+            />
           </div>
         </div>
         <div className="mt-4">

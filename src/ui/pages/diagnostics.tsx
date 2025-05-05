@@ -2,6 +2,8 @@ import { fetchDashboards } from "@app/deploy/dashboard";
 import { selectDashboardsForTableSearch } from "@app/deploy/search";
 import { useQuery, useSelector } from "@app/react";
 import { diagnosticsCreateUrl, diagnosticsDetailUrl } from "@app/routes";
+import { DateTime } from "luxon";
+import { useState } from "react";
 import { Link, useSearchParams } from "react-router-dom";
 import { usePaginate } from "../hooks/use-paginate";
 import { AppSidebarLayout } from "../layouts";
@@ -21,14 +23,19 @@ import {
   Table,
   Td,
   Th,
+  TimezoneToggle,
   TitleBar,
   Tr,
   tokens,
 } from "../shared";
+import type { TimezoneMode } from "../shared/timezone-context";
 export const DiagnosticsPage = () => {
   useQuery(fetchDashboards());
   const [params, setParams] = useSearchParams();
   const search = params.get("search") || "";
+
+  const [timezone, setTimezone] = useState<TimezoneMode>("utc");
+
   const onChange = (ev: React.ChangeEvent<HTMLInputElement>) => {
     setParams({ search: ev.currentTarget.value }, { replace: true });
   };
@@ -36,6 +43,16 @@ export const DiagnosticsPage = () => {
     selectDashboardsForTableSearch(s, { search }),
   );
   const paginated = usePaginate(dashboards);
+
+  const formatDateTime = (isoString: string) => {
+    let dt = DateTime.fromISO(isoString);
+    if (timezone === "utc") {
+      dt = dt.toUTC();
+    } else if (timezone === "local") {
+      dt = dt.setZone(DateTime.local().zoneName);
+    }
+    return dt.toFormat("yyyy-MM-dd HH:mm:ss");
+  };
 
   return (
     <AppSidebarLayout>
@@ -66,6 +83,13 @@ export const DiagnosticsPage = () => {
 
         <Group variant="horizontal" size="lg" className="items-center mt-1">
           <DescBar>{paginated.totalItems} Diagnostics</DescBar>
+          <TimezoneToggle
+            value={timezone}
+            onChange={setTimezone}
+            limitedOptions={true}
+            className="ml-2 w-32"
+            label=""
+          />
           <PaginateBar {...paginated} />
         </Group>
       </FilterBar>
@@ -94,12 +118,12 @@ export const DiagnosticsPage = () => {
                 </Link>
               </Td>
               <Td className="flex-1">
-                <p>{new Date(dashboard.createdAt).toLocaleString()}</p>
+                <p>{formatDateTime(dashboard.createdAt)}</p>
               </Td>
               <Td className="flex-1">
                 <p>
-                  {new Date(dashboard.rangeBegin).toLocaleString()} -{" "}
-                  {new Date(dashboard.rangeEnd).toLocaleString()}
+                  {formatDateTime(dashboard.rangeBegin)} -{" "}
+                  {formatDateTime(dashboard.rangeEnd)}
                 </p>
               </Td>
             </Tr>
