@@ -338,8 +338,8 @@ const DatabaseNameChange = ({ database }: DbProps) => {
         description={
           <p>
             When disabled, there will be no new automatic backups taken of this
-            database. This does not automatically delete any existing taken
-            backups.{" "}
+            database, and no final database backups will be made. This does not
+            automatically delete any existing taken backups.{" "}
             <a
               href="https://www.aptible.com/docs/core-concepts/managed-databases/managing-databases/database-backups#excluding-a-database-from-new-automatic-backups"
               target="_blank"
