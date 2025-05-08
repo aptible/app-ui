@@ -377,6 +377,7 @@ export const defaultDeployService = (
     instanceClass: DEFAULT_INSTANCE_CLASS,
     forceZeroDowntime: false,
     naiveHealthCheck: false,
+    stopTimeout: null,
     createdAt: now,
     updatedAt: now,
     ...s,
