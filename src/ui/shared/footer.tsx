@@ -26,15 +26,6 @@ export const Footer = () => {
             Changelog{" "}
             <IconExternalLink className="inline h-4 -ml-1 -mt-1 opacity-60" />
           </a>
-          <a
-            href="https://dashboard.aptible.com/login"
-            target="_blank"
-            className="flex-none text-gray-500 hover:text-indigo text-sm pl-4 uppercase hidden md:block"
-            rel="noreferrer"
-          >
-            Legacy Dashboard{" "}
-            <IconExternalLink className="inline h-4 -ml-1 -mt-1 opacity-60" />
-          </a>
         </div>
       </div>
     </div>
