@@ -101,7 +101,7 @@ export const AppDetailServiceSettingsPage = () => {
                 <div className="flex flex-col w-full gap-4">
                   <FormGroup
                     splitWidthInputs
-                    description={`The time in seconds to wait for the old release's containers to stop before killing them.`}
+                    description={`The time in seconds to wait for the old release's containers to stop before killing them. Must be between 1 and 900 seconds.`}
                     label="Stop Timeout"
                     htmlFor="stop-timeout"
                     className="mt-4"
