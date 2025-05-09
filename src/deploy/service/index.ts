@@ -29,6 +29,7 @@ export const defaultServiceResponse = (
     instance_class: DEFAULT_INSTANCE_CLASS,
     force_zero_downtime: false,
     naive_health_check: false,
+    stop_timeout: null,
     created_at: now,
     updated_at: now,
     _type: "service",
@@ -70,6 +71,7 @@ export const deserializeDeployService = (
     instanceClass: payload.instance_class || DEFAULT_INSTANCE_CLASS,
     forceZeroDowntime: payload.force_zero_downtime,
     naiveHealthCheck: payload.naive_health_check,
+    stopTimeout: payload.stop_timeout,
     createdAt: payload.created_at,
     updatedAt: payload.updated_at,
   };
@@ -144,11 +146,13 @@ export const calcServiceMetrics = (service: DeployService) => {
 export interface ServiceEditProps {
   forceZeroDowntime: boolean;
   naiveHealthCheck: boolean;
+  stopTimeout: number | null;
 }
 
 const serializeServiceEditProps = (payload: ServiceEditProps) => ({
   force_zero_downtime: payload.forceZeroDowntime,
   naive_health_check: payload.naiveHealthCheck,
+  stop_timeout: payload.stopTimeout,
 });
 
 export interface ModifyServiceProps extends ServiceEditProps {
@@ -163,6 +167,21 @@ export const updateServiceById = api.put<
     body: JSON.stringify(serializeServiceEditProps(ctx.payload)),
   });
   yield* next();
+  if (!ctx.json.ok) {
+    yield* schema.update(
+      schema.loaders.error({
+        id: ctx.key,
+        message: "Failed to save settings",
+      }),
+    );
+    return;
+  }
+  yield* schema.update(
+    schema.loaders.success({
+      id: ctx.key,
+      message: "Settings saved",
+    }),
+  );
 });
 
 export const selectServiceById = schema.services.selectById;

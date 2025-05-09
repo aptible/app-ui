@@ -64,6 +64,7 @@ export interface DeployService extends Timestamps {
   instanceClass: InstanceClass;
   forceZeroDowntime: boolean;
   naiveHealthCheck: boolean;
+  stopTimeout: number | null;
 }
 
 export interface AcmeChallenge {
@@ -627,6 +628,7 @@ export interface DeployServiceResponse {
   instance_class: InstanceClass;
   force_zero_downtime: boolean;
   naive_health_check: boolean;
+  stop_timeout: number | null;
   _links: {
     current_release: LinkResponse;
     app?: LinkResponse;
