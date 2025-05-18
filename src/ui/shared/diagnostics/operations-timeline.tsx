@@ -8,11 +8,13 @@ export const OperationsTimeline = ({
   startTime,
   endTime,
   synchronizedHoverContext,
+  timezone = "utc",
 }: {
   operations: Operation[];
   startTime: string;
   endTime: string;
   synchronizedHoverContext: React.Context<HoverState>;
+  timezone?: "local" | "utc" | string;
 }) => {
   const { timestamp, setTimestamp } = useContext(synchronizedHoverContext);
   const start = new Date(startTime);
@@ -140,7 +142,7 @@ export const OperationsTimeline = ({
                       <p className="text-sm">{operation.description}</p>
                       <p className="text-xs text-gray-300">
                         ({new Date(operation.created_at).toLocaleTimeString()}{" "}
-                        local)
+                        {timezone === "local" ? "local" : timezone})
                       </p>
                     </div>
                   </>

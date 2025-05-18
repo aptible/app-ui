@@ -73,11 +73,13 @@ export const DiagnosticsResource = ({
   startTime,
   endTime,
   synchronizedHoverContext,
+  timezone = "utc",
 }: {
   resource: Resource;
   startTime: string;
   endTime: string;
   synchronizedHoverContext: React.Context<HoverState>;
+  timezone?: "local" | "utc" | string;
 }) => {
   const [isCollapsed, setIsCollapsed] = useState(true);
   let plots: Plot[] = [];
@@ -127,6 +129,7 @@ export const DiagnosticsResource = ({
                     startTime={startTime}
                     endTime={endTime}
                     synchronizedHoverContext={synchronizedHoverContext}
+                    timezone={timezone}
                   />
                 </div>
               </div>
@@ -171,6 +174,7 @@ export const DiagnosticsResource = ({
                           yAxisUnit={plot.unit}
                           annotations={plot.annotations}
                           synchronizedHoverContext={synchronizedHoverContext}
+                          timezone={timezone}
                         />
                       </div>
                       <AnalysisSection analysis={plot.analysis} />
