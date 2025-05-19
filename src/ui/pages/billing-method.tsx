@@ -68,7 +68,7 @@ interface FormProps {
   country: string;
 }
 
-const validators = {
+export const validators = {
   zipcode: (p: FormProps) => {
     return existValidator(p.zipcode, "zipcode");
   },
