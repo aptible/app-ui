@@ -13,6 +13,7 @@ import {
   type Crumb,
   IconEdit,
   IconTrash,
+  TimezoneToggle,
   Tooltip,
 } from "../shared";
 import { DiagnosticsSummaryDependencyGraph } from "../shared/dependencies";
@@ -20,6 +21,7 @@ import { HoverContext } from "../shared/diagnostics/hover";
 import { DiagnosticsLineChart } from "../shared/diagnostics/line-chart";
 import { DiagnosticsMessages } from "../shared/diagnostics/messages";
 import { DiagnosticsResource } from "../shared/diagnostics/resource";
+import type { TimezoneMode } from "../shared/timezone-context";
 export const DiagnosticsDetailPage = () => {
   const { id = "" } = useParams();
   const { dashboard, dashboardContents, loadingComplete } = useDashboard({
@@ -29,6 +31,7 @@ export const DiagnosticsDetailPage = () => {
   const [showAllMessages, setShowAllMessages] = useState(false);
   const [hoverTimestamp, setHoverTimestamp] = useState<string | null>(null);
   const [isEditing, setIsEditing] = useState(false);
+  const [timezone, setTimezone] = useState<TimezoneMode>("utc");
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const canEditDiagnostics = useSelector(selectTokenHasWriteAccess);
@@ -126,19 +129,30 @@ export const DiagnosticsDetailPage = () => {
             </>
           )}
         </div>
-        {isEditing ? (
-          <div className="flex flex-col gap-4 ml-auto">
-            <Button
-              type="submit"
-              variant="delete"
-              className="w-70 flex"
-              onClick={handleDeleteClick}
-            >
-              <IconTrash color="#FFF" className="mr-2" />
-              Delete Diagnostic
-            </Button>
-          </div>
-        ) : null}
+
+        <div className="flex items-center ml-auto">
+          <TimezoneToggle
+            value={timezone}
+            onChange={setTimezone}
+            limitedOptions={true}
+            className="w-32"
+            label=""
+          />
+
+          {isEditing ? (
+            <div className="flex flex-col gap-4 ml-4">
+              <Button
+                type="submit"
+                variant="delete"
+                className="w-70 flex"
+                onClick={handleDeleteClick}
+              >
+                <IconTrash color="#FFF" className="mr-2" />
+                Delete Diagnostic
+              </Button>
+            </div>
+          ) : null}
+        </div>
       </div>
 
       <div className="flex flex-col gap-4 p-4">
@@ -192,6 +206,7 @@ export const DiagnosticsDetailPage = () => {
                             yAxisUnit={plot.unit}
                             annotations={plot.annotations}
                             synchronizedHoverContext={HoverContext}
+                            timezone={timezone}
                           />
                         </div>
                       </div>
@@ -217,6 +232,7 @@ export const DiagnosticsDetailPage = () => {
                   startTime={dashboard.rangeBegin}
                   endTime={dashboard.rangeEnd}
                   synchronizedHoverContext={HoverContext}
+                  timezone={timezone}
                 />
               ),
             )}
