@@ -68,7 +68,7 @@ interface FormProps {
   country: string;
 }
 
-const validators = {
+export const validators = {
   zipcode: (p: FormProps) => {
     return existValidator(p.zipcode, "zipcode");
   },
@@ -83,7 +83,7 @@ const validators = {
   },
   state: (p: FormProps) => {
     const readable = "state / province / district";
-    if ((p.country === "US" || p.country === "CA") && p.state === "NA") {
+    if (p.country === "US" && p.state === "NA") {
       return `${readable} is required`;
     }
   },
