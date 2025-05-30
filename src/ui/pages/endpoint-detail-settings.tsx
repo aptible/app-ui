@@ -262,13 +262,15 @@ const EndpointSettings = ({ endpointId }: { endpointId: string }) => {
   ) : null;
 
   const tokenEditForm =
-    (data.enpType === "http" ||
-      data.enpType === "http_proxy_protocol" ||
-      data.enpType === "grpc") ? (
+    data.enpType === "http" ||
+    data.enpType === "http_proxy_protocol" ||
+    data.enpType === "grpc" ? (
       <FormGroup
         label="Header Authentication Value"
         htmlFor="token-header"
-        description={`The 'X-Origin-Token' header value. When set, clients will be required to pass a 'X-Origin-Token' header matching this value.`}
+        description={`The 'X-Origin-Token' header value. When set, clients will be required to pass a 
+          'X-Origin-Token' header matching this value. Token header may only contain letters, numbers, 
+          '_', '-', ':', and '.'`}
       >
         <Input
           type="text"

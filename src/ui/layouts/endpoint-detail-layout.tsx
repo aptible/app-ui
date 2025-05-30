@@ -72,7 +72,7 @@ export function EndpointAppHeaderInfo({
     selectImageById(s, { id: app.currentImageId }),
   );
   const portTxt = getContainerPort(enp, image.exposedPorts);
-  
+
   return (
     <DetailHeader>
       <DetailTitleBar
