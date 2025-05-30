@@ -46,6 +46,7 @@ export const DiagnosticsLineChart = ({
   yAxisUnit,
   annotations = [],
   synchronizedHoverContext,
+  timezone = "utc",
 }: {
   showLegend?: boolean;
   keyId: string;
@@ -66,6 +67,7 @@ export const DiagnosticsLineChart = ({
   yAxisUnit?: string;
   annotations?: Annotation[];
   synchronizedHoverContext: React.Context<HoverState>;
+  timezone?: "local" | "utc" | string;
 }) => {
   const { timestamp, setTimestamp } = useContext(synchronizedHoverContext);
   const chartRef =
@@ -221,14 +223,14 @@ export const DiagnosticsLineChart = ({
             },
             adapters: {
               date: {
-                zone: "UTC",
+                zone: timezone === "local" ? undefined : timezone,
               },
             },
             time: {
-              tooltipFormat: "yyyy-MM-dd HH:mm:ss 'UTC'",
+              tooltipFormat: `yyyy-MM-dd HH:mm:ss ${timezone === "local" ? "" : "'UTC'"}`,
               unit: xAxisUnit,
               displayFormats: {
-                minute: "HH:mm 'UTC'",
+                minute: `HH:mm ${timezone === "local" ? "" : "'UTC'"}`,
                 day: "MMM dd",
               },
             },

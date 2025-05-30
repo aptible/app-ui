@@ -27,7 +27,6 @@ import {
   FormGroup,
   Input,
   Select,
-  TimezoneToggle,
   Tooltip,
 } from "../shared";
 import { AppSelect } from "../shared/select-apps";
@@ -39,7 +38,6 @@ import {
 } from "@app/deploy/custom-resource";
 import { selectTokenHasWriteAccess } from "@app/token";
 import { useNavigate } from "react-router-dom";
-import type { TimezoneMode } from "../shared/timezone-context";
 
 export interface DiagnosticsCreateFormProps {
   resourceId: string;
@@ -60,7 +58,7 @@ export const DiagnosticsCreateForm = ({
   const [symptoms, setSymptom] = useState("");
   const canCreateDiagnostics = useSelector(selectTokenHasWriteAccess);
 
-  const [timezone, setTimezone] = useState<TimezoneMode>("utc");
+  // Using local timezone by default
 
   // We need to memoize the now date because the date picker will re-render the
   // component when the date changes, making the timestamps in the options
@@ -193,7 +191,10 @@ export const DiagnosticsCreateForm = ({
             </FormGroup>
           </div>
           <div className="flex items-center gap-2">
-            <FormGroup label="Start Time" htmlFor="Start Date">
+            <FormGroup
+              label={`Start Time (${DateTime.local().offsetNameShort})`}
+              htmlFor="Start Date"
+            >
               <DatePicker
                 selected={startDate?.toJSDate()}
                 onChange={(date) => onSelectStartDate(date ?? new Date())}
@@ -205,7 +206,10 @@ export const DiagnosticsCreateForm = ({
                 filterTime={(time) => time < now.toJSDate()}
               />
             </FormGroup>
-            <FormGroup label="End Time" htmlFor="End Date">
+            <FormGroup
+              label={`End Time (${DateTime.local().offsetNameShort})`}
+              htmlFor="End Date"
+            >
               <DatePicker
                 selected={endDate?.toJSDate()}
                 onChange={(date) => onSelectEndDate(date ?? new Date())}
@@ -217,11 +221,6 @@ export const DiagnosticsCreateForm = ({
                 filterTime={(time) => time < now.toJSDate()}
               />
             </FormGroup>
-            <TimezoneToggle
-              value={timezone}
-              onChange={setTimezone}
-              limitedOptions={true}
-            />
           </div>
         </div>
         <div className="mt-4">
