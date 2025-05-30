@@ -791,7 +791,8 @@ export const updateEndpoint = thunks.create<EndpointUpdateProps>(
       certId = `${certCtx.json.value.id}`;
     }
 
-    let patchCtx: ReturnType<typeof patchEndpoint.run>;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    let patchCtx: any;
     try {
       patchCtx = yield* patchEndpoint.run({
         id: ctx.payload.id,
