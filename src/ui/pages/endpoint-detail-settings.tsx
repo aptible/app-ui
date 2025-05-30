@@ -12,7 +12,6 @@ import {
   selectServiceById,
   updateEndpoint,
 } from "@app/deploy";
-import { selectHasTokenHeaderFeature } from "@app/organizations";
 import {
   useDispatch,
   useLoader,
@@ -26,7 +25,7 @@ import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router";
 import { useValidator } from "../hooks";
 import {
-  BannerMessages,
+  Banner,
   Box,
   ButtonCreate,
   CertSelector,
@@ -80,7 +79,6 @@ const EndpointSettings = ({ endpointId }: { endpointId: string }) => {
   const image = useSelector((s) =>
     selectImageById(s, { id: app.currentImageId }),
   );
-  const hasTokenHeaderFeature = useSelector(selectHasTokenHeaderFeature);
   const exposedPorts = image.exposedPorts;
   const origAllowlist = enp.ipWhitelist.join("\n");
   const origContainerPorts = enp.containerPorts.join(", ");
@@ -129,7 +127,9 @@ const EndpointSettings = ({ endpointId }: { endpointId: string }) => {
   const isDisabled =
     ipsSame && portSame && portsSame && certSame && cert === "" && tokenSame;
   const curPortText = getContainerPort(enp, exposedPorts);
-  const loader = useLoader(updateEndpoint);
+  // Create an instance of the action with the specific data to track the right loader
+  const updateAction = updateEndpoint(data);
+  const loader = useLoader(updateAction);
   const [errors, validate] = useValidator<
     EndpointUpdateProps,
     typeof validators
@@ -139,7 +139,7 @@ const EndpointSettings = ({ endpointId }: { endpointId: string }) => {
     e.preventDefault();
     if (isDisabled) return;
     if (!validate(data)) return;
-    dispatch(updateEndpoint(data));
+    dispatch(updateAction);
   };
 
   useLoaderSuccess(loader, () => {
@@ -264,8 +264,7 @@ const EndpointSettings = ({ endpointId }: { endpointId: string }) => {
   const tokenEditForm =
     (data.enpType === "http" ||
       data.enpType === "http_proxy_protocol" ||
-      data.enpType === "grpc") &&
-    hasTokenHeaderFeature ? (
+      data.enpType === "grpc") ? (
       <FormGroup
         label="Header Authentication Value"
         htmlFor="token-header"
@@ -285,7 +284,16 @@ const EndpointSettings = ({ endpointId }: { endpointId: string }) => {
     <Box>
       <h1 className="text-lg text-gray-500 mb-4">Endpoint Settings</h1>
       <form onSubmit={onSubmit} className="flex flex-col gap-4">
-        <BannerMessages {...loader} />
+        {loader.status === "error" && (
+          <Banner variant="error">
+            {loader.message || "An error occurred while updating the endpoint"}
+          </Banner>
+        )}
+        {loader.status === "success" && (
+          <Banner variant="success">
+            {loader.message || "Endpoint updated successfully"}
+          </Banner>
+        )}
 
         {portForm}
         {certEditForm}

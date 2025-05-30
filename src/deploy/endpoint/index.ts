@@ -771,7 +771,7 @@ const patchEndpoint = api.patch<EndpointPatchProps>(
 export const updateEndpoint = thunks.create<EndpointUpdateProps>(
   "update-endpoint",
   function* (ctx, next) {
-    const id = ctx.name;
+    const id = ctx.key;
     yield* schema.update(schema.loaders.start({ id }));
 
     let certId = ctx.payload.certId;
@@ -791,19 +791,33 @@ export const updateEndpoint = thunks.create<EndpointUpdateProps>(
       certId = `${certCtx.json.value.id}`;
     }
 
-    const patchCtx = yield* patchEndpoint.run({
-      id: ctx.payload.id,
-      ipAllowlist: ctx.payload.ipAllowlist,
-      containerPort: ctx.payload.containerPort,
-      containerPorts: ctx.payload.containerPorts,
-      certId,
-      tokenHeader: ctx.payload.tokenHeader,
-    });
-    if (!patchCtx.json.ok) {
+    let patchCtx;
+    try {
+      patchCtx = yield* patchEndpoint.run({
+        id: ctx.payload.id,
+        ipAllowlist: ctx.payload.ipAllowlist,
+        containerPort: ctx.payload.containerPort,
+        containerPorts: ctx.payload.containerPorts,
+        certId,
+        tokenHeader: ctx.payload.tokenHeader,
+      });
+      if (!patchCtx.json.ok) {
+        yield* schema.update(
+          schema.loaders.error({
+            id: ctx.key,
+            message: patchCtx.json.error.message,
+          }),
+        );
+        return;
+      }
+    } catch (error) {
       yield* schema.update(
         schema.loaders.error({
           id: ctx.key,
-          message: patchCtx.json.error.message,
+          message:
+            error instanceof Error
+              ? error.message
+              : "Unknown error updating endpoint",
         }),
       );
       return;
