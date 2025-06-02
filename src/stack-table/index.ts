@@ -3,12 +3,16 @@ import {
   getStackType,
   selectStacksByOrgAsList,
 } from "@app/deploy";
+import { selectStackStats } from "@app/deploy/stats";
 import { createSelector } from "@app/fx";
 import { type WebState, schema } from "@app/schema";
 import type { DeployStack } from "@app/types";
 
 export interface DeployStackRow extends DeployStack {
   cost: number;
+  envCount: number;
+  appCount: number;
+  dbCount: number;
 }
 
 const createStackSortFn = (
@@ -42,6 +46,27 @@ const createStackSortFn = (
         return a.cost - b.cost;
       }
       return b.cost - a.cost;
+    }
+
+    if (sortKey === "envCount") {
+      if (sortDirection === "asc") {
+        return a.envCount - b.envCount;
+      }
+      return b.envCount - a.envCount;
+    }
+
+    if (sortKey === "appCount") {
+      if (sortDirection === "asc") {
+        return a.appCount - b.appCount;
+      }
+      return b.appCount - a.appCount;
+    }
+
+    if (sortKey === "dbCount") {
+      if (sortDirection === "asc") {
+        return a.dbCount - b.dbCount;
+      }
+      return b.dbCount - a.dbCount;
     }
 
     if (sortDirection === "asc") {
@@ -78,7 +103,15 @@ export const selectStacksForTableSearch = createSelector(
     },
   ) => p.sortDirection,
   schema.costs.selectTable,
-  (stacks, search, sortKey, sortDirection, costs): DeployStackRow[] => {
+  selectStackStats,
+  (
+    stacks,
+    search,
+    sortKey,
+    sortDirection,
+    costs,
+    statsByStack,
+  ): DeployStackRow[] => {
     let results = stacks;
     if (search !== "") {
       const searchLower = search.toLocaleLowerCase();
@@ -105,7 +138,12 @@ export const selectStacksForTableSearch = createSelector(
           id: computeCostId("Stack", stack.id),
         });
         const cost = costItem.estCost;
-        return { ...stack, cost };
+        const stats = statsByStack[stack.id] || {
+          envCount: 0,
+          appCount: 0,
+          dbCount: 0,
+        };
+        return { ...stack, cost, ...stats };
       })
       .sort(sortFn);
   },

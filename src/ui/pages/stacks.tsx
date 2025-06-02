@@ -14,7 +14,7 @@ import {
   type DeployStackRow,
   selectStacksForTableSearch,
 } from "@app/stack-table";
-import { useMemo, useState } from "react";
+import { useState } from "react";
 import { useSearchParams } from "react-router-dom";
 import { usePaginate } from "../hooks";
 import { AppSidebarLayout } from "../layouts";
@@ -115,65 +115,9 @@ function StackList() {
     }),
   );
 
-  const envCounts = useSelector((s) => {
-    const counts = new Map<string, number>();
-    stacks.forEach((stack) => {
-      counts.set(
-        stack.id,
-        selectEnvironmentsCountByStack(s, { stackId: stack.id }),
-      );
-    });
-    return counts;
-  });
-
-  const appCounts = useSelector((s) => {
-    const counts = new Map<string, number>();
-    stacks.forEach((stack) => {
-      counts.set(stack.id, selectAppsCountByStack(s, { stackId: stack.id }));
-    });
-    return counts;
-  });
-
-  const dbCounts = useSelector((s) => {
-    const counts = new Map<string, number>();
-    stacks.forEach((stack) => {
-      counts.set(
-        stack.id,
-        selectDatabasesCountByStack(s, { stackId: stack.id }),
-      );
-    });
-    return counts;
-  });
-
-  const sortedStacks = useMemo(() => {
-    if (
-      sortKey === "envCount" ||
-      sortKey === "appCount" ||
-      sortKey === "dbCount"
-    ) {
-      return [...stacks].sort((a, b) => {
-        const aCount =
-          sortKey === "envCount"
-            ? envCounts.get(a.id) || 0
-            : sortKey === "appCount"
-              ? appCounts.get(a.id) || 0
-              : dbCounts.get(a.id) || 0;
-        const bCount =
-          sortKey === "envCount"
-            ? envCounts.get(b.id) || 0
-            : sortKey === "appCount"
-              ? appCounts.get(b.id) || 0
-              : dbCounts.get(b.id) || 0;
-        return sortDirection === "asc" ? aCount - bCount : bCount - aCount;
-      });
-    }
-    return stacks;
-  }, [stacks, sortKey, sortDirection, envCounts, appCounts, dbCounts]);
-
   // Calculate total cost of all stacks
   const totalCost = stacks.reduce((sum, stack) => sum + (stack.cost || 0), 0);
-
-  const paginated = usePaginate(sortedStacks);
+  const paginated = usePaginate(stacks);
 
   const SortIcon = () => (
     <div className="inline-block">
