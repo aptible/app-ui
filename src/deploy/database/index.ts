@@ -209,11 +209,6 @@ export const selectDatabasesByStack = createSelector(
   },
 );
 
-export const selectDatabasesCountByStack = createSelector(
-  selectDatabasesByStack,
-  (dbs) => dbs.length,
-);
-
 export const fetchDatabases = api.get(
   "/databases?per_page=5000&no_embed=true",
   {

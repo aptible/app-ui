@@ -180,11 +180,6 @@ export const selectAppsByStack = createSelector(
   },
 );
 
-export const selectAppsCountByStack = createSelector(
-  selectAppsByStack,
-  (apps) => apps.length,
-);
-
 export const selectAppsBySource = createSelector(
   selectAppsAsList,
   selectSources,

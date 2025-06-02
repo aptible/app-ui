@@ -60,7 +60,7 @@ export default defineConfig(({ mode }) => {
       globals: true,
       environment: "jsdom",
       setupFiles: ["./src/test/setup.ts"],
-      reporters: ["basic"],
+      reporters: [["default", { summary: false }]],
       env: {
         NODE_OPTIONS: "--no-experimental-fetch",
       },
