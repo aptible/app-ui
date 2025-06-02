@@ -17,7 +17,6 @@ export interface Config {
   stripePublishableKey: string;
   origin: "app";
   betaFeatureOrgIds: string;
-  tokenHeaderOrgIds: string;
   diagnosticsPocOrgIds: string;
 }
 

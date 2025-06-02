@@ -12,7 +12,6 @@ import {
   selectServiceById,
   updateEndpoint,
 } from "@app/deploy";
-import { selectHasTokenHeaderFeature } from "@app/organizations";
 import {
   useDispatch,
   useLoader,
@@ -80,7 +79,6 @@ const EndpointSettings = ({ endpointId }: { endpointId: string }) => {
   const image = useSelector((s) =>
     selectImageById(s, { id: app.currentImageId }),
   );
-  const hasTokenHeaderFeature = useSelector(selectHasTokenHeaderFeature);
   const exposedPorts = image.exposedPorts;
   const origAllowlist = enp.ipWhitelist.join("\n");
   const origContainerPorts = enp.containerPorts.join(", ");
@@ -129,7 +127,8 @@ const EndpointSettings = ({ endpointId }: { endpointId: string }) => {
   const isDisabled =
     ipsSame && portSame && portsSame && certSame && cert === "" && tokenSame;
   const curPortText = getContainerPort(enp, exposedPorts);
-  const loader = useLoader(updateEndpoint);
+  const updateAction = updateEndpoint(data);
+  const loader = useLoader(updateAction);
   const [errors, validate] = useValidator<
     EndpointUpdateProps,
     typeof validators
@@ -139,7 +138,7 @@ const EndpointSettings = ({ endpointId }: { endpointId: string }) => {
     e.preventDefault();
     if (isDisabled) return;
     if (!validate(data)) return;
-    dispatch(updateEndpoint(data));
+    dispatch(updateAction);
   };
 
   useLoaderSuccess(loader, () => {
@@ -262,14 +261,15 @@ const EndpointSettings = ({ endpointId }: { endpointId: string }) => {
   ) : null;
 
   const tokenEditForm =
-    (data.enpType === "http" ||
-      data.enpType === "http_proxy_protocol" ||
-      data.enpType === "grpc") &&
-    hasTokenHeaderFeature ? (
+    data.enpType === "http" ||
+    data.enpType === "http_proxy_protocol" ||
+    data.enpType === "grpc" ? (
       <FormGroup
         label="Header Authentication Value"
         htmlFor="token-header"
-        description={`The 'X-Origin-Token' header value. When set, clients will be required to pass a 'X-Origin-Token' header matching this value.`}
+        description={`The 'X-Origin-Token' header value. When set, clients will be required to pass a 
+          'X-Origin-Token' header matching this value. Token header may only contain letters, numbers, 
+          '_', '-', ':', and '.'`}
       >
         <Input
           type="text"

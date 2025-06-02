@@ -13,7 +13,6 @@ import {
   selectImageById,
   selectStackById,
 } from "@app/deploy";
-import { selectHasTokenHeaderFeature } from "@app/organizations";
 import {
   useDispatch,
   useLoader,
@@ -76,7 +75,6 @@ const validators = {
 };
 
 export const AppCreateEndpointPage = () => {
-  const hasTokenHeaderFeature = useSelector(selectHasTokenHeaderFeature);
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const { id = "" } = useParams();
@@ -312,7 +310,9 @@ export const AppCreateEndpointPage = () => {
     <FormGroup
       label="Header Authentication Value"
       htmlFor="token-header"
-      description="When set, only traffic with a 'X-Origin-Token' header matching this value will be allowed."
+      description={`The 'X-Origin-Token' header value. When set, clients will be required to pass a 
+        'X-Origin-Token' header matching this value. Token header may only contain letters, numbers, 
+        '_', '-', ':', and '.'`}
       feedbackMessage={errors.tokenHeader}
       feedbackVariant={errors.tokenHeader ? "danger" : "info"}
     >
@@ -348,7 +348,7 @@ export const AppCreateEndpointPage = () => {
           {transCert && usingNewCert ? certForm : null}
           {transCert && usingNewCert ? privKeyForm : null}
           {ipAllowlistForm}
-          {hasTokenHeaderFeature ? tokenHeaderForm : null}
+          {tokenHeaderForm}
         </>
       );
     }
@@ -361,7 +361,7 @@ export const AppCreateEndpointPage = () => {
           {usingNewCert ? certForm : null}
           {usingNewCert ? privKeyForm : null}
           {ipAllowlistForm}
-          {hasTokenHeaderFeature ? tokenHeaderForm : null}
+          {tokenHeaderForm}
         </>
       );
     }
@@ -369,7 +369,7 @@ export const AppCreateEndpointPage = () => {
       <>
         {enpPlacementForm}
         {ipAllowlistForm}
-        {hasTokenHeaderFeature ? tokenHeaderForm : null}
+        {tokenHeaderForm}
       </>
     );
   };

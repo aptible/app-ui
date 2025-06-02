@@ -771,7 +771,7 @@ const patchEndpoint = api.patch<EndpointPatchProps>(
 export const updateEndpoint = thunks.create<EndpointUpdateProps>(
   "update-endpoint",
   function* (ctx, next) {
-    const id = ctx.name;
+    const id = ctx.key;
     yield* schema.update(schema.loaders.start({ id }));
 
     let certId = ctx.payload.certId;
