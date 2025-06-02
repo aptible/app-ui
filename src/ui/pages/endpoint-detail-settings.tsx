@@ -25,7 +25,7 @@ import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router";
 import { useValidator } from "../hooks";
 import {
-  Banner,
+  BannerMessages,
   Box,
   ButtonCreate,
   CertSelector,
@@ -35,7 +35,6 @@ import {
   Group,
   Input,
   TextArea,
-  BannerMessages,
 } from "../shared";
 
 const validators = {
