@@ -102,12 +102,6 @@ const validators = {
     if (p.url === "") return "Must provide a URL for log drain";
     if (!p.url.startsWith("https")) return "Must begin with https://";
   },
-  // insightops / syslog_tls_tcp
-  loggingToken: (p: CreateLogDrainProps) => {
-    if (!(p.drainType === "insightops" || p.drainType === "syslog_tls_tcp"))
-      return;
-    if (p.loggingToken === "") return "Must provide a token for log drain.";
-  },
 };
 
 const options: SelectOption<LogDrainType>[] = [
@@ -449,8 +443,6 @@ export const CreateLogDrainPage = () => {
                 </>
               }
               htmlFor="logging-token"
-              feedbackMessage={errors.loggingToken}
-              feedbackVariant={errors.loggingToken ? "danger" : "info"}
             >
               <Input
                 type="text"
