@@ -50,10 +50,6 @@ const DrainTypeNotice = ({
     return <Banner variant="info">Signs BAAs</Banner>;
   }
 
-  if (drainType === "insightops") {
-    return <Banner variant="info">Signs BAAs</Banner>;
-  }
-
   if (drainType === "datadog") {
     return <Banner variant="info">Signs BAAs</Banner>;
   }
@@ -102,10 +98,9 @@ const validators = {
     if (p.url === "") return "Must provide a URL for log drain";
     if (!p.url.startsWith("https")) return "Must begin with https://";
   },
-  // insightops / syslog_tls_tcp
+  // syslog_tls_tcp
   loggingToken: (p: CreateLogDrainProps) => {
-    if (!(p.drainType === "insightops" || p.drainType === "syslog_tls_tcp"))
-      return;
+    if (!(p.drainType === "syslog_tls_tcp")) return;
     if (p.loggingToken === "") return "Must provide a token for log drain.";
   },
 };
@@ -115,7 +110,6 @@ const options: SelectOption<LogDrainType>[] = [
   { value: "logdna", label: "Mezmo (formerly LogDNA)" },
   { value: "papertrail", label: "Papertrail" },
   { value: "sumologic", label: "Sumo Logic" },
-  { value: "insightops", label: "InsightOps" },
   { value: "elasticsearch_database", label: "Self-hosted Elasticsearch" },
   { value: "https_post", label: "HTTPS POST" },
   { value: "syslog_tls_tcp", label: "Syslog TLS TCP" },
@@ -179,14 +173,6 @@ export const CreateLogDrainPage = () => {
         ...def,
         drainType,
         url,
-      };
-    }
-
-    if (drainType === "insightops") {
-      return {
-        ...def,
-        drainType,
-        loggingToken,
       };
     }
 
@@ -429,24 +415,16 @@ export const CreateLogDrainPage = () => {
             </FormGroup>
           ) : null}
 
-          {drainType === "insightops" || drainType === "syslog_tls_tcp" ? (
+          {drainType === "syslog_tls_tcp" ? (
             <FormGroup
               label="Token"
               description={
-                <>
-                  {drainType === "insightops" && (
-                    <p>
-                      Add a new Token TCP Log in InsightOps, then copy the
-                      Logging Token provided by InsightOps.
-                    </p>
-                  )}
-                  {drainType === "syslog_tls_tcp" && (
-                    <p>
-                      All log lines sent through this Log Drain will be prefixed
-                      with this token
-                    </p>
-                  )}
-                </>
+                drainType === "syslog_tls_tcp" && (
+                  <p>
+                    All log lines sent through this Log Drain will be prefixed
+                    with this token
+                  </p>
+                )
               }
               htmlFor="logging-token"
               feedbackMessage={errors.loggingToken}
