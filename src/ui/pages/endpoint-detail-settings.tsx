@@ -35,6 +35,7 @@ import {
   Group,
   Input,
   TextArea,
+  BannerMessages,
 } from "../shared";
 
 const validators = {
@@ -286,16 +287,7 @@ const EndpointSettings = ({ endpointId }: { endpointId: string }) => {
     <Box>
       <h1 className="text-lg text-gray-500 mb-4">Endpoint Settings</h1>
       <form onSubmit={onSubmit} className="flex flex-col gap-4">
-        {loader.status === "error" && (
-          <Banner variant="error">
-            {loader.message || "An error occurred while updating the endpoint"}
-          </Banner>
-        )}
-        {loader.status === "success" && (
-          <Banner variant="success">
-            {loader.message || "Endpoint updated successfully"}
-          </Banner>
-        )}
+        <BannerMessages {...loader} />
 
         {portForm}
         {certEditForm}

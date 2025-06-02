@@ -791,34 +791,19 @@ export const updateEndpoint = thunks.create<EndpointUpdateProps>(
       certId = `${certCtx.json.value.id}`;
     }
 
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    let patchCtx: any;
-    try {
-      patchCtx = yield* patchEndpoint.run({
-        id: ctx.payload.id,
-        ipAllowlist: ctx.payload.ipAllowlist,
-        containerPort: ctx.payload.containerPort,
-        containerPorts: ctx.payload.containerPorts,
-        certId,
-        tokenHeader: ctx.payload.tokenHeader,
-      });
-      if (!patchCtx.json.ok) {
-        yield* schema.update(
-          schema.loaders.error({
-            id: ctx.key,
-            message: patchCtx.json.error.message,
-          }),
-        );
-        return;
-      }
-    } catch (error) {
+    const patchCtx = yield* patchEndpoint.run({
+      id: ctx.payload.id,
+      ipAllowlist: ctx.payload.ipAllowlist,
+      containerPort: ctx.payload.containerPort,
+      containerPorts: ctx.payload.containerPorts,
+      certId,
+      tokenHeader: ctx.payload.tokenHeader,
+    });
+    if (!patchCtx.json.ok) {
       yield* schema.update(
         schema.loaders.error({
           id: ctx.key,
-          message:
-            error instanceof Error
-              ? error.message
-              : "Unknown error updating endpoint",
+          message: patchCtx.json.error.message,
         }),
       );
       return;
