@@ -50,13 +50,13 @@ export const ResourceGroupBox = ({
           </div>
           <div>
             <h4 className={`break-words ${tokens.type.h4}`}>{handle}</h4>
-            <p className="text-black-500 text-sm pb-1">
+            <div className="text-black-500 text-sm pb-1">
               {hasDeployEndpoint(vhost) && vhost.status === "provisioned" ? (
                 <EndpointUrl enp={vhost} />
               ) : (
                 "Pending HTTP Endpoint"
               )}
-            </p>
+            </div>
           </div>
         </div>
         <div className="flex items-center mt-1 gap-1">
