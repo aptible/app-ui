@@ -3,9 +3,6 @@ import {
   fetchStacks,
   formatCurrency,
   getStackTypeTitle,
-  selectAppsCountByStack,
-  selectDatabasesCountByStack,
-  selectEnvironmentsCountByStack,
 } from "@app/deploy";
 import { selectOrganizationSelectedId } from "@app/organizations";
 import { useLoader, useQuery, useSelector } from "@app/react";
@@ -52,16 +49,6 @@ export function StacksPage() {
 
 function StackListRow({ stack }: { stack: DeployStackRow }) {
   const { isLoading } = useLoader(fetchCostsByStacks);
-  const envCount = useSelector((s) =>
-    selectEnvironmentsCountByStack(s, { stackId: stack.id }),
-  );
-  const appCount = useSelector((s) =>
-    selectAppsCountByStack(s, { stackId: stack.id }),
-  );
-  const dbCount = useSelector((s) =>
-    selectDatabasesCountByStack(s, { stackId: stack.id }),
-  );
-
   return (
     <Tr>
       <Td>
@@ -71,9 +58,9 @@ function StackListRow({ stack }: { stack: DeployStackRow }) {
       <Td>{stack.region}</Td>
       <Td>{getStackTypeTitle(stack)}</Td>
       <Td>{stack.memoryLimits ? "Memory" : ""}</Td>
-      <Td variant="center">{envCount}</Td>
-      <Td variant="center">{appCount}</Td>
-      <Td variant="center">{dbCount}</Td>
+      <Td variant="center">{stack.envCount}</Td>
+      <Td variant="center">{stack.appCount}</Td>
+      <Td variant="center">{stack.dbCount}</Td>
       <Td>
         <CostEstimateTooltip cost={isLoading ? null : stack.cost} />
       </Td>
