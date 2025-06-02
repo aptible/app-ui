@@ -127,7 +127,6 @@ const EndpointSettings = ({ endpointId }: { endpointId: string }) => {
   const isDisabled =
     ipsSame && portSame && portsSame && certSame && cert === "" && tokenSame;
   const curPortText = getContainerPort(enp, exposedPorts);
-  // Create an instance of the action with the specific data to track the right loader
   const updateAction = updateEndpoint(data);
   const loader = useLoader(updateAction);
   const [errors, validate] = useValidator<
