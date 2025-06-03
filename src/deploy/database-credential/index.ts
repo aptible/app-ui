@@ -62,15 +62,16 @@ export const connectionUrlRewrite = (
   }
   let connectionUrl = connUrl;
   const hostRe = new RegExp(/\@.+\:/);
-  const portRe = new RegExp(/\:([0-9]+)\//);
+  // negative lookahead to find last occurance
+  const portRe = new RegExp(/[0-9]+(?!.*\:[0-9]+)/);
   const port = connectionUrl.match(portRe);
   if (!port) return connUrl;
 
-  const portFound = portMapping.find((pair) => port[1] === `${pair[0]}`);
+  const portFound = portMapping.find((pair) => port[0] === `${pair[0]}`);
   if (!portFound || portFound.length < 2) return connUrl;
   const portPair = portFound[1];
 
   connectionUrl = connectionUrl.replace(hostRe, `@${host}:`);
-  connectionUrl = connectionUrl.replace(portRe, `:${portPair}/`);
+  connectionUrl = connectionUrl.replace(portRe, `${portPair}`);
   return connectionUrl;
 };

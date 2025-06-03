@@ -32,4 +32,16 @@ describe("connectionUrlRewrite", () => {
       "postgresql://user:0passvOQ-ALL3UMEsTQk9jwow@elb-aptible-us-nowhere-1-12345.aptible.in:5432/db";
     expect(actual).toEqual(expected);
   });
+
+  it("should replace original connection url when there is no database selector", () => {
+    const orig = "https://aptible:YXXy1EOF46i9Rp45645789@host:29128";
+    const actual = connectionUrlRewrite(
+      orig,
+      "elb-aptible-us-nowhere-1-12345.aptible.in",
+      [[29128, 8086]],
+    );
+    const expected =
+      "https://aptible:YXXy1EOF46i9Rp45645789@elb-aptible-us-nowhere-1-12345.aptible.in:8086";
+    expect(actual).toEqual(expected);
+  });
 });
