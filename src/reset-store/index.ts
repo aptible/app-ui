@@ -13,7 +13,7 @@ export const resetStore = createAction("RESET_STORE");
 function* watchResetStore() {
   while (true) {
     yield* take([`${resetToken}`, `${resetStore}`]);
-    const store = yield* StoreContext;
+    const store = yield* StoreContext.expect();
     const keep: (keyof WebState)[] = [
       "redirectPath",
       "entities",

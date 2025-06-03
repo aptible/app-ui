@@ -145,11 +145,6 @@ describe("Signup page", () => {
 
     render(<App />);
 
-    const setValidPassword = async () =>
-      await act(async () => {
-        await userEvent.type(pass, "Aptible!1234");
-      });
-
     const btn = await screen.findByRole("button", { name: "Create Account" });
 
     // disabled with no inputs set, does not redirect
@@ -174,22 +169,20 @@ describe("Signup page", () => {
     const email = await screen.findByRole("textbox", { name: "email" });
     const pass = await screen.findByLabelText("password");
 
-    await setValidPassword();
+    await act(() => userEvent.type(pass, "Aptible!1234"));
     await act(() => userEvent.type(email, "invalid"));
     fireEvent.click(btn);
     expect(await screen.findByText("Get started for free")).toBeInTheDocument();
 
     // set valid email
-    await act(async () => {
-      await userEvent.clear(pass);
-      await userEvent.type(email, testEmail);
-    });
+    await act(() => userEvent.clear(pass));
+    await act(() => userEvent.type(email, testEmail));
 
-    await act(async () => userEvent.type(pass, "a"));
+    await act(() => userEvent.type(pass, "a"));
     fireEvent.click(btn);
     expect(await screen.findByText("Get started for free")).toBeInTheDocument();
 
-    await setValidPassword();
+    await act(() => userEvent.type(pass, "Aptible!1234"));
     fireEvent.click(btn);
     expect(await screen.findByText("Check your Email")).toBeInTheDocument();
   });

@@ -1,4 +1,5 @@
 import cn from "classnames";
+import type { JSX } from "react";
 import { NavLink } from "react-router-dom";
 
 const active = "bg-off-white font-semibold text-black";

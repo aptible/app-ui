@@ -1,5 +1,5 @@
 import cn from "classnames";
-import { Fragment } from "react";
+import { Fragment, type JSX } from "react";
 import { tokens } from "./tokens";
 
 type Element = React.ReactNode | JSX.Element;
