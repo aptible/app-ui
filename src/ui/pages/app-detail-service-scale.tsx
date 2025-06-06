@@ -816,6 +816,27 @@ const AutoscalingSection = ({
                   <h2 className="text-md text-gray-500">General Settings</h2>
                   <FormGroup
                     splitWidthInputs
+                    description="Enable scaling the number of containers up and down without restarting all containers"
+                    label="Restart-Free Scale"
+                    htmlFor="horizontal-scale"
+                  >
+                    <Select
+                      id="horizontal-scale"
+                      value={nextPolicy.useHorizontalScale ? "enabled" : "disabled"}
+                      onSelect={(opt) =>
+                        updatePolicy(
+                          "useHorizontalScale",
+                          opt.value === "enabled"
+                        )
+                      }
+                      options={[
+                        { label: "Enabled", value: "enabled" },
+                        { label: "Disabled", value: "disabled" },
+                      ]}
+                    />
+                  </FormGroup>
+                  <FormGroup
+                    splitWidthInputs
                     label="Reset Advanced Settings to Defaults"
                     description="This will restore settings to their default values."
                     htmlFor="reset-button"
