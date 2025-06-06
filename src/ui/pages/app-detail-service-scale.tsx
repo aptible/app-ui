@@ -822,11 +822,13 @@ const AutoscalingSection = ({
                   >
                     <Select
                       id="horizontal-scale"
-                      value={nextPolicy.useHorizontalScale ? "enabled" : "disabled"}
+                      value={
+                        nextPolicy.useHorizontalScale ? "enabled" : "disabled"
+                      }
                       onSelect={(opt) =>
                         updatePolicy(
                           "useHorizontalScale",
-                          opt.value === "enabled"
+                          opt.value === "enabled",
                         )
                       }
                       options={[
