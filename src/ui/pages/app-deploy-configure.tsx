@@ -17,7 +17,7 @@ import { DB_ENV_TEMPLATE_KEY, deployProject } from "@app/projects";
 import { useDispatch, useQuery, useSelector } from "@app/react";
 import { appDeployGetStartedUrl, appDeployStatusUrl } from "@app/routes";
 import { schema } from "@app/schema";
-import { type Reducer, useEffect, useReducer, useState } from "react";
+import { useEffect, useReducer, useState } from "react";
 import { useNavigate, useParams } from "react-router";
 import { useSearchParams } from "react-router-dom";
 import {
@@ -33,10 +33,8 @@ import {
   Button,
   DatabaseCreatorForm,
   DatabaseEnvVarInput,
-  type DbCreatorReducer,
   type DbFormProps,
   DbSelector,
-  type DbSelectorAction,
   type DbValidatorError,
   EnvEditorFormInput,
   ExternalLink,
@@ -111,12 +109,12 @@ export const AppDeployConfigurePage = () => {
   }, [queryEnvsStr]);
 
   const [dbErrors, setDbErrors] = useState<DbValidatorError[]>([]);
-  const [dbCreatorMap, dbCreatorDispatch] = useReducer<DbCreatorReducer>(
-    dbSelectorReducer,
+  const [dbCreatorMap, dbCreatorDispatch] = useReducer(
+    dbSelectorReducer<DbCreatorProps>,
     {},
   );
-  const [dbExistingMap, dbExistingDispatch] = useReducer<DbExistingReducer>(
-    dbSelectorReducer,
+  const [dbExistingMap, dbExistingDispatch] = useReducer(
+    dbSelectorReducer<DbExistingProps>,
     {},
   );
 
@@ -417,11 +415,6 @@ interface DbExistingProps {
   env: string;
   connectionUrl: string;
 }
-
-type DbExistingReducer = Reducer<
-  { [key: string]: DbExistingProps },
-  DbSelectorAction<DbExistingProps>
->;
 
 const DatabaseExistingForm = ({
   envId,

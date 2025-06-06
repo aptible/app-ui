@@ -1,4 +1,4 @@
-import type { ReactNode } from "react";
+import type { JSX, ReactNode } from "react";
 import { type ActionList, ActionListView } from "./action-list-view";
 import { Box } from "./box";
 import { Breadcrumbs, type Crumb } from "./breadcrumbs";

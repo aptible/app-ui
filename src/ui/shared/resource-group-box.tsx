@@ -8,6 +8,7 @@ import {
 import { useSelector } from "@app/react";
 import { environmentAppsUrl } from "@app/routes";
 import { prettyGitSha } from "@app/string-utils";
+import type { JSX } from "react";
 import { Link } from "react-router-dom";
 import { EndpointUrl } from "./endpoint";
 import { IconGitBranch, IconGlobe } from "./icons";
