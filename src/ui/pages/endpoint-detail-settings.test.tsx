@@ -204,7 +204,7 @@ describe("EndpointSettings for an Endpoint associated with an App", () => {
 
   describe("when user changes current cert", () => {
     describe("when user adds new cert", () => {
-      it.only("should replace current cert with a new one", async () => {
+      it("should replace current cert with a new one", async () => {
         const certActual = {
           certificate_body: "",
           private_key: "",

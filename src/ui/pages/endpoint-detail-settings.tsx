@@ -128,7 +128,7 @@ const EndpointSettings = ({ endpointId }: { endpointId: string }) => {
     ipsSame && portSame && portsSame && certSame && cert === "" && tokenSame;
   const curPortText = getContainerPort(enp, exposedPorts);
   const updateAction = updateEndpoint(data);
-  const loader = useLoader(updateAction);
+  const loader = useLoader(updateEndpoint);
   const [errors, validate] = useValidator<
     EndpointUpdateProps,
     typeof validators
