@@ -31,6 +31,7 @@ export interface DeployServiceSizingPolicyResponse {
   max_cpu_threshold: number | null;
   scale_up_step: number;
   scale_down_step: number;
+  use_horizontal_scale: boolean;
   created_at: string;
   updated_at: string;
   _links: {
@@ -65,6 +66,7 @@ export const defaultServiceSizingPolicyResponse = (
     max_cpu_threshold: 0.9,
     scale_up_step: 1,
     scale_down_step: 1,
+    use_horizontal_scale: false,
     created_at: now,
     updated_at: now,
     _type: "service_sizing_policy",
@@ -102,6 +104,7 @@ export const deserializeDeployServiceSizingPolicy = (
     scaleDownStep: payload.scale_down_step,
     minCpuThreshold: payload.min_cpu_threshold,
     maxCpuThreshold: payload.max_cpu_threshold,
+    useHorizontalScale: payload.use_horizontal_scale,
     createdAt: payload.created_at,
     updatedAt: payload.updated_at,
   };
@@ -170,6 +173,7 @@ export interface ServiceSizingPolicyEditProps {
   maxCpuThreshold: number | null;
   scaleUpStep: number;
   scaleDownStep: number;
+  useHorizontalScale: boolean;
 }
 
 const serializeServiceSizingPolicyEditProps = (
@@ -194,6 +198,7 @@ const serializeServiceSizingPolicyEditProps = (
   max_cpu_threshold: payload.maxCpuThreshold,
   scale_up_step: payload.scaleUpStep,
   scale_down_step: payload.scaleDownStep,
+  use_horizontal_scale: payload.useHorizontalScale,
 });
 
 export interface ModifyServiceSizingPolicyProps

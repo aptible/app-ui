@@ -674,6 +674,7 @@ export interface DeployServiceSizingPolicy extends Timestamps {
   maxCpuThreshold: number | null;
   scaleUpStep: number;
   scaleDownStep: number;
+  useHorizontalScale: boolean;
 }
 
 export interface DeploySource {

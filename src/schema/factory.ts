@@ -723,6 +723,7 @@ export const defaultServiceSizingPolicy = (
     maxCpuThreshold: 0.9,
     scaleUpStep: 1,
     scaleDownStep: 1,
+    useHorizontalScale: false,
     createdAt: now,
     updatedAt: now,
     ...m,
