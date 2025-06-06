@@ -13,7 +13,7 @@ import {
 } from "@xyflow/react";
 
 import "@xyflow/react/dist/style.css";
-import { useMemo } from "react";
+import { type JSX, useMemo } from "react";
 import { AppNode, DatabaseNode } from "./aptible-nodes";
 import { CustomResourceNode } from "./custom-nodes";
 import { AnomalyHistoryEdge, DegradedEdge } from "./edges";

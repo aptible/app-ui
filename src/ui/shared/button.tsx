@@ -9,7 +9,7 @@ import { useSelector } from "@app/react";
 import { capitalize } from "@app/string-utils";
 import type { PermissionScope } from "@app/types";
 import cn from "classnames";
-import { type ButtonHTMLAttributes, type FC, useState } from "react";
+import { type ButtonHTMLAttributes, type FC, type JSX, useState } from "react";
 import { Link, type LinkProps } from "react-router-dom";
 import { Group } from "./group";
 import { IconExternalLink } from "./icons";

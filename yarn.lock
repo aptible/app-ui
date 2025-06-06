@@ -379,7 +379,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@babel/runtime@npm:^7.12.1, @babel/runtime@npm:^7.12.5, @babel/runtime@npm:^7.7.6":
+"@babel/runtime@npm:^7.12.5, @babel/runtime@npm:^7.7.6":
   version: 7.23.2
   resolution: "@babel/runtime@npm:7.23.2"
   dependencies:
@@ -1841,16 +1841,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/hoist-non-react-statics@npm:^3.3.1":
-  version: 3.3.3
-  resolution: "@types/hoist-non-react-statics@npm:3.3.3"
-  dependencies:
-    "@types/react": "*"
-    hoist-non-react-statics: ^3.3.0
-  checksum: 107ac20ab36acdc83fb6bfca901e6f4f11307a0a307099c31ecf2a9875f8abffd731a2e1ee793162307e8aaee48fe9fd8d4e034fce88d5da480bc4178a3fc8d7
-  languageName: node
-  linkType: hard
-
 "@types/js-levenshtein@npm:^1.1.1":
   version: 1.1.1
   resolution: "@types/js-levenshtein@npm:1.1.1"
@@ -1881,19 +1871,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/node@npm:^22.10.2":
-  version: 22.10.2
-  resolution: "@types/node@npm:22.10.2"
+"@types/node@npm:^22.15.30":
+  version: 22.15.30
+  resolution: "@types/node@npm:22.15.30"
   dependencies:
-    undici-types: ~6.20.0
-  checksum: b22401e6e7d1484e437d802c72f5560e18100b1257b9ad0574d6fe05bebe4dbcb620ea68627d1f1406775070d29ace8b6b51f57e7b1c7b8bafafe6da7f29c843
-  languageName: node
-  linkType: hard
-
-"@types/prop-types@npm:*":
-  version: 15.7.8
-  resolution: "@types/prop-types@npm:15.7.8"
-  checksum: 61dfad79da8b1081c450bab83b77935df487ae1cdd4660ec7df6be8e74725c15fa45cf486ce057addc956ca4ae78300b97091e2a25061133d1b9a1440bc896ae
+    undici-types: ~6.21.0
+  checksum: c380ad176575dc847a119e63afe457f3481c0095ef1720605d42b3133cac1c5980179643ce67c9a314c83b9a45f2b17bde5f15b29d8aa1d17e0a43318273829b
   languageName: node
   linkType: hard
 
@@ -1906,30 +1889,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/react@npm:*":
-  version: 18.2.28
-  resolution: "@types/react@npm:18.2.28"
-  dependencies:
-    "@types/prop-types": "*"
-    "@types/scheduler": "*"
-    csstype: ^3.0.2
-  checksum: 81381bedeba83278f4c9febb0b83e0bd3f42a25897a50b9cb36ef53651d34b3d50f87ebf11211ea57ea575131f85d31e93e496ce46478a00b0f9bf7b26b5917a
-  languageName: node
-  linkType: hard
-
 "@types/react@npm:^19.1.6":
   version: 19.1.6
   resolution: "@types/react@npm:19.1.6"
   dependencies:
     csstype: ^3.0.2
   checksum: 7f4d2e5fd0c1afa6aef956e551c982a59c3ccf37cf30b877300306dcae87e0c4bf7b28b54676b1783f4ca92e730af6fb7a4c1b7f6df27ba14579aa1617a58b09
-  languageName: node
-  linkType: hard
-
-"@types/scheduler@npm:*":
-  version: 0.16.4
-  resolution: "@types/scheduler@npm:0.16.4"
-  checksum: a57b0f10da1b021e6bd5eeef8a1917dd3b08a8715bd8029e2ded2096d8f091bb1bb1fef2d66e139588a983c4bfbad29b59e48011141725fa83c76e986e1257d7
   languageName: node
   linkType: hard
 
@@ -1942,10 +1907,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/use-sync-external-store@npm:^0.0.3":
-  version: 0.0.3
-  resolution: "@types/use-sync-external-store@npm:0.0.3"
-  checksum: 161ddb8eec5dbe7279ac971531217e9af6b99f7783213566d2b502e2e2378ea19cf5e5ea4595039d730aa79d3d35c6567d48599f69773a02ffcff1776ec2a44e
+"@types/use-sync-external-store@npm:^0.0.6":
+  version: 0.0.6
+  resolution: "@types/use-sync-external-store@npm:0.0.6"
+  checksum: a95ce330668501ad9b1c5b7f2b14872ad201e552a0e567787b8f1588b22c7040c7c3d80f142cbb9f92d13c4ea41c46af57a20f2af4edf27f224d352abcfe4049
   languageName: node
   linkType: hard
 
@@ -2259,7 +2224,7 @@ __metadata:
     "@testing-library/user-event": ^14.6.1
     "@types/debug": ^4.1.12
     "@types/luxon": ^3.4.2
-    "@types/node": ^22.10.2
+    "@types/node": ^22.15.30
     "@types/react": ^19.1.6
     "@types/react-dom": ^19.1.5
     "@vitejs/plugin-react": ^4.5.1
@@ -2284,7 +2249,7 @@ __metadata:
     react-router: ^7.6.1
     react-router-dom: ^7.6.1
     react-use-websocket: ^4.13.0
-    starfx: ^0.13.4
+    starfx: "https://pkg.pr.new/neurosnap/starfx@61.tgz"
     tailwindcss: ^3.4.17
     typescript: ^5.8.3
     vite: ^6.3.5
@@ -3079,10 +3044,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"effection@npm:3.0.0-beta.3":
-  version: 3.0.0-beta.3
-  resolution: "effection@npm:3.0.0-beta.3"
-  checksum: dc177799bbce5ee47f67e28b93c9cf4df55ced8520cfb38ad75f0e7ded6fb1333f8ebca91d04bc04218bc4d7d295781dea125a6f781d7cb3b5d6814f67ae97ee
+"effection@npm:^3.5.0":
+  version: 3.5.0
+  resolution: "effection@npm:3.5.0"
+  checksum: 24880dea98675c39673ce63d66716807a2a5cbdddb3aefb3790caf9e33dc8e80d43c53ed695a1539cfae47eda78b89ec28ec504047fe157c4a6f97687c1255b2
   languageName: node
   linkType: hard
 
@@ -3700,7 +3665,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"hoist-non-react-statics@npm:^3.3.0, hoist-non-react-statics@npm:^3.3.2":
+"hoist-non-react-statics@npm:^3.3.2":
   version: 3.3.2
   resolution: "hoist-non-react-statics@npm:3.3.2"
   dependencies:
@@ -3800,10 +3765,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"immer@npm:^10.0.2":
-  version: 10.0.3
-  resolution: "immer@npm:10.0.3"
-  checksum: 76acabe6f40e752028313762ba477a5d901e57b669f3b8fb406b87b9bb9b14e663a6fbbf5a6d1ab323737dd38f4b2494a4e28002045b88948da8dbf482309f28
+"immer@npm:^10.1.1":
+  version: 10.1.1
+  resolution: "immer@npm:10.1.1"
+  checksum: 07c67970b7d22aded73607193d84861bf786f07d47f7d7c98bb10016c7a88f6654ad78ae1e220b3c623695b133aabbf24f5eb8d9e8060cff11e89ccd81c9c10b
   languageName: node
   linkType: hard
 
@@ -5110,42 +5075,22 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react-is@npm:^18.0.0":
-  version: 18.2.0
-  resolution: "react-is@npm:18.2.0"
-  checksum: e72d0ba81b5922759e4aff17e0252bd29988f9642ed817f56b25a3e217e13eea8a7f2322af99a06edb779da12d5d636e9fda473d620df9a3da0df2a74141d53e
-  languageName: node
-  linkType: hard
-
-"react-redux@npm:^8.0.5":
-  version: 8.1.3
-  resolution: "react-redux@npm:8.1.3"
+"react-redux@npm:^9.2.0":
+  version: 9.2.0
+  resolution: "react-redux@npm:9.2.0"
   dependencies:
-    "@babel/runtime": ^7.12.1
-    "@types/hoist-non-react-statics": ^3.3.1
-    "@types/use-sync-external-store": ^0.0.3
-    hoist-non-react-statics: ^3.3.2
-    react-is: ^18.0.0
-    use-sync-external-store: ^1.0.0
+    "@types/use-sync-external-store": ^0.0.6
+    use-sync-external-store: ^1.4.0
   peerDependencies:
-    "@types/react": ^16.8 || ^17.0 || ^18.0
-    "@types/react-dom": ^16.8 || ^17.0 || ^18.0
-    react: ^16.8 || ^17.0 || ^18.0
-    react-dom: ^16.8 || ^17.0 || ^18.0
-    react-native: ">=0.59"
-    redux: ^4 || ^5.0.0-beta.0
+    "@types/react": ^18.2.25 || ^19
+    react: ^18.0 || ^19
+    redux: ^5.0.0
   peerDependenciesMeta:
     "@types/react":
       optional: true
-    "@types/react-dom":
-      optional: true
-    react-dom:
-      optional: true
-    react-native:
-      optional: true
     redux:
       optional: true
-  checksum: 192ea6f6053148ec80a4148ec607bc259403b937e515f616a1104ca5ab357e97e98b8245ed505a17afee67a72341d4a559eaca9607968b4a422aa9b44ba7eb89
+  checksum: 96dfe2929561d7c98d4443722738e4595f08758bde27b7bc20cd98ba9b0dfe9b81b9fa17b6888be94a0c1d2d1305397ae493a8219698536d011a941589eb82bd
   languageName: node
   linkType: hard
 
@@ -5260,10 +5205,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"reselect@npm:^4.1.8":
-  version: 4.1.8
-  resolution: "reselect@npm:4.1.8"
-  checksum: a4ac87cedab198769a29be92bc221c32da76cfdad6911eda67b4d3e7136dca86208c3b210e31632eae31ebd2cded18596f0dd230d3ccc9e978df22f233b5583e
+"reselect@npm:^5.1.1":
+  version: 5.1.1
+  resolution: "reselect@npm:5.1.1"
+  checksum: 5d32d48be29071ddda21a775945c2210cf4ca3fccde1c4a0e1582ac3bf99c431c6c2330ef7ca34eae4c06feea617e7cb2c275c4b33ccf9a930836dfc98b49b13
   languageName: node
   linkType: hard
 
@@ -5678,17 +5623,18 @@ __metadata:
   languageName: node
   linkType: hard
 
-"starfx@npm:^0.13.4":
-  version: 0.13.4
-  resolution: "starfx@npm:0.13.4"
+"starfx@https://pkg.pr.new/neurosnap/starfx@61.tgz":
+  version: 0.14.0
+  resolution: "starfx@https://pkg.pr.new/neurosnap/starfx@61.tgz"
   dependencies:
-    effection: 3.0.0-beta.3
-    immer: ^10.0.2
-    react-redux: ^8.0.5
-    reselect: ^4.1.8
+    effection: ^3.5.0
+    immer: ^10.1.1
+    react-redux: ^9.2.0
+    reselect: ^5.1.1
   peerDependencies:
-    react: ^18.2.0
-  checksum: 4ec448ffd2ef718bf04c871cd4a8ec6e1a47a10feb0929d6e22c6afc794f9ced21db678d5d78bb7acc52417c90c701ad2c9e338deac356b40238a7e4111ea2a7
+    react: ">=18"
+    react-dom: ">=18"
+  checksum: 50638f2feeb80dce0922f94bcca0955e24f488e72545ae11d7414088561e77dfd7b4aa47525bc9645ed83e56e7233bf797b0fe29c7ecec550ef75fd557219081
   languageName: node
   linkType: hard
 
@@ -6123,10 +6069,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"undici-types@npm:~6.20.0":
-  version: 6.20.0
-  resolution: "undici-types@npm:6.20.0"
-  checksum: b7bc50f012dc6afbcce56c9fd62d7e86b20a62ff21f12b7b5cbf1973b9578d90f22a9c7fe50e638e96905d33893bf2f9f16d98929c4673c2480de05c6c96ea8b
+"undici-types@npm:~6.21.0":
+  version: 6.21.0
+  resolution: "undici-types@npm:6.21.0"
+  checksum: 46331c7d6016bf85b3e8f20c159d62f5ae471aba1eb3dc52fff35a0259d58dcc7d592d4cc4f00c5f9243fa738a11cfa48bd20203040d4a9e6bc25e807fab7ab3
   languageName: node
   linkType: hard
 
@@ -6195,21 +6141,21 @@ __metadata:
   languageName: node
   linkType: hard
 
-"use-sync-external-store@npm:^1.0.0":
-  version: 1.2.0
-  resolution: "use-sync-external-store@npm:1.2.0"
-  peerDependencies:
-    react: ^16.8.0 || ^17.0.0 || ^18.0.0
-  checksum: 5c639e0f8da3521d605f59ce5be9e094ca772bd44a4ce7322b055a6f58eeed8dda3c94cabd90c7a41fb6fa852210092008afe48f7038792fd47501f33299116a
-  languageName: node
-  linkType: hard
-
 "use-sync-external-store@npm:^1.2.2":
   version: 1.4.0
   resolution: "use-sync-external-store@npm:1.4.0"
   peerDependencies:
     react: ^16.8.0 || ^17.0.0 || ^18.0.0 || ^19.0.0
   checksum: dc3843a1b59ac8bd01417bd79498d4c688d5df8bf4801be50008ef4bfaacb349058c0b1605b5b43c828e0a2d62722d7e861573b3f31cea77a7f23e8b0fc2f7e3
+  languageName: node
+  linkType: hard
+
+"use-sync-external-store@npm:^1.4.0":
+  version: 1.5.0
+  resolution: "use-sync-external-store@npm:1.5.0"
+  peerDependencies:
+    react: ^16.8.0 || ^17.0.0 || ^18.0.0 || ^19.0.0
+  checksum: 5e639c9273200adb6985b512c96a3a02c458bc8ca1a72e91da9cdc6426144fc6538dca434b0f99b28fb1baabc82e1c383ba7900b25ccdcb43758fb058dc66c34
   languageName: node
   linkType: hard
 
