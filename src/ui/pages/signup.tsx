@@ -147,7 +147,6 @@ export const SignupPage = () => {
   const queryEmail = params.get("email") || "";
   const redirectPath = useSelector(selectRedirectPath);
   const isAuthenticated = useSelector(selectIsUserAuthenticated);
-  console.log("IS AUTHENTICATED", isAuthenticated);
   const { invitation, inviteId, code } = useInvitation(redirectPath);
 
   useEffect(() => {
@@ -179,6 +178,7 @@ export const SignupPage = () => {
     dispatch(action);
   };
 
+  console.log("LOADER", loader);
   useLoaderSuccess(loader, () => {
     if (inviteId) {
       navigate(teamAcceptInviteUrl(inviteId, code));
