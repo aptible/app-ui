@@ -147,6 +147,7 @@ export const SignupPage = () => {
   const queryEmail = params.get("email") || "";
   const redirectPath = useSelector(selectRedirectPath);
   const isAuthenticated = useSelector(selectIsUserAuthenticated);
+  console.log("IS AUTHENTICATED", isAuthenticated);
   const { invitation, inviteId, code } = useInvitation(redirectPath);
 
   useEffect(() => {

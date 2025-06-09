@@ -133,7 +133,7 @@ describe("Signup page", () => {
     expect(await screen.findByText("Check your Email")).toBeInTheDocument();
   });
 
-  it("during signup expect validation to guard against submission", async () => {
+  it.only("during signup expect validation to guard against submission", async () => {
     server.use(
       rest.get(`${testEnv.authUrl}/current_token`, (_, res, ctx) => {
         return res(ctx.status(401), ctx.json({}));
