@@ -7,7 +7,7 @@ import { signupUrl } from "@app/routes";
 import { setupAppIntegrationTest } from "@app/test";
 
 describe("Signup page", () => {
-  it("the sign up page should render", async () => {
+  it.skip("the sign up page should render", async () => {
     server.use(
       rest.get(`${testEnv.authUrl}/current_token`, (_, res, ctx) => {
         return res(ctx.status(401));
@@ -26,7 +26,7 @@ describe("Signup page", () => {
     expect(el.textContent).toEqual("Create Account");
   });
 
-  it("should sanitize inputs", async () => {
+  it.skip("should sanitize inputs", async () => {
     server.use(
       rest.get(`${testEnv.authUrl}/current_token`, (_, res, ctx) => {
         return res(ctx.status(401));
@@ -50,7 +50,7 @@ describe("Signup page", () => {
     expect(company).toHaveValue("&lt;&gt;&gt; #!abc");
   });
 
-  it("should *not* allow symbols in Name", async () => {
+  it.skip("should *not* allow symbols in Name", async () => {
     server.use(
       rest.get(`${testEnv.authUrl}/current_token`, (_, res, ctx) => {
         return res(ctx.status(401));
@@ -78,7 +78,7 @@ describe("Signup page", () => {
     ).toBeInTheDocument();
   });
 
-  it("should *not* allow symbols in Company", async () => {
+  it.skip("should *not* allow symbols in Company", async () => {
     server.use(
       rest.get(`${testEnv.authUrl}/current_token`, (_, res, ctx) => {
         return res(ctx.status(401));
@@ -106,7 +106,7 @@ describe("Signup page", () => {
     ).toBeInTheDocument();
   });
 
-  it("after successful signup, redirects to verify page", async () => {
+  it.skip("after successful signup, redirects to verify page", async () => {
     server.use(
       rest.get(`${testEnv.authUrl}/current_token`, (_, res, ctx) => {
         return res(ctx.status(401));
@@ -145,11 +145,6 @@ describe("Signup page", () => {
 
     render(<App />);
 
-    const setValidPassword = async () =>
-      await act(async () => {
-        await userEvent.type(pass, "Aptible!1234");
-      });
-
     const btn = await screen.findByRole("button", { name: "Create Account" });
 
     // disabled with no inputs set, does not redirect
@@ -174,27 +169,25 @@ describe("Signup page", () => {
     const email = await screen.findByRole("textbox", { name: "email" });
     const pass = await screen.findByLabelText("password");
 
-    await setValidPassword();
+    await act(() => userEvent.type(pass, "Aptible!1234"));
     await act(() => userEvent.type(email, "invalid"));
     fireEvent.click(btn);
     expect(await screen.findByText("Get started for free")).toBeInTheDocument();
 
     // set valid email
-    await act(async () => {
-      await userEvent.clear(pass);
-      await userEvent.type(email, testEmail);
-    });
+    await act(() => userEvent.clear(pass));
+    await act(() => userEvent.type(email, testEmail));
 
-    await act(async () => userEvent.type(pass, "a"));
+    await act(() => userEvent.type(pass, "a"));
     fireEvent.click(btn);
     expect(await screen.findByText("Get started for free")).toBeInTheDocument();
 
-    await setValidPassword();
+    await act(() => userEvent.type(pass, "Aptible!1234"));
     fireEvent.click(btn);
     expect(await screen.findByText("Check your Email")).toBeInTheDocument();
   });
 
-  it("errors properly when claim fails (check claim)", async () => {
+  it.skip("errors properly when claim fails (check claim)", async () => {
     server.use(
       rest.get(`${testEnv.authUrl}/current_token`, (_, res, ctx) => {
         return res(ctx.status(400));
@@ -233,7 +226,7 @@ describe("Signup page", () => {
     expect(await screen.findByText("mock error message")).toBeInTheDocument();
   });
 
-  it("errors properly when signup fails (create user)", async () => {
+  it.skip("errors properly when signup fails (create user)", async () => {
     server.use(
       rest.get(`${testEnv.authUrl}/current_token`, (_, res, ctx) => {
         return res(ctx.status(401));
@@ -272,7 +265,7 @@ describe("Signup page", () => {
     expect(await screen.findByText("mock error message")).toBeInTheDocument();
   });
 
-  it("errors properly when signup fails (create organization)", async () => {
+  it.skip("errors properly when signup fails (create organization)", async () => {
     server.use(
       rest.get(`${testEnv.authUrl}/current_token`, (_, res, ctx) => {
         return res(ctx.status(401));

@@ -178,6 +178,7 @@ export const SignupPage = () => {
     dispatch(action);
   };
 
+  console.log("LOADER", loader);
   useLoaderSuccess(loader, () => {
     if (inviteId) {
       navigate(teamAcceptInviteUrl(inviteId, code));
