@@ -177,7 +177,7 @@ export const SecurityCompliance = () => {
           <ResourceCard
             icon={<QuestionMarkCircleIcon />}
             title="Support"
-            href="https://www.aptible.com/support"
+            href="https://app.aptible.com/support"
           />
         </div>
       </div>
