@@ -808,6 +808,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@heroicons/react@npm:^2.2.0":
+  version: 2.2.0
+  resolution: "@heroicons/react@npm:2.2.0"
+  peerDependencies:
+    react: ">= 16 || ^19.0.0-rc"
+  checksum: ff4dbfa98dacc41f86db82be9102d0c2cd0b8652b428f0b49ffd2580bee8f36fca43937a3d3d5e8f209c7303f5317a32163c018dfa13a3730d79dec43addac93
+  languageName: node
+  linkType: hard
+
 "@isaacs/cliui@npm:^8.0.2":
   version: 8.0.2
   resolution: "@isaacs/cliui@npm:8.0.2"
@@ -2128,6 +2137,7 @@ __metadata:
     "@dagrejs/dagre": ^1.1.4
     "@floating-ui/react": ^0.27.0
     "@github/webauthn-json": ^2.1.1
+    "@heroicons/react": ^2.2.0
     "@mintlify/widget-react": ^0.0.11
     "@remix-run/web-fetch": ^4.4.2
     "@sentry/react": ^8.45.0

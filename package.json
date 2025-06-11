@@ -23,6 +23,7 @@
     "@dagrejs/dagre": "^1.1.4",
     "@floating-ui/react": "^0.27.0",
     "@github/webauthn-json": "^2.1.1",
+    "@heroicons/react": "^2.2.0",
     "@mintlify/widget-react": "^0.0.11",
     "@remix-run/web-fetch": "^4.4.2",
     "@sentry/react": "^8.45.0",
