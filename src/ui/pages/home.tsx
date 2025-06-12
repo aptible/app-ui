@@ -3,7 +3,6 @@ import { useState } from "react";
 import { AppSidebarLayout } from "../layouts";
 import {
   Overview,
-  RecentActivity,
   ActivityFeed,
   Scaling,
   Sources,

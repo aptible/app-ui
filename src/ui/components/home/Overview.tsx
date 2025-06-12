@@ -1,4 +1,5 @@
 import { Square3Stack3DIcon, GlobeAltIcon, CubeIcon, CircleStackIcon, CurrencyDollarIcon, InformationCircleIcon } from "@heroicons/react/24/outline";
+import { useState, useEffect } from "react";
 import { useSelector } from "react-redux";
 import { Link } from "react-router-dom";
 import {
@@ -14,6 +15,7 @@ import { Tooltip } from "../../shared";
 import type { WebState } from "@app/schema";
 
 export const Overview = () => {
+  const [hasInitiallyLoaded, setHasInitiallyLoaded] = useState(false);
   const stacks = useSelector((state: WebState) => selectStacksByOrgAsList(state));
   const apps = useSelector(schema.apps.selectTableAsList);
   const databases = useSelector((state: WebState) => 
@@ -26,12 +28,23 @@ export const Overview = () => {
   const environments = useSelector(selectEnvironmentsByOrg);
   const costs = useSelector(schema.costs.selectTable);
 
-  // Loading states
-  const isStacksLoading = !stacks || stacks.length === 0;
-  const isAppsLoading = !apps || apps.length === 0;
-  const isDatabasesLoading = !databases || databases.length === 0;
-  const isEnvironmentsLoading = !environments || Object.keys(environments).length === 0;
-  const isCostsLoading = !costs || Object.keys(costs).length === 0;
+  // Track when data has loaded
+  useEffect(() => {
+    if (stacks && apps && databases && environments && costs && !hasInitiallyLoaded) {
+      // Add a small delay to ensure smooth loading experience
+      const timer = setTimeout(() => {
+        setHasInitiallyLoaded(true);
+      }, 500);
+      return () => clearTimeout(timer);
+    }
+  }, [stacks, apps, databases, environments, costs, hasInitiallyLoaded]);
+
+  // Loading states - show loading if data hasn't loaded yet OR if we haven't marked as initially loaded
+  const isStacksLoading = !stacks || !hasInitiallyLoaded;
+  const isAppsLoading = !apps || !hasInitiallyLoaded;
+  const isDatabasesLoading = !databases || !hasInitiallyLoaded;
+  const isEnvironmentsLoading = !environments || !hasInitiallyLoaded;
+  const isCostsLoading = !costs || !hasInitiallyLoaded;
 
   // Calculate total cost
   const totalMonthlyCost = !isCostsLoading && costs && stacks ? stacks.reduce((total, stack) => {
@@ -39,7 +52,7 @@ export const Overview = () => {
       id: computeCostId("Stack", stack.id),
     });
     return total + (costItem?.estCost || 0);
-  }, 0) : null;
+  }, 0) : 0;
 
   return (
     <div>
@@ -122,7 +135,7 @@ export const Overview = () => {
                 <InformationCircleIcon className="w-4 h-4 text-gray-400 cursor-help flex-shrink-0" />
               </Tooltip>
             </div>
-            {isCostsLoading || !totalMonthlyCost ? (
+            {isCostsLoading ? (
               <div className="h-10 w-24 bg-gray-200 rounded animate-pulse" />
             ) : (
               <div className="text-2xl sm:text-3xl font-semibold">

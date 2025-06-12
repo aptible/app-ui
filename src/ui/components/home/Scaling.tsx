@@ -1,8 +1,8 @@
 import { ArrowsPointingInIcon, CurrencyDollarIcon, InformationCircleIcon } from "@heroicons/react/24/outline";
+import { useState, useEffect } from "react";
 import { useSelector } from "react-redux";
 import { Link } from "react-router-dom";
 import {
-  selectServices,
   selectDatabasesForTableSearch,
   formatCurrency,
 } from "@app/deploy";
@@ -11,6 +11,7 @@ import { Tooltip } from "../../shared";
 import type { WebState } from "@app/schema";
 
 export const Scaling = () => {
+  const [hasInitiallyLoaded, setHasInitiallyLoaded] = useState(false);
   const services = useSelector(schema.services.selectTableAsList);
   const databases = useSelector((state: WebState) => 
     selectDatabasesForTableSearch(state, { 
@@ -22,10 +23,21 @@ export const Scaling = () => {
   const recommendations = useSelector(schema.manualScaleRecommendations.selectTableAsList);
   const serviceSizingPolicies = useSelector(schema.serviceSizingPolicies.selectTable);
 
-  // Loading states
-  const isServicesLoading = !services || services.length === 0;
-  const isDatabasesLoading = !databases || databases.length === 0;
-  const isRecommendationsLoading = !recommendations || recommendations.length === 0;
+  // Track when data has loaded
+  useEffect(() => {
+    if (services && databases && recommendations && !hasInitiallyLoaded) {
+      // Add a small delay to ensure smooth loading experience
+      const timer = setTimeout(() => {
+        setHasInitiallyLoaded(true);
+      }, 500);
+      return () => clearTimeout(timer);
+    }
+  }, [services, databases, recommendations, hasInitiallyLoaded]);
+
+  // Loading states - show loading if data hasn't loaded yet OR if we haven't marked as initially loaded
+  const isServicesLoading = !services || !hasInitiallyLoaded;
+  const isDatabasesLoading = !databases || !hasInitiallyLoaded;
+  const isRecommendationsLoading = !recommendations || !hasInitiallyLoaded;
 
   // Count autoscaled services
   const autoscaledServices = !isServicesLoading ? services.filter(service => {

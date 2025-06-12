@@ -1,5 +1,6 @@
 import { CheckCircleIcon, InformationCircleIcon, BookOpenIcon, QuestionMarkCircleIcon } from "@heroicons/react/24/outline";
 import { ArrowPathIcon } from "@heroicons/react/24/solid";
+import { useState, useEffect } from "react";
 import { useSelector } from "react-redux";
 import {
   selectStacksByOrgAsList,
@@ -83,10 +84,22 @@ const ResourceCard = ({ icon, title, href }: { icon: React.ReactNode, title: str
 );
 
 export const SecurityCompliance = () => {
+  const [hasInitiallyLoaded, setHasInitiallyLoaded] = useState(false);
   const stacks = useSelector((state: WebState) => selectStacksByOrgAsList(state));
 
-  // Loading states
-  const isStacksLoading = !stacks || stacks.length === 0;
+  // Track when data has loaded
+  useEffect(() => {
+    if (stacks && !hasInitiallyLoaded) {
+      // Add a small delay to ensure smooth loading experience
+      const timer = setTimeout(() => {
+        setHasInitiallyLoaded(true);
+      }, 500);
+      return () => clearTimeout(timer);
+    }
+  }, [stacks, hasInitiallyLoaded]);
+
+  // Loading states - show loading if data hasn't loaded yet OR if we haven't marked as initially loaded
+  const isStacksLoading = !stacks || !hasInitiallyLoaded;
 
   // Check if user has any dedicated stacks - simplified check
   const hasDedicatedStack = !isStacksLoading && stacks ? Object.values(stacks).some(stack => getStackType(stack) === 'dedicated') : false;

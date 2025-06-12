@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Link } from "react-router-dom";
+import { ArrowPathIcon } from "@heroicons/react/24/outline";
 import { fetchOperationsByOrgId } from "@app/deploy";
 import { selectOrganizationSelected } from "@app/organizations";
 import { schema } from "@app/schema";
@@ -10,6 +11,7 @@ export const ActivityFeed = () => {
   const dispatch = useDispatch();
   const [isLoading, setIsLoading] = useState(true);
   const [hasInitiallyFetched, setHasInitiallyFetched] = useState(false);
+  const [isRefreshing, setIsRefreshing] = useState(false);
   const org = useSelector(selectOrganizationSelected);
   const operations = useSelector(schema.operations.selectTableAsList);
   const apps = useSelector(schema.apps.selectTableAsList);
@@ -74,8 +76,12 @@ export const ActivityFeed = () => {
     id: op.id
   })));
 
-  const fetchRecentOperations = async () => {
+  const fetchRecentOperations = async (isRefresh = false) => {
     if (!org?.id) return;
+    
+    if (isRefresh) {
+      setIsRefreshing(true);
+    }
     
     try {
       console.log('🔍 Fetching operations with params:', {
@@ -97,6 +103,10 @@ export const ActivityFeed = () => {
       console.log('📊 Operations after fetch:', operations?.slice(0, 10));
     } catch (error) {
       console.error('Error fetching operations:', error);
+    } finally {
+      if (isRefresh) {
+        setIsRefreshing(false);
+      }
     }
   };
 
@@ -119,7 +129,7 @@ export const ActivityFeed = () => {
     // Set up 15-second refresh interval
     const interval = setInterval(() => {
       console.log('🔄 Refreshing activity feed...');
-      fetchRecentOperations();
+      fetchRecentOperations(true); // Pass true to indicate this is a refresh
     }, 15000); // 15 seconds
 
     return () => clearInterval(interval);
@@ -184,7 +194,12 @@ export const ActivityFeed = () => {
   return (
     <div>
       <div className="flex items-center justify-between mb-4">
-        <h2 className="text-lg font-medium">Activity Feed</h2>
+        <div className="flex items-center gap-2">
+          <h2 className="text-lg font-medium">Activity Feed</h2>
+          {isRefreshing && (
+            <ArrowPathIcon className="w-4 h-4 text-blue-500 animate-spin" />
+          )}
+        </div>
         <Link 
           to="/activity"
           className="text-sm font-medium text-blue-600 hover:text-blue-800"

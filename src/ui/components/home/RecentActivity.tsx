@@ -161,9 +161,6 @@ export const RecentActivity = () => {
   // Check if base data is ready
   const isBaseDataReady = Boolean(operations && apps && services && databases);
   
-  // Check if we have actual operation data
-  const hasOperationData = activities && Object.values(activities).some(activity => activity !== null);
-
   // Memoize the processed activity data to avoid recalculation
   const memoizedActivities = useMemo(() => {
     if (!activities) return null;
