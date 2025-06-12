@@ -1,35 +1,41 @@
-import { useState, useEffect } from "react";
-import { useDispatch, useSelector } from "react-redux";
+import { useMemo } from "react";
+import { useSelector } from "react-redux";
 import { Link } from "react-router-dom";
-import { ArrowPathIcon } from "@heroicons/react/24/outline";
-import { fetchOperationsByOrgId } from "@app/deploy";
+import { 
+  pollOrgOperations, 
+  cancelOrgOperationsPoll,
+  selectApps,
+  selectServices,
+  selectDatabases
+} from "@app/deploy";
 import { selectOrganizationSelected } from "@app/organizations";
-import { schema } from "@app/schema";
+import { usePoller } from "../../hooks/use-poller";
+import { usePaginatedOpsByOrgId } from "../../hooks/use-paginate-operations";
 import { formatDistanceToNow } from "date-fns";
 
 export const ActivityFeed = () => {
-  const dispatch = useDispatch();
-  const [isLoading, setIsLoading] = useState(true);
-  const [hasInitiallyFetched, setHasInitiallyFetched] = useState(false);
-  const [isRefreshing, setIsRefreshing] = useState(false);
   const org = useSelector(selectOrganizationSelected);
-  const operations = useSelector(schema.operations.selectTableAsList);
-  const apps = useSelector(schema.apps.selectTableAsList);
-  const services = useSelector(schema.services.selectTableAsList);
-  const databases = useSelector(schema.databases.selectTableAsList);
+  
+  // Use polling just like the /activity page
+  const poller = useMemo(() => pollOrgOperations({ orgId: org?.id || '' }), [org?.id]);
+  const cancel = useMemo(() => cancelOrgOperationsPoll(), []);
+  usePoller({
+    action: poller,
+    cancel,
+  });
+  
+  // Get paginated data (same as activity page)
+  const paginated = usePaginatedOpsByOrgId(org?.id || '');
+  
+  // Get resource data for names
+  const apps = useSelector(selectApps);
+  const services = useSelector(selectServices);
+  const databases = useSelector(selectDatabases);
 
-  // Get the first 5 operations, sorted by date, with resource names
-  const recentOperations = operations
+  // Get the first 5 operations from paginated data (polling automatically keeps it fresh)
+  const recentOperations = paginated.data
     ?.filter(operation => {
-      // Debug: Log all operation types and resource IDs to understand the data
-      console.log('🔍 Operation debug:', {
-        type: operation.type,
-        resourceId: operation.resourceId,
-        resourceType: operation.resourceType,
-        status: operation.status
-      });
-      
-      // Only filter out ephemeral_session operations for now
+      // Filter out ephemeral_session operations
       if (operation.resourceId?.toLowerCase().includes('ephemeral_session')) {
         return false;
       }
@@ -41,23 +47,11 @@ export const ActivityFeed = () => {
       
       return true;
     })
-    ?.sort((a, b) => new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime())
-    ?.slice(0, 5)
+    ?.slice(0, 5) // Get latest 5
     ?.map(operation => {
-      let resourceName = operation.resourceId;
+      // The data from selectActivityByIdsForTable already has resourceHandle populated
+      const resourceName = operation.resourceHandle || operation.resourceId;
       
-      // Get actual resource name from the appropriate collection
-      if (operation.resourceType === 'app' && apps) {
-        const app = apps.find((app: any) => app.id === operation.resourceId);
-        resourceName = app?.handle || operation.resourceId;
-      } else if (operation.resourceType === 'service' && services) {
-        const service = services.find((service: any) => service.id === operation.resourceId);
-        resourceName = service?.handle || operation.resourceId;
-      } else if (operation.resourceType === 'database' && databases) {
-        const database = databases.find((db: any) => db.id === operation.resourceId);
-        resourceName = database?.handle || operation.resourceId;
-      }
-
       return {
         ...operation,
         resourceName,
@@ -65,75 +59,7 @@ export const ActivityFeed = () => {
       };
     }) || [];
 
-  // Debug logging for processed operations
-  console.log('🏠 Activity Feed - Recent Operations:', recentOperations.map(op => ({
-    type: op.type,
-    resourceName: op.resourceName,
-    resourceType: op.actualResourceType,
-    status: op.status,
-    user: op.userName,
-    date: op.updatedAt,
-    id: op.id
-  })));
-
-  const fetchRecentOperations = async (isRefresh = false) => {
-    if (!org?.id) return;
-    
-    if (isRefresh) {
-      setIsRefreshing(true);
-    }
-    
-    try {
-      console.log('🔍 Fetching operations with params:', {
-        id: org.id,
-        page: 1,
-        operationType: 'all',
-        operationStatus: 'all',
-        resourceType: 'all'
-      });
-      
-      await dispatch(fetchOperationsByOrgId({
-        id: org.id,
-        page: 1,
-        operationType: 'all',
-        operationStatus: 'all',
-        resourceType: 'all'
-      }));
-      
-      console.log('📊 Operations after fetch:', operations?.slice(0, 10));
-    } catch (error) {
-      console.error('Error fetching operations:', error);
-    } finally {
-      if (isRefresh) {
-        setIsRefreshing(false);
-      }
-    }
-  };
-
-  useEffect(() => {
-    if (!org?.id) {
-      setIsLoading(false);
-      setHasInitiallyFetched(true);
-      return;
-    }
-
-    const initialFetch = async () => {
-      setIsLoading(true);
-      await fetchRecentOperations();
-      setIsLoading(false);
-      setHasInitiallyFetched(true);
-    };
-
-    initialFetch();
-
-    // Set up 15-second refresh interval
-    const interval = setInterval(() => {
-      console.log('🔄 Refreshing activity feed...');
-      fetchRecentOperations(true); // Pass true to indicate this is a refresh
-    }, 15000); // 15 seconds
-
-    return () => clearInterval(interval);
-  }, [dispatch, org?.id]);
+  console.log('🏠 Activity Feed - Recent Operations (polling):', recentOperations.length, 'operations');
 
   const formatDate = (dateString: string) => {
     if (!dateString) return '—';
@@ -194,12 +120,7 @@ export const ActivityFeed = () => {
   return (
     <div>
       <div className="flex items-center justify-between mb-4">
-        <div className="flex items-center gap-2">
-          <h2 className="text-lg font-medium">Activity Feed</h2>
-          {isRefreshing && (
-            <ArrowPathIcon className="w-4 h-4 text-blue-500 animate-spin" />
-          )}
-        </div>
+        <h2 className="text-lg font-medium">Activity Feed</h2>
         <Link 
           to="/activity"
           className="text-sm font-medium text-blue-600 hover:text-blue-800"
@@ -209,7 +130,8 @@ export const ActivityFeed = () => {
       </div>
       
       <div className="bg-white rounded-lg border border-gray-200 shadow">
-        {isLoading || !hasInitiallyFetched ? (
+        <div className="h-96 overflow-y-auto">
+          {paginated.isLoading ? (
           <div className="divide-y divide-gray-200">
             {[...Array(5)].map((_, i) => (
               <div key={i} className="block p-4">
@@ -294,10 +216,13 @@ export const ActivityFeed = () => {
             ))}
           </div>
         ) : (
-          <div className="p-6 text-center text-gray-500">
-            No recent activity found
+          <div className="h-full flex items-center justify-center">
+            <div className="text-center text-gray-500">
+              No recent activity found
+            </div>
           </div>
         )}
+        </div>
       </div>
     </div>
   );

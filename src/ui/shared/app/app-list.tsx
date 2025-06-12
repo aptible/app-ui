@@ -41,6 +41,7 @@ import { Group } from "../group";
 import { IconChevronDown, IconPlusCircle } from "../icons";
 import { InputSearch } from "../input";
 import { OpStatus } from "../operation-status";
+import { PinStar } from "../pin-star";
 import {
   ActionBar,
   DescBar,
@@ -59,15 +60,36 @@ interface AppCellProps {
 }
 
 export const AppItemView = ({ app }: { app: DeployApp }) => {
+  const services = useSelector((s) =>
+    selectServicesByAppId(s, { appId: app.id }),
+  );
+  
+  // Determine app status based on services
+  const getAppStatus = () => {
+    if (!services || services.length === 0) return 'stopped';
+    const runningServices = services.filter(service => service.currentReleaseId);
+    return runningServices.length > 0 ? 'running' : 'stopped';
+  };
+
   return (
-    <Link to={appDetailUrl(app.id)} className="flex">
-      <img
-        src="/resource-types/logo-app.png"
-        className="w-[32px] h-[32px] mr-2 align-middle"
-        aria-label="App"
+    <div className="flex items-center gap-2">
+      <PinStar 
+        resource={{
+          id: app.id,
+          type: 'app',
+          name: app.handle,
+          status: getAppStatus()
+        }}
       />
-      <p className={`${tokens.type["table link"]} leading-8`}>{app.handle}</p>
-    </Link>
+      <Link to={appDetailUrl(app.id)} className="flex">
+        <img
+          src="/resource-types/logo-app.png"
+          className="w-[32px] h-[32px] mr-2 align-middle"
+          aria-label="App"
+        />
+        <p className={`${tokens.type["table link"]} leading-8`}>{app.handle}</p>
+      </Link>
+    </div>
   );
 };
 

@@ -40,6 +40,7 @@ import { Group } from "../group";
 import { IconChevronDown, IconPlusCircle } from "../icons";
 import { InputSearch } from "../input";
 import { OpStatus } from "../operation-status";
+import { PinStar } from "../pin-star";
 import {
   ActionBar,
   DescBar,
@@ -64,22 +65,42 @@ export const DatabaseItemView = ({
   const image = useSelector((s) =>
     selectDatabaseImageById(s, { id: database.databaseImageId }),
   );
+  const service = useSelector((s) =>
+    selectServiceById(s, { id: database.serviceId }),
+  );
   useQuery(fetchDatabaseImageById({ id: database.databaseImageId }));
+  
+  // Determine database status
+  const getDatabaseStatus = () => {
+    if (!service) return 'unknown';
+    return service.currentReleaseId ? 'running' : 'stopped';
+  };
+
   return (
-    <div className="flex">
-      <Link to={databaseDetailUrl(database.id)} className="flex">
-        <img
-          src={`/database-types/logo-${database.type}.png`}
-          className="w-[32px] h-[32px] mr-2 mt-1 align-middle"
-          aria-label={`${database.type} Database`}
-        />
-        <p className="flex flex-col">
-          <span className={tokens.type["table link"]}>{database.handle}</span>
-          <span className={tokens.type["normal lighter"]}>
-            {image.description}
-          </span>
-        </p>
-      </Link>
+    <div className="flex items-center gap-2">
+      <PinStar 
+        resource={{
+          id: database.id,
+          type: 'database',
+          name: database.handle,
+          status: getDatabaseStatus()
+        }}
+      />
+      <div className="flex">
+        <Link to={databaseDetailUrl(database.id)} className="flex">
+          <img
+            src={`/database-types/logo-${database.type}.png`}
+            className="w-[32px] h-[32px] mr-2 mt-1 align-middle"
+            aria-label={`${database.type} Database`}
+          />
+          <p className="flex flex-col">
+            <span className={tokens.type["table link"]}>{database.handle}</span>
+            <span className={tokens.type["normal lighter"]}>
+              {image.description}
+            </span>
+          </p>
+        </Link>
+      </div>
     </div>
   );
 };

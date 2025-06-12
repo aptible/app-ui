@@ -4,6 +4,7 @@ import { AppSidebarLayout } from "../layouts";
 import {
   Overview,
   ActivityFeed,
+  PinnedResources,
   Scaling,
   Sources,
   SecurityCompliance
@@ -92,19 +93,24 @@ export const HomePage = () => {
               {/* Overview Section */}
               <Overview />
 
-              {/* Main content grid */}
+              {/* Activity Feed and Pinned Resources Grid */}
               <div className="grid grid-cols-1 xl:grid-cols-2 gap-6">
-                {/* Left column - Activity Feed (1/2 width) */}
+                {/* Left column - Activity Feed */}
                 <div>
                   <ActivityFeed />
                   {/* <RecentActivity /> - Hidden for now */}
                 </div>
 
-                {/* Right column - Scaling & Sources (1/2 width) */}
-                <div className="space-y-6">
-                  <Scaling />
-                  <Sources />
+                {/* Right column - Pinned Resources */}
+                <div>
+                  <PinnedResources />
                 </div>
+              </div>
+
+              {/* Scaling and Sources Row */}
+              <div className="grid grid-cols-1 xl:grid-cols-2 gap-6">
+                <Scaling />
+                <Sources />
               </div>
 
               {/* Bottom section */}
