@@ -56,7 +56,6 @@ export const Overview = () => {
 
   return (
     <div>
-      <h2 className="text-lg font-medium mb-4">Overview</h2>
       <div className="bg-white rounded-lg border border-gray-200 shadow">
         <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 divide-x divide-gray-200">
           <div className="p-4 flex flex-col items-center border-b border-gray-200 sm:border-b lg:border-b-0">
