@@ -1,4 +1,4 @@
-import { CommandLineIcon, SparklesIcon, XMarkIcon } from "@heroicons/react/24/outline";
+import { CommandLineIcon } from "@heroicons/react/24/outline";
 import { useState } from "react";
 import { AppSidebarLayout } from "../layouts";
 import {
@@ -16,7 +16,6 @@ import {
 } from "../shared";
 
 export const HomePage = () => {
-  const [showWhatsNew, setShowWhatsNew] = useState(true);
   const [showFeedbackBanner, setShowFeedbackBanner] = useState(true);
 
   const handleDismiss = () => {

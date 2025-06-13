@@ -3,10 +3,7 @@ import { useSelector } from "react-redux";
 import { Link } from "react-router-dom";
 import { 
   pollOrgOperations, 
-  cancelOrgOperationsPoll,
-  selectApps,
-  selectServices,
-  selectDatabases
+  cancelOrgOperationsPoll
 } from "@app/deploy";
 import { selectOrganizationSelected } from "@app/organizations";
 import { usePoller } from "../../hooks/use-poller";
@@ -26,11 +23,6 @@ export const ActivityFeed = () => {
   
   // Get paginated data (same as activity page)
   const paginated = usePaginatedOpsByOrgId(org?.id || '');
-  
-  // Get resource data for names
-  const apps = useSelector(selectApps);
-  const services = useSelector(selectServices);
-  const databases = useSelector(selectDatabases);
 
   // Get the first 5 operations from paginated data (polling automatically keeps it fresh)
   const recentOperations = paginated.data
