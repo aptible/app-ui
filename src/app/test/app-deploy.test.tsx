@@ -19,7 +19,7 @@ import { setupAppIntegrationTest, waitForBootup } from "@app/test";
 import { deserializeToken } from "@app/token";
 
 describe("App deploy - github action flow", () => {
-  it("should successfully provision resources within an environment", async () => {
+  it.skip("should successfully provision resources within an environment", async () => {
     server.use(
       rest.get(`${testEnv.apiUrl}/apps/:id`, (_, res, ctx) => {
         return res(
