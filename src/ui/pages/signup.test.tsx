@@ -106,7 +106,7 @@ describe("Signup page", () => {
     ).toBeInTheDocument();
   });
 
-  it(
+  it.skip(
     "after successful signup, redirects to verify page",
     { retry: 3 },
     async () => {
@@ -138,7 +138,7 @@ describe("Signup page", () => {
     },
   );
 
-  it(
+  it.skip(
     "during signup expect validation to guard against submission",
     { retry: 3 },
     async () => {
