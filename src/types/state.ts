@@ -8,6 +8,7 @@ export interface Config {
   authUrl: string;
   billingUrl: string;
   apiUrl: string;
+  v2apiUrl: string;
   metricTunnelUrl: string;
   portalUrl: string;
   aptibleAiUrl: string;

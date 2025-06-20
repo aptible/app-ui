@@ -1,3 +1,5 @@
+export * from "./v2";
+
 export const HOME_PATH = "/";
 export const homeUrl = () => HOME_PATH;
 export const NOT_FOUND_PATH = "/404";

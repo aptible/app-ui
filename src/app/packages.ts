@@ -6,6 +6,7 @@ import {
   metricTunnelApi,
   portalApi,
   thunks,
+  v2api,
 } from "@app/api";
 import * as auth from "@app/auth";
 import * as billing from "@app/billing";
@@ -74,6 +75,7 @@ const initialSagas: { [key: string]: Callable<any> } = {
   thunks: thunks.bootup,
   billingApi: billingApi.bootup,
   aptibleAiApi: aptibleAiApi.bootup,
+  v2Api: v2api.bootup,
 };
 
 export const sagas = corePackages.reduce<{ [key: string]: Callable<any> }>(

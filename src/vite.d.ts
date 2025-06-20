@@ -9,6 +9,7 @@ interface ImportMetaEnv {
   PROD: boolean;
   VITE_APP_URL: string;
   VITE_API_URL: string;
+  VITE_V2_API_URL: string;
   VITE_AUTH_URL: string;
   VITE_BILLING_URL: string;
   VITE_LEGACY_DASHBOARD_URL: string;
