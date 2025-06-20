@@ -105,5 +105,6 @@ export const [schema, initialState] = createSchema({
   llmIntegrations: slice.table({
     empty: factory.defaultDeployLlmIntegration(),
   }),
+  v2Apps: slice.table({ empty: factory.defaultV2App() }),
 });
 export type WebState = typeof initialState;

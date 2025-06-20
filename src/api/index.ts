@@ -49,7 +49,8 @@ type EndpointUrl =
   | "billing"
   | "metrictunnel"
   | "portal"
-  | "aptibleai";
+  | "aptibleai"
+  | "v2api";
 
 const log = createLog("fx");
 
@@ -129,6 +130,10 @@ function* getApiBaseUrl(endpoint: EndpointUrl) {
     return env.aptibleAiUrl;
   }
 
+  if (endpoint === "v2api") {
+    return env.v2apiUrl;
+  }
+
   return env.apiUrl;
 }
 
@@ -179,12 +184,26 @@ function* getUrl(ctx: AppCtx, endpoint: EndpointUrl) {
     return url;
   }
 
-  const baseUrl = yield* call(() => getApiBaseUrl(endpoint));
+  const baseUrl = yield* getApiBaseUrl(endpoint);
   return `${baseUrl}${url}`;
 }
 
 function* requestBilling(ctx: ApiCtx, next: Next) {
   const url = yield* call(() => getUrl(ctx, "billing" as const));
+  ctx.request = ctx.req({
+    url,
+    // https://github.com/github/fetch#sending-cookies
+    credentials: "include",
+    headers: {
+      "Content-Type": "application/hal+json",
+    },
+  });
+
+  yield* next();
+}
+
+function* requestV2Api(ctx: ApiCtx, next: Next) {
+  const url = yield* getUrl(ctx, "v2api" as const);
   ctx.request = ctx.req({
     url,
     // https://github.com/github/fetch#sending-cookies
@@ -319,6 +338,20 @@ api.use(halEntityParser);
 api.use(api.routes());
 api.use(tokenMdw);
 api.use(mdw.fetch());
+
+export const v2api = createApi<DeployApiCtx>(
+  createThunks({ supervisor: takeEvery }),
+);
+v2api.use(debugMdw);
+v2api.use(apiErrorMdw);
+v2api.use(sentryErrorHandler);
+v2api.use(expiredToken);
+v2api.use(mdw.api({ schema }));
+v2api.use(aborter);
+v2api.use(requestV2Api);
+v2api.use(v2api.routes());
+v2api.use(tokenMdw);
+v2api.use(mdw.fetch());
 
 export const authApi = createApi<AuthApiCtx>(
   createThunks({ supervisor: takeEvery }),

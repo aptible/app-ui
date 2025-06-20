@@ -78,3 +78,4 @@ export * from "./scale-recs";
 export * from "./last-scale";
 export * from "./timezone-toggle";
 export * from "./timezone-context";
+export * from "./v2-application-sidebar";

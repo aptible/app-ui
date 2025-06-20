@@ -150,6 +150,8 @@ import {
   TeamRolesPage,
   TeamScimPage,
   TeamSsoPage,
+  V2AppSidebarLayout,
+  V2HomePage,
   VerifyEmailPage,
   VerifyEmailRequired,
 } from "@app/ui";
@@ -165,6 +167,7 @@ import { SettingsTeamLlmIntegrationsPage } from "@app/ui/pages/settings-team-llm
 import { SettingsTeamLlmIntegrationsAddPage } from "@app/ui/pages/settings-team-llm-integrations-add";
 import { SettingsTeamLlmIntegrationsEditPage } from "@app/ui/pages/settings-team-llm-integrations-edit";
 import { SourcesSetupPage } from "@app/ui/pages/sources-setup";
+import { V2AppsPage } from "@app/ui/pages/v2-apps";
 import {
   Navigate,
   type RouteObject,
@@ -198,6 +201,25 @@ export const appRoutes: RouteObject[] = [
       {
         index: true,
         element: <HomePage />,
+      },
+
+      {
+        path: routes.V2_ROOT,
+        element: <V2AppSidebarLayout />,
+        children: [
+          {
+            index: true,
+            element: <Navigate replace to={routes.V2_HOME_PATH} />,
+          },
+          {
+            path: routes.V2_HOME_PATH,
+            element: <V2HomePage />,
+          },
+          {
+            path: routes.V2_APPS_PATH,
+            element: <V2AppsPage />,
+          },
+        ],
       },
 
       {
