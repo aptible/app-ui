@@ -1,5 +1,6 @@
 import type { LoadingState } from "@app/fx";
 
+import type { JSX } from "react";
 import { Loading } from "./loading";
 
 interface LoadResourcesProps {

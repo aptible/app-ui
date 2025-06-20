@@ -71,7 +71,7 @@ export const DiagnosticsLineChart = ({
 }) => {
   const { timestamp, setTimestamp } = useContext(synchronizedHoverContext);
   const chartRef =
-    React.useRef<ChartJS<"line", { x: string; y: number }[], unknown>>();
+    React.useRef<ChartJS<"line", { x: string; y: number }[], unknown>>(null);
 
   // Truncate sha256 resource names to 8 chars
   const datasets = originalDatasets.map((dataset) => ({
@@ -194,7 +194,7 @@ export const DiagnosticsLineChart = ({
           mode: "index",
           intersect: false,
         },
-        onHover: (event, elements, chart) => {
+        onHover: (event, elements) => {
           if (!event.native) return;
 
           if (elements && elements.length > 0) {

@@ -26,6 +26,7 @@ import {
 } from "@app/routes";
 import type { DeployEndpoint } from "@app/types";
 import { usePaginate } from "@app/ui/hooks";
+import type { JSX } from "react";
 import { useNavigate } from "react-router";
 import { Link, useSearchParams } from "react-router-dom";
 import { Button, ButtonCreate } from "../button";

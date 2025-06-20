@@ -1,5 +1,5 @@
 import classNames from "classnames";
-import type { LabelHTMLAttributes, PropsWithChildren } from "react";
+import type { JSX, LabelHTMLAttributes, PropsWithChildren } from "react";
 import { tokens } from "./tokens";
 
 export function Form({
