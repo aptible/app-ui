@@ -7,6 +7,7 @@ import {
   ModalType,
   type Nav,
   NoticeType,
+  type PinnedResource,
   type ResourceStats,
   type Role,
   type U2fDevice,
@@ -105,5 +106,6 @@ export const [schema, initialState] = createSchema({
   llmIntegrations: slice.table({
     empty: factory.defaultDeployLlmIntegration(),
   }),
+  pinnedResources: slice.table<PinnedResource[]>(),
 });
 export type WebState = typeof initialState;

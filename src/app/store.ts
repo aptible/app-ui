@@ -34,6 +34,7 @@ export function setupStore({
       "feedback",
       "resourceStats",
       "notices",
+      "pinnedResources",
     ],
   });
 

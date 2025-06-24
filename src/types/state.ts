@@ -128,3 +128,9 @@ export interface ManualScaleRecommendation {
   createdAt: string;
   metricPercentile: number;
 }
+
+export interface PinnedResource {
+  id: string;
+  orgId: string;
+  type: "app" | "database";
+}

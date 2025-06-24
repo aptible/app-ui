@@ -18,6 +18,7 @@ import {
   selectServicesByAppId,
 } from "@app/deploy";
 import { fetchDeploymentById, selectDeploymentById } from "@app/deployment";
+import { selectOrganizationSelectedId } from "@app/organizations";
 import { useLoader, useQuery, useSelector } from "@app/react";
 import {
   appDetailUrl,
@@ -60,25 +61,14 @@ interface AppCellProps {
 }
 
 export const AppItemView = ({ app }: { app: DeployApp }) => {
-  const services = useSelector((s) =>
-    selectServicesByAppId(s, { appId: app.id }),
-  );
-  
-  // Determine app status based on services
-  const getAppStatus = () => {
-    if (!services || services.length === 0) return 'stopped';
-    const runningServices = services.filter(service => service.currentReleaseId);
-    return runningServices.length > 0 ? 'running' : 'stopped';
-  };
-
+  const orgId = useSelector(selectOrganizationSelectedId);
   return (
     <div className="flex items-center gap-2">
-      <PinStar 
+      <PinStar
         resource={{
           id: app.id,
-          type: 'app',
-          name: app.handle,
-          status: getAppStatus()
+          type: "app",
+          orgId,
         }}
       />
       <Link to={appDetailUrl(app.id)} className="flex">

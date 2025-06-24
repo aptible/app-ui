@@ -62,28 +62,19 @@ interface DatabaseCellProps {
 export const DatabaseItemView = ({
   database,
 }: { database: DeployDatabase }) => {
+  const orgId = useSelector(selectOrganizationSelectedId);
   const image = useSelector((s) =>
     selectDatabaseImageById(s, { id: database.databaseImageId }),
   );
-  const service = useSelector((s) =>
-    selectServiceById(s, { id: database.serviceId }),
-  );
   useQuery(fetchDatabaseImageById({ id: database.databaseImageId }));
-  
-  // Determine database status
-  const getDatabaseStatus = () => {
-    if (!service) return 'unknown';
-    return service.currentReleaseId ? 'running' : 'stopped';
-  };
 
   return (
     <div className="flex items-center gap-2">
-      <PinStar 
+      <PinStar
         resource={{
           id: database.id,
-          type: 'database',
-          name: database.handle,
-          status: getDatabaseStatus()
+          type: "database",
+          orgId,
         }}
       />
       <div className="flex">

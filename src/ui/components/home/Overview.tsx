@@ -1,36 +1,52 @@
-import { Square3Stack3DIcon, GlobeAltIcon, CubeIcon, CircleStackIcon, CurrencyDollarIcon, InformationCircleIcon } from "@heroicons/react/24/outline";
-import { useState, useEffect } from "react";
-import { useSelector } from "react-redux";
-import { Link } from "react-router-dom";
 import {
-  selectEnvironmentsByOrg,
-  selectStacksByOrgAsList,
-  getStackType,
   computeCostId,
   formatCurrency,
+  getStackType,
   selectDatabasesForTableSearch,
+  selectEnvironmentsByOrg,
+  selectStacksByOrgAsList,
 } from "@app/deploy";
 import { schema } from "@app/schema";
-import { Tooltip } from "../../shared";
 import type { WebState } from "@app/schema";
+import {
+  CircleStackIcon,
+  CubeIcon,
+  CurrencyDollarIcon,
+  GlobeAltIcon,
+  InformationCircleIcon,
+  Square3Stack3DIcon,
+} from "@heroicons/react/24/outline";
+import { useEffect, useState } from "react";
+import { useSelector } from "react-redux";
+import { Link } from "react-router-dom";
+import { Tooltip } from "../../shared";
 
 export const Overview = () => {
   const [hasInitiallyLoaded, setHasInitiallyLoaded] = useState(false);
-  const stacks = useSelector((state: WebState) => selectStacksByOrgAsList(state));
+  const stacks = useSelector((state: WebState) =>
+    selectStacksByOrgAsList(state),
+  );
   const apps = useSelector(schema.apps.selectTableAsList);
-  const databases = useSelector((state: WebState) => 
-    selectDatabasesForTableSearch(state, { 
-      search: '', 
-      sortBy: 'savings', 
-      sortDir: 'desc' 
-    })
+  const databases = useSelector((state: WebState) =>
+    selectDatabasesForTableSearch(state, {
+      search: "",
+      sortBy: "savings",
+      sortDir: "desc",
+    }),
   );
   const environments = useSelector(selectEnvironmentsByOrg);
   const costs = useSelector(schema.costs.selectTable);
 
   // Track when data has loaded
   useEffect(() => {
-    if (stacks && apps && databases && environments && costs && !hasInitiallyLoaded) {
+    if (
+      stacks &&
+      apps &&
+      databases &&
+      environments &&
+      costs &&
+      !hasInitiallyLoaded
+    ) {
       // Add a small delay to ensure smooth loading experience
       const timer = setTimeout(() => {
         setHasInitiallyLoaded(true);
@@ -47,12 +63,15 @@ export const Overview = () => {
   const isCostsLoading = !costs || !hasInitiallyLoaded;
 
   // Calculate total cost
-  const totalMonthlyCost = !isCostsLoading && costs && stacks ? stacks.reduce((total, stack) => {
-    const costItem = schema.costs.findById(costs, {
-      id: computeCostId("Stack", stack.id),
-    });
-    return total + (costItem?.estCost || 0);
-  }, 0) : 0;
+  const totalMonthlyCost =
+    !isCostsLoading && costs && stacks
+      ? stacks.reduce((total, stack) => {
+          const costItem = schema.costs.findById(costs, {
+            id: computeCostId("Stack", stack.id),
+          });
+          return total + (costItem?.estCost || 0);
+        }, 0)
+      : 0;
 
   return (
     <div>
@@ -61,7 +80,9 @@ export const Overview = () => {
           <div className="p-4 flex flex-col items-center border-b border-gray-200 sm:border-b lg:border-b-0">
             <div className="flex items-center gap-1.5 text-gray-500 mb-2">
               <Square3Stack3DIcon className="w-4 h-4" />
-              <h3 className="text-sm font-medium text-gray-600">Dedicated Stacks</h3>
+              <h3 className="text-sm font-medium text-gray-600">
+                Dedicated Stacks
+              </h3>
               <Tooltip text="Total number of dedicated stacks">
                 <InformationCircleIcon className="w-4 h-4 text-gray-400 cursor-help flex-shrink-0" />
               </Tooltip>
@@ -69,8 +90,15 @@ export const Overview = () => {
             {isStacksLoading ? (
               <div className="h-10 w-16 bg-gray-200 rounded animate-pulse" />
             ) : (
-              <Link to="http://localhost:4200/stacks" className="text-2xl sm:text-3xl font-semibold text-blue-600 hover:text-blue-800">
-                {Object.values(stacks).filter(stack => getStackType(stack) === 'dedicated').length}
+              <Link
+                to="http://localhost:4200/stacks"
+                className="text-2xl sm:text-3xl font-semibold text-blue-600 hover:text-blue-800"
+              >
+                {
+                  Object.values(stacks).filter(
+                    (stack) => getStackType(stack) === "dedicated",
+                  ).length
+                }
               </Link>
             )}
           </div>
@@ -78,7 +106,9 @@ export const Overview = () => {
           <div className="p-4 flex flex-col items-center border-b border-gray-200 sm:border-b lg:border-b-0">
             <div className="flex items-center gap-1.5 text-gray-500 mb-2">
               <GlobeAltIcon className="w-4 h-4" />
-              <h3 className="text-sm font-medium text-gray-600">Environments</h3>
+              <h3 className="text-sm font-medium text-gray-600">
+                Environments
+              </h3>
               <Tooltip text="Total number of environments in your organization">
                 <InformationCircleIcon className="w-4 h-4 text-gray-400 cursor-help flex-shrink-0" />
               </Tooltip>
@@ -86,7 +116,10 @@ export const Overview = () => {
             {isEnvironmentsLoading ? (
               <div className="h-10 w-16 bg-gray-200 rounded animate-pulse" />
             ) : (
-              <Link to="http://localhost:4200/environments" className="text-2xl sm:text-3xl font-semibold text-blue-600 hover:text-blue-800">
+              <Link
+                to="http://localhost:4200/environments"
+                className="text-2xl sm:text-3xl font-semibold text-blue-600 hover:text-blue-800"
+              >
                 {Object.keys(environments).length}
               </Link>
             )}
@@ -103,7 +136,10 @@ export const Overview = () => {
             {isAppsLoading ? (
               <div className="h-10 w-16 bg-gray-200 rounded animate-pulse" />
             ) : (
-              <Link to="http://localhost:4200/apps" className="text-2xl sm:text-3xl font-semibold text-blue-600 hover:text-blue-800">
+              <Link
+                to="http://localhost:4200/apps"
+                className="text-2xl sm:text-3xl font-semibold text-blue-600 hover:text-blue-800"
+              >
                 {Object.keys(apps).length}
               </Link>
             )}
@@ -112,7 +148,9 @@ export const Overview = () => {
           <div className="p-4 flex flex-col items-center border-b border-gray-200 lg:border-b-0">
             <div className="flex items-center gap-1.5 text-gray-500 mb-2">
               <CircleStackIcon className="w-4 h-4" />
-              <h3 className="text-sm font-medium text-gray-600">Managed Databases</h3>
+              <h3 className="text-sm font-medium text-gray-600">
+                Managed Databases
+              </h3>
               <Tooltip text="Total number of managed databases across all environments">
                 <InformationCircleIcon className="w-4 h-4 text-gray-400 cursor-help flex-shrink-0" />
               </Tooltip>
@@ -120,7 +158,10 @@ export const Overview = () => {
             {isDatabasesLoading ? (
               <div className="h-10 w-16 bg-gray-200 rounded animate-pulse" />
             ) : (
-              <Link to="http://localhost:4200/databases" className="text-2xl sm:text-3xl font-semibold text-blue-600 hover:text-blue-800">
+              <Link
+                to="http://localhost:4200/databases"
+                className="text-2xl sm:text-3xl font-semibold text-blue-600 hover:text-blue-800"
+              >
                 {Object.keys(databases).length}
               </Link>
             )}
@@ -129,7 +170,9 @@ export const Overview = () => {
           <div className="p-4 flex flex-col items-center">
             <div className="flex items-center gap-1.5 text-gray-500 mb-2">
               <CurrencyDollarIcon className="w-4 h-4" />
-              <h3 className="text-sm font-medium text-gray-600">Est. Monthly Cost</h3>
+              <h3 className="text-sm font-medium text-gray-600">
+                Est. Monthly Cost
+              </h3>
               <Tooltip text="Estimated monthly cost based on current resource usage across all environments">
                 <InformationCircleIcon className="w-4 h-4 text-gray-400 cursor-help flex-shrink-0" />
               </Tooltip>
@@ -146,4 +189,4 @@ export const Overview = () => {
       </div>
     </div>
   );
-}; 
+};

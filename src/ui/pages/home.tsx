@@ -1,19 +1,15 @@
 import { CommandLineIcon } from "@heroicons/react/24/outline";
 import { useState } from "react";
-import { AppSidebarLayout } from "../layouts";
 import {
-  Overview,
   ActivityFeed,
+  Overview,
   PinnedResources,
   Scaling,
+  SecurityCompliance,
   Sources,
-  SecurityCompliance
-} from '../components/home';
-import {
-  Banner,
-  IconChevronRight,
-  IconX,
-} from "../shared";
+} from "../components/home";
+import { AppSidebarLayout } from "../layouts";
+import { Banner, IconChevronRight, IconX } from "../shared";
 
 export const HomePage = () => {
   const [showFeedbackBanner, setShowFeedbackBanner] = useState(true);
@@ -122,12 +118,16 @@ export const HomePage = () => {
       {/* Beta Feedback Banner */}
       {showFeedbackBanner && (
         <div className="fixed bottom-4 right-4 z-50 max-w-md">
-          <Banner variant="info" className="shadow-lg bg-gradient-to-br from-blue-50 to-white">
+          <Banner
+            variant="info"
+            className="shadow-lg bg-gradient-to-br from-blue-50 to-white"
+          >
             <div className="flex items-start justify-between gap-4">
               <div>
                 <div className="font-semibold mb-1">Share feedback</div>
                 <div className="text-sm text-gray-600">
-                  This landing page is in BETA. Have feedback? Experiencing a bug? Let us know!
+                  This landing page is in BETA. Have feedback? Experiencing a
+                  bug? Let us know!
                 </div>
                 <div className="mt-2">
                   <a
@@ -142,6 +142,7 @@ export const HomePage = () => {
                 </div>
               </div>
               <button
+                type="button"
                 onClick={handleDismiss}
                 className="text-gray-400 hover:text-gray-500"
                 aria-label="Dismiss feedback banner"

@@ -1,13 +1,15 @@
-import { CheckCircleIcon, InformationCircleIcon, BookOpenIcon, QuestionMarkCircleIcon } from "@heroicons/react/24/outline";
-import { ArrowPathIcon } from "@heroicons/react/24/solid";
-import { useState, useEffect } from "react";
-import { useSelector } from "react-redux";
-import {
-  selectStacksByOrgAsList,
-  getStackType,
-} from "@app/deploy";
-import { Tooltip } from "../../shared";
+import { getStackType, selectStacksByOrgAsList } from "@app/deploy";
 import type { WebState } from "@app/schema";
+import {
+  BookOpenIcon,
+  CheckCircleIcon,
+  InformationCircleIcon,
+  QuestionMarkCircleIcon,
+} from "@heroicons/react/24/outline";
+import { ArrowPathIcon } from "@heroicons/react/24/solid";
+import { useEffect, useState } from "react";
+import { useSelector } from "react-redux";
+import { Tooltip } from "../../shared";
 
 interface SecurityBoxProps {
   title: string;
@@ -18,30 +20,42 @@ interface SecurityBoxProps {
   children?: React.ReactNode;
 }
 
-const SecurityBox = ({ title, description, tooltip, isLoading = false, hasDedicatedStack = false, children }: SecurityBoxProps) => {
-  const isInProgress = title === "HIPAA Addressable Controls" || title === "HITRUST Controls";
+const SecurityBox = ({
+  title,
+  description,
+  tooltip,
+  isLoading = false,
+  hasDedicatedStack = false,
+  children,
+}: SecurityBoxProps) => {
+  const isInProgress =
+    title === "HIPAA Addressable Controls" || title === "HITRUST Controls";
   const isHipaaRequired = title === "HIPAA Required Controls";
 
   const getBackgroundColor = () => {
-    if (isLoading) return 'bg-gray-50 border-gray-200';
-    if (isInProgress) return 'bg-gray-50 border-gray-200';
+    if (isLoading) return "bg-gray-50 border-gray-200";
+    if (isInProgress) return "bg-gray-50 border-gray-200";
     if (isHipaaRequired) {
-      return hasDedicatedStack ? 'bg-emerald-50 border-emerald-200' : 'bg-orange-50 border-orange-200';
+      return hasDedicatedStack
+        ? "bg-emerald-50 border-emerald-200"
+        : "bg-orange-50 border-orange-200";
     }
-    return 'bg-emerald-50 border-emerald-200';
+    return "bg-emerald-50 border-emerald-200";
   };
 
   const getIconColor = () => {
-    if (isLoading) return 'text-gray-400';
-    if (isInProgress) return 'text-gray-600';
+    if (isLoading) return "text-gray-400";
+    if (isInProgress) return "text-gray-600";
     if (isHipaaRequired) {
-      return hasDedicatedStack ? 'text-emerald-600' : 'text-orange-600';
+      return hasDedicatedStack ? "text-emerald-600" : "text-orange-600";
     }
-    return 'text-emerald-600';
+    return "text-emerald-600";
   };
 
   return (
-    <div className={`p-4 rounded-lg border shadow flex flex-col justify-between h-full ${getBackgroundColor()}`}>
+    <div
+      className={`p-4 rounded-lg border shadow flex flex-col justify-between h-full ${getBackgroundColor()}`}
+    >
       <div>
         <div className="flex items-center gap-2 mb-2">
           {isLoading ? (
@@ -58,7 +72,7 @@ const SecurityBox = ({ title, description, tooltip, isLoading = false, hasDedica
             </Tooltip>
           )}
         </div>
-        <p className="text-sm text-gray-600">{description}</p>
+        <div className="text-sm text-gray-600">{description}</div>
       </div>
       {isLoading ? (
         <div className="mt-4">
@@ -67,13 +81,24 @@ const SecurityBox = ({ title, description, tooltip, isLoading = false, hasDedica
             <span className="text-sm">Loading compliance data...</span>
           </div>
         </div>
-      ) : children}
+      ) : (
+        children
+      )}
     </div>
   );
 };
 
-const ResourceCard = ({ icon, title, href }: { icon: React.ReactNode, title: string, href: string }) => (
-  <a href={href} className="block h-full" target="_blank" rel="noopener noreferrer">
+const ResourceCard = ({
+  icon,
+  title,
+  href,
+}: { icon: React.ReactNode; title: string; href: string }) => (
+  <a
+    href={href}
+    className="block h-full"
+    target="_blank"
+    rel="noopener noreferrer"
+  >
     <div className="bg-white rounded-lg border border-gray-200 p-4 hover:border-gray-300 h-full">
       <div className="flex items-center gap-2">
         <span className="w-4 h-4 text-gray-500">{icon}</span>
@@ -85,7 +110,9 @@ const ResourceCard = ({ icon, title, href }: { icon: React.ReactNode, title: str
 
 export const SecurityCompliance = () => {
   const [hasInitiallyLoaded, setHasInitiallyLoaded] = useState(false);
-  const stacks = useSelector((state: WebState) => selectStacksByOrgAsList(state));
+  const stacks = useSelector((state: WebState) =>
+    selectStacksByOrgAsList(state),
+  );
 
   // Track when data has loaded
   useEffect(() => {
@@ -102,7 +129,12 @@ export const SecurityCompliance = () => {
   const isStacksLoading = !stacks || !hasInitiallyLoaded;
 
   // Check if user has any dedicated stacks - simplified check
-  const hasDedicatedStack = !isStacksLoading && stacks ? Object.values(stacks).some(stack => getStackType(stack) === 'dedicated') : false;
+  const hasDedicatedStack =
+    !isStacksLoading && stacks
+      ? Object.values(stacks).some(
+          (stack) => getStackType(stack) === "dedicated",
+        )
+      : false;
 
   return (
     <div className="space-y-6">
@@ -114,7 +146,10 @@ export const SecurityCompliance = () => {
             description={
               <div className="space-y-1">
                 <p className="text-sm text-gray-600">
-                  Aptible implements and manages the infrastructure security controls required to meet compliance with frameworks such as HIPAA, HITRUST, SOC 2 Type 2, and PCI DSS for Service Providers Level 2.{' '}
+                  Aptible implements and manages the infrastructure security
+                  controls required to meet compliance with frameworks such as
+                  HIPAA, HITRUST, SOC 2 Type 2, and PCI DSS for Service
+                  Providers Level 2.{" "}
                   <a
                     href="https://trust.aptible.com/"
                     className="text-blue-600 hover:text-blue-800 font-bold"
@@ -196,4 +231,4 @@ export const SecurityCompliance = () => {
       </div>
     </div>
   );
-}; 
+};
