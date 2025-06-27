@@ -43,20 +43,6 @@ VITE_PORTAL_URL="https://portal.aptible.com"
 VITE_APTIBLE_AI_URL="wss://app-86559.on-aptible.com"
 ```
 
-Staging APIs:
-
-```bash
-VITE_APP_URL="http://localhost:4200"
-
-VITE_AUTH_URL="https://auth-sbx-main.aptible-sandbox.com"
-VITE_API_URL="https://api-sbx-main.aptible-sandbox.com"
-VITE_BILLING_URL="https://goldenboy-sbx-main.aptible-sandbox.com"
-VITE_LEGACY_DASHBOARD_URL="https://dashboard-sbx-main.aptible-sandbox.com"
-VITE_METRIC_TUNNEL_URL="https://metrictunnel-sbx-main.aptible-sandbox.com"
-VITE_PORTAL_URL="https://portal-sbx-main.aptible-sandbox.com"
-VITE_APTIBLE_AI_URL="wss://app-86559.on-aptible.com"
-```
-
 **4. Run Start Commands**
 
 ```bash
