@@ -50,6 +50,7 @@ import {
   type Theme,
   type Token,
   type User,
+  type V2App,
 } from "@app/types";
 
 export const DEFAULT_INSTANCE_CLASS: InstanceClass = "m5";
@@ -63,6 +64,7 @@ export const defaultConfig = (e: Partial<Config> = {}): Config => {
     authUrl: import.meta.env.VITE_AUTH_URL || "",
     billingUrl: import.meta.env.VITE_BILLING_URL || "",
     apiUrl: import.meta.env.VITE_API_URL || "",
+    v2apiUrl: import.meta.env.VITE_V2_API_URL || "https://ng-api.aptible.com",
     metricTunnelUrl: import.meta.env.VITE_METRIC_TUNNEL_URL || "",
     portalUrl: import.meta.env.VITE_PORTAL_URL || "",
     aptibleAiUrl: import.meta.env.VITE_APTIBLE_AI_URL || "",
@@ -1058,5 +1060,13 @@ export const defaultDeployLlmIntegration = (
     createdAt: now,
     updatedAt: now,
     ...i,
+  };
+};
+
+export const defaultV2App = (a: Partial<V2App> = {}): V2App => {
+  return {
+    id: "",
+    handle: "",
+    ...a,
   };
 };
